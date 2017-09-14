@@ -9,8 +9,6 @@ CC = g++ -O3 -g -Wall -fopenmp
 
 LFLAG = -lgsl -lgslcblas -lm -lboost_program_options
 
-#LIBS = -I/software/gsl/1.15/include/ -L/software/gsl/1.15/lib/ -I/software/boost/1.41.0/include/ -L/software/boost/1.41.0/lib/ 
-
 CFLAG = -c
 
 OFLAG = -o
