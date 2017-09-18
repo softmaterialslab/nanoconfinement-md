@@ -14,7 +14,7 @@
 #include<gsl/gsl_randist.h>
 
 //#define CHUNKSIZE 1				// for parallel implementation
-#define THREADSIZE 1
+#define THREADSIZE $OMP_NUM_THREADS
 
 using namespace std;
 
