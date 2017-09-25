@@ -17,8 +17,8 @@ $(PROG) : $(OBJ)
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
 
 %.o : %.cpp
-    $(CC) - C $(LFLAG) $< -o $@
-
+    $(CC) -c $(LFLAG ) $< -o $@
+    
 main.o: utility.h interface.h particle.h vertex.h databin.h control.h functions.h thermostat.h
 interface.o: interface.h functions.h
 functions.o: functions.h
