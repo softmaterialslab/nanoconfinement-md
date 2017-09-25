@@ -1,5 +1,3 @@
-// This is a header file that contains functions that compute the forces on particles
-
 #ifndef _FORCES_H
 #define _FORCES_H
 
