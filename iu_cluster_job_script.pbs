@@ -12,8 +12,8 @@
 #module load gsl
 
 cd $PBS_O_WORKDIR
-export ppn = $PBS_NUM_PPN
+
 export OMP_NUM_THREADS = 16
 # the following is a test simulation to check things are working, it simulates 0.1 M of +1 and -1 ions of diameter 0.714 nm confined within 3 nm
 
-aprun -n $PBS_NUM_PPN ./md_simulation_confined_ions -X 34.272 -Y 34.272 -Z 3 -p 1 -n -1 -c 0.1 -d 0.714 -g 4 -e 80.1 -E 80.1 -T 0.0005 -S 1000000 -P 100000 -F 100 -x 1000 -w 100000 -m 1000
+aprun -n 1 -d 16 ./md_simulation_confined_ions -X 34.272 -Y 34.272 -Z 3 -p 1 -n -1 -c 0.1 -d 0.714 -g 4 -e 80.1 -E 80.1 -T 0.0005 -S 1000000 -P 100000 -F 100 -x 1000 -w 100000 -m 1000
