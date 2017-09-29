@@ -14,7 +14,7 @@ void for_md_calculate_force(vector<PARTICLE>& ion, INTERFACE& box, char flag)
   
   // force on the particles (electrostatic)
   // parallel calculation of forces (uniform case)
-#pragma omp parallel default(shared) private(iloop, j1, h1, dz, factor, r1, r2, E_z, hcsh, temp_vec, r, r3) num_threads(THREADSIZE)
+#pragma omp parallel default(shared) private(iloop, j1, h1, dz, factor, r1, r2, E_z, hcsh, temp_vec, r, r3)
 {
   #pragma omp for schedule(dynamic) nowait
   for (iloop = 0; iloop < ion.size(); iloop++)
@@ -56,7 +56,7 @@ void for_md_calculate_force(vector<PARTICLE>& ion, INTERFACE& box, char flag)
   vector<VECTOR3D> lj_ion_ion (ion.size(), VECTOR3D(0,0,0));
   VECTOR3D r_vec, flj, fljcc;
   PARTICLE wall_dummy, dummy;
-  #pragma omp parallel default(shared) private(i, j, r_vec, r2, d, d2, elj, r6, r12, d6, d12, fljcc) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, j, r_vec, r2, d, d2, elj, r6, r12, d6, d12, fljcc)
  {
     #pragma omp for schedule(dynamic) nowait
   for (i = 0; i < ion.size(); i++)
@@ -119,7 +119,7 @@ void for_md_calculate_force(vector<PARTICLE>& ion, INTERFACE& box, char flag)
   
   // ion interacting with discretized left wall
   vector<VECTOR3D> lj_ion_left_wall (ion.size(), VECTOR3D(0,0,0));
-  #pragma omp parallel default(shared) private(i, k, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, k, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
  {
     #pragma omp for schedule(dynamic) nowait
   for ( i = 0; i < ion.size(); i++)
@@ -182,7 +182,7 @@ void for_md_calculate_force(vector<PARTICLE>& ion, INTERFACE& box, char flag)
   
   // ion interacting with discretized right wall
   vector<VECTOR3D> lj_ion_right_wall (ion.size(), VECTOR3D(0,0,0));
-  #pragma omp parallel default(shared) private(i, k, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, k, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
  {
     #pragma omp for schedule(dynamic) nowait
   for ( i = 0; i < ion.size(); i++)
