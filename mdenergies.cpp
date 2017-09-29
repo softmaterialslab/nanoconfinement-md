@@ -16,7 +16,7 @@ long double energy_functional(vector<PARTICLE>& ion, INTERFACE& box)
   
   // charged sheets method is used to compute Coulomb interactions; an Ewald version should be designed to compare and ensure that long-range effects are taken into account in either methods
   
-#pragma omp parallel default(shared) private(i, j, fqq, fqq_csh, dz, r1, r2, fcsh_inf, fcsh_z,temp_vec) num_threads(THREADSIZE)
+#pragma omp parallel default(shared) private(i, j, fqq, fqq_csh, dz, r1, r2, fcsh_inf, fcsh_z,temp_vec)
 {
   #pragma omp for schedule(dynamic) nowait
   for (i = 0; i < ion.size(); i++)
@@ -61,7 +61,7 @@ long double energy_functional(vector<PARTICLE>& ion, INTERFACE& box)
   VECTOR3D r_vec;
   PARTICLE wall_dummy;
   double ulj, uljcc, elj, r, r6, d, d2, d6;
-  #pragma omp parallel default(shared) private(i, j, uljcc, r, r2, r6, d, d2, d6, elj, r_vec) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, j, uljcc, r, r2, r6, d, d2, d6, elj, r_vec)
   {
     #pragma omp for schedule(dynamic) nowait
   for (i = 0; i < ion.size(); i++)
@@ -123,7 +123,7 @@ long double energy_functional(vector<PARTICLE>& ion, INTERFACE& box)
   
   // ion interacting with discretized left wall
   vector<double> lj_ion_leftwall(ion.size(), 0.0);
-  #pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy,r_vec) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy,r_vec)
   {
     #pragma omp for schedule(dynamic) nowait
   for (i = 0; i < ion.size(); i++)
@@ -184,7 +184,7 @@ long double energy_functional(vector<PARTICLE>& ion, INTERFACE& box)
   
   // ion interacting with discretized right wall
   vector<double> lj_ion_rightwall(ion.size(), 0.0);
-  #pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy,r_vec) num_threads(THREADSIZE)
+  #pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy,r_vec)
   {
     #pragma omp for schedule(dynamic) nowait
   for (i = 0; i < ion.size(); i++)
