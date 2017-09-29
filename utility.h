@@ -6,6 +6,7 @@
 #define _UTILITY_H
 
 #include<iostream>
+#include <omp.h>
 #include<iomanip>
 #include<fstream>
 #include<cmath>
@@ -14,7 +15,7 @@
 #include<gsl/gsl_randist.h>
 
 //#define CHUNKSIZE 1				// for parallel implementation
-#define THREADSIZE $OMP_NUM_THREADS
+//#define THREADSIZE $OMP_NUM_THREADS
 
 using namespace std;
 
