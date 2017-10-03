@@ -105,8 +105,15 @@ int main(int argc, char* argv[])
   
   // output to screen the parameters of the problem
   cout << "Dielectric constant of water is taken to be " << epsilon_water << endl;
-  cout << "Number of processors used (the app comes with OpenMP parallelization)  " << THREADSIZE << endl;
-  cout << "Make sure that number of grid points and ions is greater than  " << THREADSIZE << endl;
+  #pragma omp parallel default(none)
+  {
+    if (omp_get_thread_num() == 0) {
+		printf("Number of processors used (the app comes with OpenMP parallelization) %d\n", omp_get_num_threads());
+		printf("Make sure that number of grid points and ions is greater than %d\n", omp_get_num_threads());
+	}
+  }
+  //cout << "Number of processors used (the app comes with OpenMP parallelization)  " << THREADSIZE << endl;
+  //cout << "Make sure that number of grid points and ions is greater than  " << THREADSIZE << endl;
   cout << "Unit of length is " << unitlength << " nanometers" << endl; // half Bjerrum length; close to Na ion radius
   cout << "Unit of mass is " << unitmass << " grams" << endl; // mass of sodium atom in CGS; in grams
   cout << "Unit of energy is " << unitenergy << " ergs (CGS)" << endl; // kB room_T
