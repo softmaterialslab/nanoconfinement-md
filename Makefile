@@ -5,9 +5,9 @@ PROG = md_simulation_confined_ions
 OBJ = main.o interface.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
-CC = g++ -O3 -g -Wall -fopenmp
+CC = CC -O3 -g -Wall -fopenmp
 
-LFLAG = -lgsl -lgslcblas -lm -lboost_program_options
+LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
 
 CFLAG = -c
 

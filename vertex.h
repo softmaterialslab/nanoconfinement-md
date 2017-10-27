@@ -12,6 +12,37 @@
 
 class VERTEX 
 {
+private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+      ar & posvec;
+      ar & a;
+      ar & normalvec;
+      ar & r;
+      ar & theta;
+      ar & phi;
+      ar & mu;
+      ar & w;
+      ar & vw;
+      ar & fw;
+      ar & ke;
+      ar & pe;
+      ar & wmean;
+      ar & presumgwEw;
+      ar & presumgEwEq;
+      ar & presumgEwEw;
+      ar & presumfwEw;
+      ar & presumfEwEq;
+      ar & presumhEqEw;
+      ar & Greens;
+      ar & ndotGradGreens;
+      ar & Gion;
+      ar & gradGion;
+    }
+
   public:
 
   // members
