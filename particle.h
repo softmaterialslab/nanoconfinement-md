@@ -9,6 +9,30 @@
 
 class PARTICLE 
 {
+  private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+      ar & id;
+      ar & diameter;
+      ar & valency;
+      ar & q;
+      ar & m;
+      ar & epsilon;
+      ar & posvec;
+      ar & velvec;
+      ar & forvec;
+      ar & pe;
+      ar & ke;
+      ar & energy;
+      ar & lx;
+      ar & ly;
+      ar & lz;
+
+    }
+
   public:
 
   // members

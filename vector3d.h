@@ -4,11 +4,23 @@
 #ifndef _VECTOR3D_H
 #define _VECTOR3D_H
 
+
 class VECTOR3D 
 {
+  private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & x;
+        ar & y;
+        ar & z;
+    }
+
   public:
     long double x, y, z;								// component along each axis (cartesian)
-    
+
     // make a 3d vector
     VECTOR3D(long double initial_x = 0.0, long double initial_y = 0.0, long double initial_z = 0.0) 
     {

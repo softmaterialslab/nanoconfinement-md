@@ -8,7 +8,7 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
   // useful combinations of different dielectric constants (inside and outside)
   em = 0.5 * (ein + eout);
   ed = (eout - ein) / (4 * pi);
-  
+
   // useful length scales signifying competition between electrostatics and entropy
   lB_in = (lB_water * epsilon_water / ein) / unitlength;
   lB_out = (lB_water * epsilon_water / eout) / unitlength;
@@ -43,6 +43,8 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
   
 void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double diameter, vector<PARTICLE>& ion)
 {
+  mpi::environment env;
+  mpi::communicator world;
   // establish the number of inside salt ions first
   // Note: salt concentration is the concentration of one kind of ions, so for total ions a factor of 2 needs to be multiplied. 
   // also the factor of 0.6 is there in order to be consistent with units.
@@ -105,13 +107,15 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
-  ofstream list_salt_ions_inside("outfiles/salt_ions_inside.xyz", ios::out);
-  list_salt_ions_inside << saltion_in.size() << endl;
-  list_salt_ions_inside << "salt ions inside" << endl;
-  for (unsigned int i = 0; i < saltion_in.size(); i++)
-    list_salt_ions_inside << "Si" << setw(15) << saltion_in[i].posvec << endl;
-  list_salt_ions_inside.close(); 
-  
+  if (world.rank() == 0) {
+
+    ofstream list_salt_ions_inside("outfiles/salt_ions_inside.xyz", ios::out);
+    list_salt_ions_inside << saltion_in.size() << endl;
+    list_salt_ions_inside << "salt ions inside" << endl;
+    for (unsigned int i = 0; i < saltion_in.size(); i++)
+      list_salt_ions_inside << "Si" << setw(15) << saltion_in[i].posvec << endl;
+    list_salt_ions_inside.close();
+  }
   gsl_rng_free (rnr);
   
   return;
@@ -120,6 +124,9 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 // discretize interface
 void INTERFACE::discretize(double ion_diameter, double f)
 {
+  mpi::environment env;
+  mpi::communicator world;
+
   // width of the discretization (f is typically 1 or 1/2 or 1/4 or 1/8 ...)
   width = f * ion_diameter;	// in reduced units
   
@@ -150,34 +157,37 @@ void INTERFACE::discretize(double ion_diameter, double f)
       rightplane.push_back(VERTEX(position,area,normal));
     }
   }
-  
-  ofstream listleftplane("outfiles/leftplane.xyz", ios::out);
-  listleftplane << "ITEM: TIMESTEP" << endl;
-  listleftplane << 0 << endl;
-  listleftplane << "ITEM: NUMBER OF ATOMS" << endl;
-  listleftplane << leftplane.size() << endl;
-  listleftplane << "ITEM: BOX BOUNDS" << endl;
-  listleftplane << -0.5*lx << "\t" << 0.5*lx << endl;
-  listleftplane << -0.5*ly << "\t" << 0.5*ly << endl;
-  listleftplane << -0.5*lz << "\t" << 0.5*lz << endl;
-  listleftplane << "ITEM: ATOMS index type x y z" << endl;
-  for (unsigned int k = 0; k < leftplane.size(); k++) 
-    listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
-  listleftplane.close();  
-  
-  ofstream listrightplane("outfiles/rightplane.xyz", ios::out);
-  listrightplane << "ITEM: TIMESTEP" << endl;
-  listrightplane << 0 << endl;
-  listrightplane << "ITEM: NUMBER OF ATOMS" << endl;
-  listrightplane << rightplane.size() << endl;
-  listrightplane << "ITEM: BOX BOUNDS" << endl;
-  listrightplane << -0.5*lx << "\t" << 0.5*lx << endl;
-  listrightplane << -0.5*ly << "\t" << 0.5*ly << endl;
-  listrightplane << -0.5*lz << "\t" << 0.5*lz << endl;
-  listrightplane << "ITEM: ATOMS index type x y z" << endl;
-  for (unsigned int k = 0; k < rightplane.size(); k++) 
-    listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec << endl;
-  listrightplane.close();  
+  if (world.rank() == 0) {
+
+    ofstream listleftplane("outfiles/leftplane.xyz", ios::out);
+    listleftplane << "ITEM: TIMESTEP" << endl;
+    listleftplane << 0 << endl;
+    listleftplane << "ITEM: NUMBER OF ATOMS" << endl;
+    listleftplane << leftplane.size() << endl;
+    listleftplane << "ITEM: BOX BOUNDS" << endl;
+    listleftplane << -0.5 * lx << "\t" << 0.5 * lx << endl;
+    listleftplane << -0.5 * ly << "\t" << 0.5 * ly << endl;
+    listleftplane << -0.5 * lz << "\t" << 0.5 * lz << endl;
+    listleftplane << "ITEM: ATOMS index type x y z" << endl;
+    for (unsigned int k = 0; k < leftplane.size(); k++)
+      listleftplane << k + 1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
+    listleftplane.close();
+
+    ofstream listrightplane("outfiles/rightplane.xyz", ios::out);
+    listrightplane << "ITEM: TIMESTEP" << endl;
+    listrightplane << 0 << endl;
+    listrightplane << "ITEM: NUMBER OF ATOMS" << endl;
+    listrightplane << rightplane.size() << endl;
+    listrightplane << "ITEM: BOX BOUNDS" << endl;
+    listrightplane << -0.5 * lx << "\t" << 0.5 * lx << endl;
+    listrightplane << -0.5 * ly << "\t" << 0.5 * ly << endl;
+    listrightplane << -0.5 * lz << "\t" << 0.5 * lz << endl;
+    listrightplane << "ITEM: ATOMS index type x y z" << endl;
+    for (unsigned int k = 0; k < rightplane.size(); k++)
+      listrightplane << k + 1 << "  " << "1" << "  " << rightplane[k].posvec << endl;
+    listrightplane.close();
+
+  }
   
   return;
 }

@@ -12,7 +12,9 @@
 void md(vector<PARTICLE>& ion, INTERFACE& box, vector<THERMOSTAT>& real_bath,  vector<DATABIN>& bin, CONTROL& mdremote)
 {
   
-  // initialization
+  // initialization MPI
+  mpi::environment env;
+  mpi::communicator world;
   
   initialize_particle_velocities(ion, real_bath);	// particle velocities initialized
   for_md_calculate_force(ion, box, 'y');		// force on particles and fake degrees initialized
@@ -21,7 +23,7 @@ void md(vector<PARTICLE>& ion, INTERFACE& box, vector<THERMOSTAT>& real_bath,  v
   potential_energy= energy_functional(ion, box);	// compute initial potential energy
   
   // Output cpmd essentials
-  
+if (world.rank() == 0) {  
   cout << "\n";
   cout << "M D" << " on " << endl;
   cout << "Initial ion kinetic energy " << particle_ke << endl; 
@@ -37,7 +39,7 @@ void md(vector<PARTICLE>& ion, INTERFACE& box, vector<THERMOSTAT>& real_bath,  v
   cout << "Sampling frequency " << mdremote.freq << endl;
   cout << "Extra computation every " << mdremote.extra_compute <<  " steps" << endl;
   cout << "Write density profile every " << mdremote.writedensity << endl;
-  
+  }
   // for movie
   int moviestart = 1;					// starting point of the movie
   
@@ -128,7 +130,7 @@ void md(vector<PARTICLE>& ion, INTERFACE& box, vector<THERMOSTAT>& real_bath,  v
     p_error_bar.push_back( sqrt(1.0/density_profile_samples) * sqrt( mean_sq_positiveion_density.at(b)/density_profile_samples - positiveion_density_profile.at(b)*positiveion_density_profile.at(b) ) );
   for (unsigned int b = 0; b < negativeion_density_profile.size(); b++)
     n_error_bar.push_back( sqrt(1.0/density_profile_samples) * sqrt( mean_sq_negativeion_density.at(b)/density_profile_samples - negativeion_density_profile.at(b)*negativeion_density_profile.at(b) ) );
-  
+   if (world.rank() == 0) {
   // 3. write results
   ofstream list_p_profile ("outfiles/p_denisty_profile.dat", ios::out);
   ofstream list_n_profile ("outfiles/n_denisty_profile.dat", ios::out);
@@ -144,7 +146,7 @@ void md(vector<PARTICLE>& ion, INTERFACE& box, vector<THERMOSTAT>& real_bath,  v
   
   cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
   cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
-  
+  }
   return ;
 }
 // End of MD routine
