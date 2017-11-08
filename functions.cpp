@@ -32,15 +32,11 @@ void make_bins(vector<DATABIN>& bin, INTERFACE& box, double bin_width)
 // initialize velocities of particles to start simulation
 void initialize_particle_velocities(vector<PARTICLE>& ion, vector<THERMOSTAT>& bath)
 {
-  mpi::environment env;
-  mpi::communicator world;
-  
   if (bath.size() == 1)
   {
     for (unsigned int i = 0; i < ion.size(); i++) 
       ion[i].velvec = VECTOR3D(0,0,0);					// initialized velocities
-    if (world.rank() == 0)
-	cout << "Velocities initialized to 0" << endl;
+    cout << "Velocities initialized to 0" << endl;
     return;
   }
   double p_sigma = sqrt(kB * bath[0].T / (2.0 * ion[0].m));		// Maxwell distribution width
@@ -120,10 +116,8 @@ double compute_MD_trust_factor_R(int hiteqm)
     char filename[200];
     sprintf(filename, "outfiles/energy.dat");
     ifstream in(filename, ios::in);
-    if (!in) 
-    {
-	if (world.rank() == 0)
-		cout << "File could not be opened" << endl;
+    if (!in) {
+      cout << "File could not be opened" << endl;
       return 0;
     }
 
@@ -176,10 +170,8 @@ void auto_correlation_function()
     char filename[200];
     sprintf(filename, "outfiles/for_auto_corr.dat");
     ifstream in(filename, ios::in);
-    if (!in) 
-    {
-	if (world.rank() == 0)
-		cout << "File could not be opened" << endl;
+    if (!in) {
+      cout << "File could not be opened" << endl;
       return;
     }
 
