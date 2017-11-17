@@ -50,7 +50,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
                 if (temp_vec.y < -box.ly / 2) temp_vec.y += box.ly;
                 r = temp_vec.GetMagnitude();
                 r3 = r * r * r;
-                h2 = ((temp_vec ^ ((-1.0) / r3)) ^
+                h2 =h2+ ((temp_vec ^ ((-1.0) / r3)) ^
                       ((-0.5) * ion[i].q * ion[j].q * (1 / ion[i].epsilon + 1 / ion[j].epsilon)));
                 h1 = h1 + h2;
 
