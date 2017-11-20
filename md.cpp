@@ -16,10 +16,9 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     mpi::environment env;
     mpi::communicator world;
     //Boundary calculation
-    unsigned int range = ion.size() / world.size() + 0.5;
-    range = range + 1;
+    unsigned int range = ion.size() / world.size() + 1.5;
     unsigned int lowerBound = world.rank() * range;
-    unsigned int upperBound = (world.rank() * range) + range - 1;
+    unsigned int upperBound = (world.rank()+1)*range - 1;
     if (world.rank() == world.size() - 1)
         upperBound = ion.size() - 1;
     if (world.size() == 1) {

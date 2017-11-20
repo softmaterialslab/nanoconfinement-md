@@ -16,4 +16,4 @@ cd $PBS_O_WORKDIR
 export OMP_NUM_THREADS=16
 # the following is a test simulation to check things are working, it simulates 0.1 M of +1 and -1 ions of diameter 0.714 nm confined within 3 nm
 # -d refers to number of cores. this should match ppn in Line 2.
-time aprun -n 4 -d 16 ./md_simulation_confined_ions -X 34.272 -Y 34.272 -Z 3 -p 1 -n -1 -c 0.1 -d 0.714 -g 4 -e 80.1 -E 80.1 -T 0.0005 -S 100000 -P 10000 -F 1000 -x 10000 -w 10000 -m 1000
+time aprun -n 4 -d 16 ./md_simulation_confined_ions -X 34.272 -Y 34.272 -Z 3 -p 1 -n -1 -c 0.1 -d 0.714 -g 4 -e 80.1 -E 80.1 -T 0.0005 -S 1000000 -P 100000 -F 10000 -x 100000 -w 100000 -m 10000

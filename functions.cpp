@@ -32,7 +32,7 @@ void make_bins(vector<DATABIN>& bin, INTERFACE& box, double bin_width)
 // initialize velocities of particles to start simulation
 void initialize_particle_velocities(vector<PARTICLE>& ion, vector<THERMOSTAT>& bath)
 {
-  mpi::environment env;
+	mpi::environment env;
   mpi::communicator world;
   
   if (bath.size() == 1)
@@ -120,9 +120,8 @@ double compute_MD_trust_factor_R(int hiteqm)
     char filename[200];
     sprintf(filename, "outfiles/energy.dat");
     ifstream in(filename, ios::in);
-    if (!in) 
-    {
-	if (world.rank() == 0)
+    if (!in) {
+		if (world.rank() == 0)
 		cout << "File could not be opened" << endl;
       return 0;
     }
@@ -176,10 +175,9 @@ void auto_correlation_function()
     char filename[200];
     sprintf(filename, "outfiles/for_auto_corr.dat");
     ifstream in(filename, ios::in);
-    if (!in) 
-    {
-	if (world.rank() == 0)
-		cout << "File could not be opened" << endl;
+    if (!in) {
+		if (world.rank() == 0)
+			cout << "File could not be opened" << endl;
       return;
     }
 
