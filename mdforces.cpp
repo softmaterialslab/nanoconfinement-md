@@ -27,7 +27,6 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
         for (i = lowerBound; i <= upperBound; i++) {
             h1 = VECTOR3D(0, 0, 0);
             for (j = 0; j < ion.size(); j++) {
-                VECTOR3D h2 = VECTOR3D(0, 0, 0);
                 if (j == i) continue;
                 dz = ion[i].posvec.z - ion[j].posvec.z;
                 if (dz >= 0) factor = 1;
@@ -39,7 +38,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
                        16 * fabs(dz) * (box.lx / (box.lx * box.lx + 4 * dz * dz * r1 * r1)) *
                        (fabs(dz) * dz / (box.lx * box.lx * r1) + factor * r1);
 
-                h2.z = h2.z +
+                h1.z = h1.z +
                        2 * ion[i].q * (ion[j].q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / ion[j].epsilon) *
                        hcsh;
 
@@ -50,9 +49,8 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
                 if (temp_vec.y < -box.ly / 2) temp_vec.y += box.ly;
                 r = temp_vec.GetMagnitude();
                 r3 = r * r * r;
-                h2 =h2+ ((temp_vec ^ ((-1.0) / r3)) ^
+                h1 =h1+ ((temp_vec ^ ((-1.0) / r3)) ^
                       ((-0.5) * ion[i].q * ion[j].q * (1 / ion[i].epsilon + 1 / ion[j].epsilon)));
-                h1 = h1 + h2;
 
                 // force is q1 * q2 / r^2, no half factor. half factor cancels out in the above expression.
             }
@@ -232,53 +230,21 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 
 
     if (world.size() > 1) {
-        //MPI message passing
-        if (world.rank() == 0) {
 
-            // total force on the particle = the electrostatic force + the Lennard-Jones force in main processes
-            for (i = 0; i < sendForceVector.size(); i++)
-                partialForceVector[i + lowerBound] =
-                        sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] + lj_ion_left_wall[i] +
-                        lj_ion_rightdummy[i] + lj_ion_right_wall[i];
-
-            int pF = 0;
-            unsigned int rangeL, lowerBoundL, upperBoundL;
-            std::vector <VECTOR3D> recvForceVector;
-            for (pF = 0; pF < world.size() - 1; pF++) {
-                world.recv((pF + 1), (pF + 1), recvForceVector);
-                // deciding the regions for each processes
-                rangeL = ion.size() / world.size() + 0.5;
-                rangeL = rangeL + 1;
-                lowerBoundL = (pF + 1) * rangeL;
-                upperBoundL = ((pF + 1) * rangeL) + rangeL - 1;
-                if ((pF + 1) == world.size() - 1)
-                    upperBoundL = ion.size() - 1;
-                i = 0;
-                for (unsigned int ind = lowerBoundL; ind <= upperBoundL; ind++) {
-                    partialForceVector[ind] = recvForceVector[i];
-                    i++;
-                }
-            }
-
-        } else {
-
-            // total force on the particle = the electrostatic force + the Lennard-Jones force slave processes
-            for (i = 0; i < sendForceVector.size(); i++) {
-                sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
-                                     lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
-            }
-
-            world.send(0, world.rank(), sendForceVector);
+        // total force on the particle = the electrostatic force + the Lennard-Jones force slave processes
+        for (i = 0; i < sendForceVector.size(); i++) {
+            sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
+                                 lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
         }
 
-        //broadcasting partialForceVector of 0th node (root/Master)
-        broadcast(world, partialForceVector, 0);
+        //broadcasting using all gather = gather + broadcast
+        //template<typename T> void all_gather(const communicator & comm, const T * in_values, int n, std::vector< T > & out_values);
+         all_gather(world, &sendForceVector[0],sendForceVector.size(),partialForceVector);
 
-        //assigning broadcasted forces to each node's force vector
+        //assigning all gathered forces to each node's force vector
         //#pragma omp parallel for schedule(dynamic) private(i)
         for (i = 0; i < ion.size(); i++)
             ion[i].forvec = partialForceVector[i];
-
 
     } else {
 

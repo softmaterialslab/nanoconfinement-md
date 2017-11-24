@@ -1,5 +1,5 @@
 #! /bin/bash
-#PBS -l	nodes=4:ppn=16,walltime=2:00:00
+#PBS -l	nodes=4:ppn=16,walltime=1:00:00
 #PBS -q	gpu
 #PBS -m	ae
 #PBS -o	out.log
