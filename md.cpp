@@ -19,14 +19,17 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     unsigned int range = ion.size() / world.size() + 1.5;
     unsigned int lowerBound = world.rank() * range;
     unsigned int upperBound = (world.rank()+1)*range - 1;
-    if (world.rank() == world.size() - 1)
+    unsigned int extraElements=world.size()*range-ion.size();
+    unsigned int sizFVec = upperBound-lowerBound+1;
+    if (world.rank() == world.size() - 1){
         upperBound = ion.size() - 1;
+        sizFVec = upperBound-lowerBound+1+extraElements;
+    }
     if (world.size() == 1) {
         lowerBound = 0;
         upperBound = ion.size() - 1;
     }
-    std::vector <VECTOR3D> partialForceVector(ion.size(), VECTOR3D(0, 0, 0));
-    unsigned int sizFVec = upperBound-lowerBound+1;
+    std::vector <VECTOR3D> partialForceVector(ion.size()+extraElements, VECTOR3D(0, 0, 0));
     std::vector <VECTOR3D> lj_ion_ion(sizFVec, VECTOR3D(0, 0, 0));
     std::vector <VECTOR3D> lj_ion_leftdummy(sizFVec, VECTOR3D(0, 0, 0));
     std::vector <VECTOR3D> lj_ion_left_wall(sizFVec, VECTOR3D(0, 0, 0));
