@@ -42,8 +42,18 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
                            lj_ion_left_wall, lj_ion_rightdummy,
                            lj_ion_right_wall,sendForceVector);        // force on particles and fake degrees initialized
     long double particle_ke = particle_kinetic_energy(ion);// compute initial kinetic energy
+
     long double potential_energy;
-    potential_energy = energy_functional(ion, box);    // compute initial potential energy
+
+    vector <double> ion_energy(sizFVec, 0.0);
+    vector <double> lj_ion_ion_energy(sizFVec, 0.0);
+    vector <double> lj_ion_leftdummy_energy(sizFVec, 0.0);
+    vector <double> lj_ion_leftwall_energy(sizFVec, 0.0);
+    vector <double> lj_ion_rightdummy_energy(sizFVec, 0.0);
+    vector <double> lj_ion_rightwall_energy(sizFVec, 0.0);
+
+    // compute initial potential energy
+    potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
 
     // Output cpmd essentials
     if (world.rank() == 0) {
@@ -125,7 +135,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         // extra computations
         if (num == 1 || num % mdremote.extra_compute == 0) {
             energy_samples++;
-            compute_n_write_useful_data(num, ion, real_bath, box);
+            compute_n_write_useful_data(num, ion, real_bath, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
             write_basic_files(num, ion, real_bath, box);
         }
 
