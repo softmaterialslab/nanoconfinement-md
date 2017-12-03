@@ -8,6 +8,6 @@
 #include "interface.h"
 #include "functions.h"
 
-void for_md_calculate_force(vector<PARTICLE>&, INTERFACE&, char);
+void for_md_calculate_force(vector<PARTICLE>&, INTERFACE&, char, vector<vector<VECTOR3D> >&, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &);
 
 #endif 
