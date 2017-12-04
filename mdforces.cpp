@@ -53,6 +53,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, v
     for (iloop = 0; iloop < ion.size(); iloop++) {
         h1 = VECTOR3D(0, 0, 0);
         for (j1 = 0; j1 < ion.size(); j1++) {
+            if (j1 == iloop) continue;
             if (iloop<j1)
                 h1 = h1 + forceMatrix[iloop][j1];
             else
