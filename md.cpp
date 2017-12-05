@@ -74,6 +74,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
 
     long double expfac_real;                // exponential factors useful in velocity Verlet routine
 
+    double percentage=0,percentagePre=-1;
+
     // Part II : Propagate
     for (int num = 1; num <= mdremote.steps; num++) {
         // INTEGRATOR
@@ -122,6 +124,15 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
                                     mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
         }
+
+        //percentage calculation
+        percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
+        //percentage output
+        if(percentage!=percentagePre){
+            printf("Simulation Completion %0.1f %%\n",percentage);
+            percentagePre=percentage;
+        }
+
     }
 
     // Part III : Analysis
