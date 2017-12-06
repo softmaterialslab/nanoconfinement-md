@@ -31,4 +31,4 @@ clean:
 	rm -f *.o
 
 dataclean:
-	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  datafiles/*.dat
+	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  data/*.dat
