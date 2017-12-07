@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <run>
     <tool>
-        <title>Nanoconfinement MD</title>
-        <about>Nanoconfinement tool enables users to explore the effects of nanoscale confinement on the distribution of
+        <title>Ions in Nanoconfinement</title>
+        <about>This app enables users to explore the effects of nanoscale confinement on the distribution of
             ions
         </about>
         <command>python @tool/nanoconfinement-wrapper.py @driver</command>
@@ -16,7 +16,7 @@
             <number id="salt_concentration">
                 <about>
                     <label>Salt Concentration</label>
-                    <description>Salt concentration of the solution.</description>
+                    <description>Salt concentration of the solution</description>
                 </about>
                 <units>M</units>
                 <min>0.3M</min>
@@ -26,7 +26,7 @@
             <integer id="positive_valency">
                 <about>
                     <label>Positive Ion Valency</label>
-                    <description>Z+ Positive ion valency.</description>
+                    <description>Valency (charge) of the positive ions</description>
                 </about>
                 <min>1</min>
                 <max>3</max>
@@ -47,7 +47,7 @@
             <integer id="negative_valency">
                 <about>
                     <label>Negative Ion Valency</label>
-                    <description>Z- Negative ion valency.</description>
+                    <description>Valency (charge) of the negative ions</description>
                 </about>
                 <min>-3</min>
                 <max>-1</max>
@@ -68,7 +68,7 @@
             <number id="confinement_length">
                 <about>
                     <label>Confinement Length</label>
-                    <description>Confinement Length.</description>
+                    <description>Length of Nanoscale Confinement</description>
                 </about>
                 <units>nm</units>
                 <min>2nm</min>
@@ -78,7 +78,7 @@
             <number id="ion_diameter">
                 <about>
                     <label>Ion Diameter</label>
-                    <description>Ion Diameter.</description>
+                    <description>Diameter of Ions</description>
                 </about>
                 <units>nm</units>
                 <min>0.5nm</min>
@@ -89,7 +89,7 @@
         <group id="computing">
             <about>
                 <label>Computing</label>
-                <description>Computing parameters which effect algorithm</description>
+                <description>Computing parameters related to the simulation</description>
             </about>
             <integer id="simulation_steps">
                 <about>
@@ -103,19 +103,20 @@
         </group>
     </input>
     <output>
-        <curve id="energy">
+        <curve id="positive_ion_density">
             <about>
-                <label>Energy Plot</label>
-                <description>Energy Plot for verification</description>
+                <label>Density of Positive Ions</label>
+                <description>Distribution of positive ions confined within the nanoparticle surfaces</description>
             </about>
             <xaxis>
-                <label>Energy</label>
-                <description>Energy</description>
-                <units>eV</units>
+                <label>z</label>
+                <description>Distance measure between the two Surfaces (z = 0 is the midpoint)</description>
+                <units>nm</units>
             </xaxis>
             <yaxis>
-                <label>TimeSteps</label>
-                <description>Timesteps</description>
+                <label>Density</label>
+                <description>Density distribution of ions</description>
+                <units>M</units>
             </yaxis>
         </curve>
     </output>
