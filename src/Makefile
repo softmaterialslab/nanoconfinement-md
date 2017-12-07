@@ -16,7 +16,7 @@ OFLAG = -o
 
 all: $(PROG)
 
-install:
+install: all
 	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
 $(PROG) : $(OBJ)
@@ -34,7 +34,7 @@ mdforces.o: forces.h
 mdenergies.o: energies.h
 
 clean:
-	rm -f *.o
+	rm -f *.o $(PROG)
 
 dataclean:
 	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  data/*.dat
