@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <run>
     <tool>
-        <title>Ions in Nanoconfinement</title>
-        <about>This app enables users to explore the effects of nanoscale confinement on the distribution of
+        <title>Nanoconfinement MD</title>
+        <about>Nanoconfinement tool enables users to explore the effects of nanoscale confinement on the distribution of
             ions
         </about>
         <command>python @tool/nanoconfinement-wrapper.py @driver</command>
@@ -15,18 +15,17 @@
             </about>
             <number id="salt_concentration">
                 <about>
-                    <label>Salt Concentration</label>
-                    <description>Salt concentration of the solution</description>
+                    <label>Salt Concentration (M)</label>
+                    <description>Salt concentration of the solution.</description>
                 </about>
-                <units>M</units>
-                <min>0.3M</min>
-                <max>0.9M</max>
-                <default>0.5M</default>
+                <min>0.3</min>
+                <max>0.9</max>
+                <default>0.5</default>
             </number>
             <integer id="positive_valency">
                 <about>
                     <label>Positive Ion Valency</label>
-                    <description>Valency (charge) of the positive ions</description>
+                    <description>Z+ Positive ion valency.</description>
                 </about>
                 <min>1</min>
                 <max>3</max>
@@ -47,7 +46,7 @@
             <integer id="negative_valency">
                 <about>
                     <label>Negative Ion Valency</label>
-                    <description>Valency (charge) of the negative ions</description>
+                    <description>Z- Negative ion valency.</description>
                 </about>
                 <min>-3</min>
                 <max>-1</max>
@@ -67,29 +66,27 @@
             </integer>
             <number id="confinement_length">
                 <about>
-                    <label>Confinement Length</label>
-                    <description>Length of Nanoscale Confinement</description>
+                    <label>Confinement Length (nm)</label>
+                    <description>Confinement Length.</description>
                 </about>
-                <units>nm</units>
-                <min>2nm</min>
-                <max>4nm</max>
-                <default>3nm</default>
+                <min>2</min>
+                <max>4</max>
+                <default>3</default>
             </number>
             <number id="ion_diameter">
                 <about>
-                    <label>Ion Diameter</label>
-                    <description>Diameter of Ions</description>
+                    <label>Ion Diameter (nm)</label>
+                    <description>Ion Diameter.</description>
                 </about>
-                <units>nm</units>
-                <min>0.5nm</min>
-                <max>0.8nm</max>
-                <default>0.714nm</default>
+                <min>0.5</min>
+                <max>0.8</max>
+                <default>0.714</default>
             </number>
         </group>
         <group id="computing">
             <about>
                 <label>Computing</label>
-                <description>Computing parameters related to the simulation</description>
+                <description>Computing parameters which effect algorithm</description>
             </about>
             <integer id="simulation_steps">
                 <about>
@@ -103,20 +100,19 @@
         </group>
     </input>
     <output>
-        <curve id="positive_ion_density">
+        <curve id="energy">
             <about>
-                <label>Density of Positive Ions</label>
-                <description>Distribution of positive ions confined within the nanoparticle surfaces</description>
+                <label>Energy Plot</label>
+                <description>Energy Plot for verification</description>
             </about>
             <xaxis>
-                <label>z</label>
-                <description>Distance measure between the two Surfaces (z = 0 is the midpoint)</description>
-                <units>nm</units>
+                <label>Energy</label>
+                <description>Energy</description>
+                <units>eV</units>
             </xaxis>
             <yaxis>
-                <label>Density</label>
-                <description>Density distribution of ions</description>
-                <units>M</units>
+                <label>TimeSteps</label>
+                <description>Timesteps</description>
             </yaxis>
         </curve>
     </output>

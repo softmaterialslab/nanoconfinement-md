@@ -30,15 +30,18 @@ print " ion_diameter is %s" % ion_diameter
 simulation_steps = user_inputs['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps
 
-#Close the input file handler
+# Close the input file handler
 user_inputs.close()
 
-# print Rappture.tools.executeCommand(['../bin/md_simulation_confined_ions', '-Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000'], streamOutput=True)
-
 try:
-    print Rappture.tools.executeCommand(['../bin/md_simulation_confined_ions'], streamOutput=True)
+    print Rappture.tools.executeCommand(
+        ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+         salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
+    # exitStatus, stdOut, stdErr = Rappture.tools.executeCommand(
+    #     ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+    #      salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
 except:
-  sys.stderr.write('Error during execution of md_simulation_confined_ions')
-  sys.exit(1);
+    sys.stderr.write('Error during execution of md_simulation_confined_ions')
+    sys.exit(1);
 
 sys.exit(0)
