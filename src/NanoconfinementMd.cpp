@@ -91,14 +91,14 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     //-Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000
     options_description config("Configuration");
     config.add_options()
-            ("bz,Z", value<double>(&bz)->default_value(3),
+            ("confinement_length,Z", value<double>(&bz)->default_value(3),
              "box length in z direction in nanometers")        // enter in nanometers
-            ("pz_in,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
-            ("nz_in,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
-            ("salt_conc_in,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
-            ("saltion_diameter_in,d", value<double>(&saltion_diameter_in)->default_value(0.714),
+            ("positive_valency,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
+            ("negative_valency,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
+            ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
+            ("ion_diameter,d", value<double>(&saltion_diameter_in)->default_value(0.714),
              "salt ion diameter inside")        // enter in nanometers
-            ("md_steps,S", value<int>(&mdremote.steps)->default_value(1000000), "steps used in md")
+            ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(1000000), "steps used in md")
             ;
 
     options_description cmdline_options;
