@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<run>
+    <tool>
+        <title>Nanoconfinement MD</title>
+        <about>Nanoconfinement tool enables users to explore the effects of nanoscale confinement on the distribution of
+            ions
+        </about>
+        <command>@tool/md_simulation_confined_ions @driver</command>
+    </tool>
+    <input>
+        <group id="physical">
+            <about>
+                <label>Physical</label>
+                <description>Physical parameters specific to the material system</description>
+            </about>
+            <number id="salt-concentration">
+                <about>
+                    <label>Salt Concentration</label>
+                    <description>Salt concentration of the solution.</description>
+                </about>
+                <default>0.5M</default>
+                <units>M</units>
+                <min>0.3M</min>
+                <max>0.9M</max>
+            </number>
+            <number id="positive-valency">
+                <about>
+                    <label>Positive Ion Valency</label>
+                    <description>Z+ Positive ion valency.</description>
+                </about>
+                <default>1</default>
+                <min>1</min>
+                <max>3</max>
+                <preset>
+                    <value>1</value>
+                    <label>1(monovalent)</label>
+                </preset>
+                <preset>
+                    <value>2</value>
+                    <label>2(divalent)</label>
+                </preset>
+                <preset>
+                    <value>3</value>
+                    <label>3(trivalent)</label>
+                </preset>
+            </number>
+            <number id="negative-valency">
+                <about>
+                    <label>Negative Ion Valency</label>
+                    <description>Z- Negative ion valency.</description>
+                </about>
+                <default>-1</default>
+                <min>-1</min>
+                <max>-2</max>
+                <preset>
+                    <value>-1</value>
+                    <label>-1</label>
+                </preset>
+                <preset>
+                    <value>-2</value>
+                    <label>-2</label>
+                </preset>
+                <preset>
+                    <value>-3</value>
+                    <label>-3</label>
+                </preset>
+            </number>
+            <number id="confinement-length">
+                <about>
+                    <label>Confinement Length</label>
+                    <description>Confinement Length.</description>
+                </about>
+                <default>3nm</default>
+                <units>nm</units>
+                <min>2nm</min>
+                <max>4nm</max>
+            </number>
+            <number id="ion-diameter">
+                <about>
+                    <label>Ion Diameter</label>
+                    <description>Ion Diameter.</description>
+                </about>
+                <default>0.714nm</default>
+                <units>nm</units>
+                <min>0.5nm</min>
+                <max>0.8nm</max>
+            </number>
+        </group>
+        <group id="computing">
+            <about>
+                <label>Computing</label>
+                <description>Computing parameters which effect algorithm</description>
+            </about>
+            <number id="simulation-steps">
+                <about>
+                    <label>Simulation Steps</label>
+                    <description>Number of Simulation Time Steps.</description>
+                </about>
+                <default>1000000</default>
+                <min>500000</min>
+                <max>5000000</max>
+            </number>
+        </group>
+    </input>
+    <output>
+        <curve id="energy">
+            <about>
+                <label>Energy Plot</label>
+                <description>Energy Plot for verification</description>
+            </about>
+            <xaxis>
+                <label>Energy</label>
+                <description>Energy</description>
+                <units>eV</units>
+            </xaxis>
+            <yaxis>
+                <label>TimeSteps</label>
+                <description>Timesteps</description>
+            </yaxis>
+        </curve>
+    </output>
+</run>
