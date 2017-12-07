@@ -158,8 +158,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
 
     // 3. write results
     string p_density_profile, n_density_profile;
-    p_density_profile=rootDirectory+"data/p_density_profile.dat"+simulationParams;
-    n_density_profile=rootDirectory+"data/n_density_profile.dat"+simulationParams;
+    p_density_profile=rootDirectory+"data/p_density_profile"+simulationParams+".dat";
+    n_density_profile=rootDirectory+"data/n_density_profile"+simulationParams+".dat";
     ofstream list_p_profile(p_density_profile.c_str(), ios::out);
     ofstream list_n_profile(n_density_profile.c_str(), ios::out);
     for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)
