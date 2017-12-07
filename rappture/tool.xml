@@ -5,7 +5,7 @@
         <about>Nanoconfinement tool enables users to explore the effects of nanoscale confinement on the distribution of
             ions
         </about>
-        <command>@tool/md_simulation_confined_ions @driver</command>
+        <command>@tool/../bin/md_simulation_confined_ions @driver</command>
     </tool>
     <input>
         <group id="physical">
@@ -18,19 +18,19 @@
                     <label>Salt Concentration</label>
                     <description>Salt concentration of the solution.</description>
                 </about>
-                <default>0.5M</default>
                 <units>M</units>
                 <min>0.3M</min>
                 <max>0.9M</max>
+                <default>0.5M</default>
             </number>
-            <number id="positive-valency">
+            <integer id="positive-valency">
                 <about>
                     <label>Positive Ion Valency</label>
                     <description>Z+ Positive ion valency.</description>
                 </about>
-                <default>1</default>
                 <min>1</min>
                 <max>3</max>
+                <default>1</default>
                 <preset>
                     <value>1</value>
                     <label>1(monovalent)</label>
@@ -43,15 +43,15 @@
                     <value>3</value>
                     <label>3(trivalent)</label>
                 </preset>
-            </number>
-            <number id="negative-valency">
+            </integer>
+            <integer id="negative-valency">
                 <about>
                     <label>Negative Ion Valency</label>
                     <description>Z- Negative ion valency.</description>
                 </about>
+                <min>-3</min>
+                <max>-1</max>
                 <default>-1</default>
-                <min>-1</min>
-                <max>-2</max>
                 <preset>
                     <value>-1</value>
                     <label>-1</label>
@@ -64,26 +64,26 @@
                     <value>-3</value>
                     <label>-3</label>
                 </preset>
-            </number>
+            </integer>
             <number id="confinement-length">
                 <about>
                     <label>Confinement Length</label>
                     <description>Confinement Length.</description>
                 </about>
-                <default>3nm</default>
                 <units>nm</units>
                 <min>2nm</min>
                 <max>4nm</max>
+                <default>3nm</default>
             </number>
             <number id="ion-diameter">
                 <about>
                     <label>Ion Diameter</label>
                     <description>Ion Diameter.</description>
                 </about>
-                <default>0.714nm</default>
                 <units>nm</units>
                 <min>0.5nm</min>
                 <max>0.8nm</max>
+                <default>0.714nm</default>
             </number>
         </group>
         <group id="computing">
@@ -91,15 +91,15 @@
                 <label>Computing</label>
                 <description>Computing parameters which effect algorithm</description>
             </about>
-            <number id="simulation-steps">
+            <integer id="simulation-steps">
                 <about>
                     <label>Simulation Steps</label>
                     <description>Number of Simulation Time Steps.</description>
                 </about>
-                <default>1000000</default>
                 <min>500000</min>
                 <max>5000000</max>
-            </number>
+                <default>1000000</default>
+            </integer>
         </group>
     </input>
     <output>
