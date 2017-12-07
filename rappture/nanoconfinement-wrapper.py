@@ -30,38 +30,15 @@ print " ion_diameter is %s" % ion_diameter
 simulation_steps = user_inputs['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps
 
-try:
-  out = commands.getoutput('../bin/md_simulation_confined_ions')
-  print out
-except:
-  sys.stderr.write('Error during execution of md_simulation_confined_ions')
-  exit(1);
-
-
-# driver.put('output.log',out)
-#
-# fid = open('out.dat','r')
-# info = fid.readlines()
-# fid.close()
-#
-# # Label output graph with title, x-axis label,
-# # y-axis lable, and y-axis units
-# driver.put('output.curve(f12).about.label','Fermi-Dirac Factor')
-# driver.put('output.curve(f12).xaxis.label','Fermi-Dirac Factor')
-# driver.put('output.curve(f12).yaxis.label','Energy')
-# driver.put('output.curve(f12).yaxis.units','eV')
-#
-# # skip over the first 4 header lines
-# for line in info[6:]:
-#     f,E = string.split(line[:-1])
-#     f,E = float(f),float(E)
-#     xy = "%g %g\n" % (f,E)
-#     driver.put('output.curve(f12).component.xy',xy,append=1)
-#
-# os.remove('indeck'); os.remove('out.dat')
-#
-# Rappture.result(driver)
-
 #Close the input file handler
 user_inputs.close()
+
+# print Rappture.tools.executeCommand(['../bin/md_simulation_confined_ions', '-Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000'], streamOutput=True)
+
+try:
+    print Rappture.tools.executeCommand(['../bin/md_simulation_confined_ions'], streamOutput=True)
+except:
+  sys.stderr.write('Error during execution of md_simulation_confined_ions')
+  sys.exit(1);
+
 sys.exit(0)

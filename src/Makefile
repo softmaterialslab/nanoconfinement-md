@@ -1,9 +1,8 @@
 # This is a makefile.
 # Use option -p in CC for profiling with gprof
 
-bindir = ../bin/
-
 PROG = md_simulation_confined_ions
+BIN = ../bin/
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
@@ -18,7 +17,7 @@ OFLAG = -o
 all: $(PROG)
 
 install:
-	@echo "Installing $(PROG) into $(bindir) directory"; cp $(PROG) $(bindir)
+	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
 $(PROG) : $(OBJ)
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
