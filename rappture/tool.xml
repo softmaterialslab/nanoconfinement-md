@@ -15,13 +15,12 @@
             </about>
             <number id="salt_concentration">
                 <about>
-                    <label>Salt Concentration</label>
+                    <label>Salt Concentration (M)</label>
                     <description>Salt concentration of the solution</description>
                 </about>
-                <units>M</units>
-                <min>0.3M</min>
-                <max>0.9M</max>
-                <default>0.5M</default>
+                <min>0.3</min>
+                <max>0.9</max>
+                <default>0.5</default>
             </number>
             <integer id="positive_valency">
                 <about>
@@ -67,34 +66,32 @@
             </integer>
             <number id="confinement_length">
                 <about>
-                    <label>Confinement Length</label>
+                    <label>Confinement Length (nm)</label>
                     <description>Length of Nanoscale Confinement</description>
                 </about>
-                <units>nm</units>
-                <min>2nm</min>
-                <max>4nm</max>
-                <default>3nm</default>
+                <min>2</min>
+                <max>4</max>
+                <default>3</default>
             </number>
             <number id="ion_diameter">
                 <about>
-                    <label>Ion Diameter</label>
+                    <label>Ion Diameter (nm)</label>
                     <description>Diameter of Ions</description>
                 </about>
-                <units>nm</units>
-                <min>0.5nm</min>
-                <max>0.8nm</max>
-                <default>0.714nm</default>
+                <min>0.5</min>
+                <max>0.8</max>
+                <default>0.714</default>
             </number>
         </group>
         <group id="computing">
             <about>
                 <label>Computing</label>
-                <description>Computing parameters related to the simulation</description>
+                <description>Computing parameters which effect algorithm</description>
             </about>
             <integer id="simulation_steps">
                 <about>
                     <label>Simulation Steps</label>
-                    <description>Number of Simulation Time Steps.</description>
+                    <description>Computing parameters related to the simulation</description>
                 </about>
                 <min>500000</min>
                 <max>5000000</max>
