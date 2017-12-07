@@ -1,0 +1,1 @@
+Once the code is built using Makefile in src directory, the binaries will be placed in this bin directory. 

@@ -2,6 +2,7 @@
 # Use option -p in CC for profiling with gprof
 
 PROG = md_simulation_confined_ions
+BIN = ../bin/
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
@@ -12,6 +13,11 @@ LFLAG = -lgsl -lgslcblas -lm -lboost_program_options
 CFLAG = -c
 
 OFLAG = -o
+
+all: $(PROG)
+
+install:
+	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
 $(PROG) : $(OBJ)
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
@@ -31,4 +37,8 @@ clean:
 	rm -f *.o
 
 dataclean:
-	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  datafiles/*.dat
+	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  data/*.dat
+
+distclean: clean dataclean
+
+.PHONY: all install clean distclean

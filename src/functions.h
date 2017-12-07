@@ -206,8 +206,8 @@ inline void compute_density_profile(int cpmdstep, double density_profile_samples
   if (cpmdstep % cpmdremote.writedensity == 0)
   {
     char datap[200], datan[200];
-    sprintf(datap, "datafiles/_z+_den_%.06d.dat", cpmdstep);
-    sprintf(datan, "datafiles/_z-_den_%.06d.dat", cpmdstep);
+    sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
+    sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
     ofstream outdenp, outdenn;
     outdenp.open(datap);
     outdenn.open(datan);
