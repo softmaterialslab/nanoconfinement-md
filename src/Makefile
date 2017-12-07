@@ -1,6 +1,8 @@
 # This is a makefile.
 # Use option -p in CC for profiling with gprof
 
+bindir = ../bin/
+
 PROG = md_simulation_confined_ions
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
@@ -12,6 +14,11 @@ LFLAG = -lgsl -lgslcblas -lm -lboost_program_options
 CFLAG = -c
 
 OFLAG = -o
+
+all: $(PROG)
+
+install:
+	@echo "Installing $(PROG) into $(bindir) directory"; cp $(PROG) $(bindir)
 
 $(PROG) : $(OBJ)
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
@@ -32,3 +39,7 @@ clean:
 
 dataclean:
 	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  data/*.dat
+
+distclean: clean dataclean
+
+.PHONY: all install clean distclean
