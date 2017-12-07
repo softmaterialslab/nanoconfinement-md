@@ -16,7 +16,8 @@ void make_bins(vector<DATABIN>& bin, INTERFACE& box, double bin_width)
   bin.resize(number_of_bins);
   for (unsigned int bin_num = 0; bin_num < bin.size(); bin_num++)
     bin[bin_num].set_up(bin_num, bin_width, box.lx, box.ly, box.lz);				
-  ofstream listbin ("outfiles/listbin.dat");
+  string listbinPath= rootDirectory+"outfiles/listbin.dat";
+  ofstream listbin (listbinPath.c_str());
   for (unsigned int num = 0; num < bin.size(); num++)
     listbin << bin[num].n << setw(15) << bin[num].width << setw(15) << bin[num].volume << setw(15) << bin[num].lower << setw(15) << bin[num].higher << endl;
   listbin.close(); 
@@ -53,7 +54,8 @@ void initialize_particle_velocities(vector<PARTICLE>& ion, vector<THERMOSTAT>& b
 // make movie
 void make_movie(int num, vector<PARTICLE>& ion, INTERFACE& box)
 {
-  ofstream outdump("outfiles/p.lammpstrj", ios::app);
+  string outdumpPath= rootDirectory+"outfiles/p.lammpstrj";
+  ofstream outdump(outdumpPath.c_str(), ios::app);
   outdump << "ITEM: TIMESTEP" << endl;
   outdump << num - 1 << endl;
   outdump << "ITEM: NUMBER OF ATOMS" << endl;
@@ -79,8 +81,11 @@ void make_movie(int num, vector<PARTICLE>& ion, INTERFACE& box)
 // compute additional quantities
 void compute_n_write_useful_data(int cpmdstep, vector<PARTICLE>& ion, vector<THERMOSTAT>& real_bath, INTERFACE& box)
 {
-  ofstream list_temperature ("outfiles/temperature.dat", ios::app);
-  ofstream list_energy ("outfiles/energy.dat", ios::app);
+
+  string list_temperaturePath= rootDirectory+"outfiles/temperature.dat";
+  ofstream list_temperature (list_temperaturePath.c_str(), ios::app);
+  string list_energyPath= rootDirectory+"outfiles/energy.dat";
+  ofstream list_energy (list_energyPath.c_str(), ios::app);
   list_temperature << cpmdstep << setw(15) << 2*particle_kinetic_energy(ion)/(real_bath[0].dof*kB) << setw(15) << real_bath[0].T << setw(15) << endl;
   double particle_ke = particle_kinetic_energy(ion);
   double potential_energy = energy_functional(ion, box);
@@ -93,9 +98,8 @@ void compute_n_write_useful_data(int cpmdstep, vector<PARTICLE>& ion, vector<THE
 // compute MD trust factor R
 double compute_MD_trust_factor_R(int hiteqm)
 {
-  char filename[200];
-  sprintf(filename, "outfiles/energy.dat");
-  ifstream in(filename, ios::in);
+  string inPath= rootDirectory+"outfiles/energy.dat";
+  ifstream in(inPath.c_str(), ios::in);
   if (!in) 
   {
     cout << "File could not be opened" << endl; 
@@ -135,7 +139,8 @@ double compute_MD_trust_factor_R(int hiteqm)
   
   double R = ext_sd / ke_sd;
   
-  ofstream out ("outfiles/R.dat");
+  string outPath= rootDirectory+"outfiles/R.dat";
+  ofstream out (outPath.c_str());
   out << "Sample size " << ext.size() << endl;
   out << "Sd: ext, kinetic energy and R" << endl;
   out << ext_sd << setw(15) << ke_sd << setw(15) << R << endl;
@@ -146,9 +151,8 @@ double compute_MD_trust_factor_R(int hiteqm)
 // auto correlation function
 void auto_correlation_function()
 {
-  char filename[200];
-  sprintf(filename, "outfiles/for_auto_corr.dat");
-  ifstream in(filename, ios::in);
+  string inPath= rootDirectory+"outfiles/for_auto_corr.dat";
+  ifstream in(inPath.c_str(), ios::in);
   if (!in) 
   {
     cout << "File could not be opened" << endl; 
@@ -176,7 +180,8 @@ void auto_correlation_function()
     autocorr.push_back(A - avg*avg);
   }
 
-  ofstream out ("outfiles/auto_correlation.dat");
+  string outPath= rootDirectory+"outfiles/auto_correlation.dat";
+  ofstream out (outPath.c_str());
   for (int i = 0; i < ntau; i++)
     out << i << setw(15) << autocorr[i]/autocorr[0] << endl;
   

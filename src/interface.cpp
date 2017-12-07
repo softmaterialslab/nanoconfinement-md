@@ -105,7 +105,8 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
-  ofstream list_salt_ions_inside("outfiles/salt_ions_inside.xyz", ios::out);
+  string list_salt_ions_insidePath= rootDirectory+"outfiles/salt_ions_inside.xyz";
+  ofstream list_salt_ions_inside(list_salt_ions_insidePath.c_str(), ios::out);
   list_salt_ions_inside << saltion_in.size() << endl;
   list_salt_ions_inside << "salt ions inside" << endl;
   for (unsigned int i = 0; i < saltion_in.size(); i++)
@@ -151,7 +152,8 @@ void INTERFACE::discretize(double ion_diameter, double f)
     }
   }
   
-  ofstream listleftplane("outfiles/leftplane.xyz", ios::out);
+  string listleftplanePath= rootDirectory+"outfiles/leftplane.xyz";
+  ofstream listleftplane(listleftplanePath.c_str(), ios::out);
   listleftplane << "ITEM: TIMESTEP" << endl;
   listleftplane << 0 << endl;
   listleftplane << "ITEM: NUMBER OF ATOMS" << endl;
@@ -165,7 +167,8 @@ void INTERFACE::discretize(double ion_diameter, double f)
     listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
   listleftplane.close();  
   
-  ofstream listrightplane("outfiles/rightplane.xyz", ios::out);
+  string listrightplanePath= rootDirectory+"outfiles/rightplane.xyz";
+  ofstream listrightplane(listrightplanePath.c_str(), ios::out);
   listrightplane << "ITEM: TIMESTEP" << endl;
   listrightplane << 0 << endl;
   listrightplane << "ITEM: NUMBER OF ATOMS" << endl;

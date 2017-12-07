@@ -10,7 +10,7 @@
 #include "functions.h"
 
 void
-md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote) {
+md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams) {
 
     // initialization
     std::vector<vector<VECTOR3D> > forceMatrix(ion.size());
@@ -157,19 +157,22 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
                                    negativeion_density_profile.at(b) * negativeion_density_profile.at(b)));
 
     // 3. write results
-    ofstream list_p_profile("outfiles/p_denisty_profile.dat", ios::out);
-    ofstream list_n_profile("outfiles/n_denisty_profile.dat", ios::out);
+    string p_density_profile, n_density_profile;
+    p_density_profile=rootDirectory+"data/p_density_profile"+simulationParams+".dat";
+    n_density_profile=rootDirectory+"data/n_density_profile"+simulationParams+".dat";
+    ofstream list_p_profile(p_density_profile.c_str(), ios::out);
+    ofstream list_n_profile(n_density_profile.c_str(), ios::out);
     for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)
         list_p_profile << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
                        << positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b)
                        << endl; // change in the z coordinate, counted from leftwall
-    ofstream list_profile("outfiles/n_denisty_profile.dat", ios::out);
     for (unsigned int b = 0; b < negativeion_density_profile.size(); b++)
         list_n_profile << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
                        << negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)
                        << endl; // change in the z coordinate, counted from leftwall
 
-    ofstream final_configuration("outfiles/final_configuration.dat");
+    string finalConFilePath= rootDirectory+"outfiles/final_configuration.dat";
+    ofstream final_configuration(finalConFilePath.c_str());
     for (unsigned int i = 0; i < ion.size(); i++)
         final_configuration << ion[i].posvec << endl;
 

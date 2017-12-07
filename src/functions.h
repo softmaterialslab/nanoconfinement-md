@@ -136,10 +136,16 @@ inline void update_chain_xi(unsigned int j, vector<THERMOSTAT>& bath, double dt,
 
 inline void write_basic_files(int cpmdstep, vector<PARTICLE>& ion, vector<THERMOSTAT>& real_bath, INTERFACE& box)
 {
-  ofstream list_position ("outfiles/ion_position.dat", ios::app);
-  ofstream list_velocity ("outfiles/ion_velocity.dat", ios::app);
-  ofstream list_force ("outfiles/ion_force.dat", ios::app);
-  ofstream list_bath ("outfiles/bath_values.dat", ios::app);
+
+
+  string list_positionPath= rootDirectory+"outfiles/ion_position.dat";
+  string list_velocityPath= rootDirectory+"outfiles/ion_velocity.dat";
+  string list_forcePath= rootDirectory+"outfiles/ion_force.dat";
+  string list_bathPath= rootDirectory+"outfiles/bath_values.dat";
+  ofstream list_position (list_positionPath.c_str(), ios::app);
+  ofstream list_velocity (list_velocityPath.c_str(), ios::app);
+  ofstream list_force (list_forcePath.c_str(), ios::app);
+  ofstream list_bath (list_bathPath.c_str(), ios::app);
   
   list_position << cpmdstep << setw(15) << ion[0].posvec << setw(15) << ion[1].posvec << endl; 
   list_velocity << cpmdstep << setw(15) << ion[0].velvec << setw(15) << ion[1].velvec << endl; 
@@ -208,9 +214,14 @@ inline void compute_density_profile(int cpmdstep, double density_profile_samples
     char datap[200], datan[200];
     sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
     sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
+	
+	string p_density_profile, n_density_profile;
+    p_density_profile=rootDirectory+string(datap);
+    n_density_profile=rootDirectory+string(datan);
+	
     ofstream outdenp, outdenn;
-    outdenp.open(datap);
-    outdenn.open(datan);
+    outdenp.open(p_density_profile.c_str());
+    outdenn.open(n_density_profile.c_str());
     for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
       outdenp << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_positiveion_density.at(b)/density_profile_samples << endl;
     for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)

@@ -26,6 +26,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     unsigned int chain_length_real;    // Nose Hoover thermostat chain length for particles
     double bin_width;            // width of the bins used to compute density profiles
     CONTROL mdremote;            // remote control for md
+    string config_file ="input_config.cfg";         //Configuration file path holder
+    string simulationParams;
+    char simulationParamsTemp[200];
 
     // Different parts of the system
     vector <PARTICLE> saltion_in;        // salt ions inside
@@ -49,24 +52,20 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     cout << "-----------------------------------------------------" << endl;
 
     // Get input values from the user
-    options_description desc("Usage:\nrandom_mesh <options>");
-    desc.add_options()
+    //options_description desc("Usage:\nrandom_mesh <options>");
+    // Declare a group of options that will be
+    // allowed only on command line
+    options_description generic("Generic options");
+    generic.add_options()
             ("help,h", "print usage message")
             ("bx,X", value<double>(&bx)->default_value(15.3153),
              "box length in x direction in nanometers")    // enter in nanometers
             ("by,Y", value<double>(&by)->default_value(15.3153),
              "box length in y direction in nanometers")    // enter in nanometers
-            ("bz,Z", value<double>(&bz)->default_value(3),
-             "box length in z direction in nanometers")        // enter in nanometers
             ("epsilon_in,e", value<double>(&ein)->default_value(80.1),
              "dielectric const inside")        // must have ein = eout
             ("epsilon_out,E", value<double>(&eout)->default_value(80.1),
              "dielectric const outside")        // must have ein = eout
-            ("pz_in,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
-            ("nz_in,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
-            ("salt_conc_in,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
-            ("saltion_diameter_in,d", value<double>(&saltion_diameter_in)->default_value(0.714),
-             "salt ion diameter inside")        // enter in nanometers
             ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(1),
              "for interface discretization width")    // enter a perfect square
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
@@ -74,19 +73,55 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
              "chain length for real system: enter L+1 if you want L thermostats")
             ("bin_width,B", value<double>(&bin_width)->default_value(0.10), "bin width")
             ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.0005), "time step used in md")
-            ("md_steps,S", value<int>(&mdremote.steps)->default_value(1000000), "steps used in md")
             ("md_eqm,P", value<int>(&mdremote.hiteqm)->default_value(100000), "production begin (md)")
             ("md_freq,F", value<int>(&mdremote.freq)->default_value(100), "sample frequency (md)")
             ("md_extra_compute,x", value<int>(&mdremote.extra_compute)->default_value(10000),
              "compute additional (md)")
             ("md_writedensity,w", value<int>(&mdremote.writedensity)->default_value(100000), "write density files")
-            ("md_movie_freq,m", value<int>(&mdremote.moviefreq)->default_value(10000), "compute additional (md)");
+            ("md_movie_freq,m", value<int>(&mdremote.moviefreq)->default_value(10000), "compute additional (md)")
+            //("config,conf", value<string>(&config_file)->default_value("input_config.cfg"),
+            // "name of a file of a configuration.")
+            ;
+
+
+
+    // Declare a group of options that will be
+    // allowed both on command line and in
+    // config file
+    //-Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000
+    options_description config("Configuration");
+    config.add_options()
+            ("confinement_length,Z", value<double>(&bz)->default_value(3),
+             "box length in z direction in nanometers")        // enter in nanometers
+            ("positive_valency,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
+            ("negative_valency,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
+            ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
+            ("ion_diameter,d", value<double>(&saltion_diameter_in)->default_value(0.714),
+             "salt ion diameter inside")        // enter in nanometers
+            ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(1000000), "steps used in md")
+            ;
+
+    options_description cmdline_options;
+    cmdline_options.add(generic).add(config);
 
     variables_map vm;
-    store(parse_command_line(argc, argv, desc), vm);
+    store(parse_command_line(argc, argv, cmdline_options), vm);
     notify(vm);
+
+    ifstream ifs(config_file.c_str());
+    if (!ifs)
+    {
+        cout << "can not open config file: " << config_file << "\n";
+        return 0;
+    }
+    else
+    {
+        store(parse_config_file(ifs, config), vm);
+        notify(vm);
+    }
+
     if (vm.count("help")) {
-        std::cout << desc << "\n";
+        std::cout << cmdline_options << "\n";
         return 0;
     }
 
@@ -96,6 +131,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     by=bx;
     }
 
+    //creating simulation parameters to create the output file names
+    sprintf(simulationParamsTemp, "_%.2f_%d_%d_%.2f_%.3f_%d", bz,pz_in,nz_in,salt_conc_in,saltion_diameter_in,mdremote.steps);
+    simulationParams=string(simulationParamsTemp);
     // Set up the system
     T = 1;        // set temperature
     box.ein = ein;
@@ -151,14 +189,16 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     // write to files
 
     // initial configuration
-    ofstream initial_configuration("outfiles/initialconfig.dat");
+	string initial_configurationPath= rootDirectory+"outfiles/initialconfig.dat";
+    ofstream initial_configuration(initial_configurationPath.c_str());
     for (unsigned int i = 0; i < ion.size(); i++)
         initial_configuration << "ion" << setw(5) << ion[i].id << setw(15) << "charge" << setw(5) << ion[i].q
                               << setw(15) << "position" << setw(15) << ion[i].posvec << endl;
     initial_configuration.close();
 
     // initial density
-    ofstream density_profile("outfiles/initial_density_profile.dat", ios::out);
+	string density_profilePath= rootDirectory+"outfiles/initial_density_profile.dat";
+    ofstream density_profile(density_profilePath.c_str(), ios::out);
     for (unsigned int b = 0; b < initial_density.size(); b++)
         density_profile << bin[b].lower << setw(15) << initial_density.at(b) << endl;
     density_profile.close();
@@ -194,7 +234,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     }
 
     // Car-Parrinello Molecular Dynamics
-    md(ion, box, real_bath, bin, mdremote);
+    md(ion, box, real_bath, bin, mdremote,simulationParams);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
     cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
