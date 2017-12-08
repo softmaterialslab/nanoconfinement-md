@@ -112,7 +112,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     if (!ifs)
     {
         cout << "can not open config file: " << config_file << "\n";
-        return 0;
+        //return 0;
     }
     else
     {
