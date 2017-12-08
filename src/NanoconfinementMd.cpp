@@ -9,7 +9,7 @@
 */
 #include "NanoconfinementMd.h"
 
-int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
+int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     // Electrostatic system variables
     double bx, by, bz;        // lengths of the box
     double ein;            // permittivity of inside medium
@@ -126,9 +126,11 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool XY_Map) {
     }
 
     //X and Y mapping
-    if(XY_Map){
+    if(paraMap){
     bx = sqrt(212/0.6022/salt_conc_in/bz);
     by=bx;
+    mdremote.hiteqm=mdremote.steps*0.1;
+    mdremote.writedensity=mdremote.steps*0.1;
     }
 
     //creating simulation parameters to create the output file names
