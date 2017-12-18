@@ -34,10 +34,10 @@ mdforces.o: forces.h
 mdenergies.o: energies.h
 
 clean:
-	rm -f *.o $(PROG)
+	rm -f *.o $(PROG) 
 
 dataclean:
-	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  data/*.dat
+	rm -f ../outfiles/*.dat ../outfiles/*.xyz ../outfiles/*.lammpstrj ../data/*.dat ../bin/$(PROG)
 
 distclean: clean dataclean
 

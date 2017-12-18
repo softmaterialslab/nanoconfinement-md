@@ -1,8 +1,8 @@
-// Last update: April 5, 2013
-// This is main.
-// This is MD simulation of an electrolyte confined within planar walls
-// There is no dielectric contrast between the walls. This is uniform dielectric medium.
-// Problem : Compute density profiles of ions trapped within planar walls
+// This is main
+// This is molecular dynamics (MD) simulation of ions of an electrolyte confined within nanoparticle (NP) surfaces
+// NP surfaces are assumed as planar walls
+// NP and its environment (typically water) are assumed to have the same dielectric properties
+// Problem (output): Compute density profiles of ions trapped within this nanoconfinement
 
 #include "NanoconfinementMd.h"
 
