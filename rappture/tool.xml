@@ -2,8 +2,7 @@
 <run>
     <tool>
         <title>Ions in Nanoconfinement</title>
-        <about>This app enables users to explore the effects of nanoscale confinement on the distribution of
-            ions
+        <about>This app enables users to explore the effects of nanoscale confinement on the distribution of ions. The output is the density profile of ions.
         </about>
         <command>python @tool/nanoconfinement-wrapper.py @driver</command>
     </tool>
