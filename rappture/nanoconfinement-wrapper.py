@@ -45,8 +45,9 @@ except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
+print exitStatus
 
-if exitStatus
+if exitStatus==0
 	# Label output graph with title, x-axis label,
 	# Positive density profile
 	io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
