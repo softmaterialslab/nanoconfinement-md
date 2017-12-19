@@ -48,8 +48,7 @@ except:
 
 
 # Label output graph with title, x-axis label,
-# y-axis lable, and y-axis units
-
+# Positive density profile
 io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
 io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
 io['output.curve(positive_ion_density).xaxis.label']='z'
@@ -74,6 +73,33 @@ for line in info:
 	yList.append(float(m))
 
 io['output.curve(positive_ion_density).component.xy']=(xList, yList)
+
+# Negative density profile
+io['output.curve(negative_ion_density).about.label']='Density of Negative Ions'
+io['output.curve(negative_ion_density).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
+io['output.curve(negative_ion_density).xaxis.label']='z'
+io['output.curve(negative_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(negative_ion_density).xaxis.units']='nm'
+io['output.curve(negative_ion_density).yaxis.label']='Density'
+io['output.curve(negative_ion_density).yaxis.description']='Density distribution of ions'
+io['output.curve(negative_ion_density).yaxis.units']='M'
+
+fid = open('data/n_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
+info = fid.readlines()
+fid.close()
+
+# add density profile to xy data
+xList = []
+yList = []
+for line in info:
+	proLine=" ".join(line.split())
+	print proLine
+	d,m,e = proLine.split()
+	xList.append(float(d))
+	yList.append(float(m))
+
+io['output.curve(negative_ion_density).component.xy']=(xList, yList)
+
 		
 # Close the input file handler
 io.close()
