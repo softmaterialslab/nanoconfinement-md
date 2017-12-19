@@ -68,6 +68,7 @@ xList = []
 yList = []
 for line in info:
 	proLine=" ".join(line.split())
+	print proLine
 	f,E = proLine.split()
 	xList.append(float(f))
 	yList.append(float(E))
