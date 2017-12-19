@@ -45,72 +45,62 @@ except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
-print exitStatus
+# Label output graph with title, x-axis label,
+# Positive density profile
+io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
+io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
+io['output.curve(positive_ion_density).xaxis.label']='z'
+io['output.curve(positive_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(positive_ion_density).xaxis.units']='nm'
+io['output.curve(positive_ion_density).yaxis.label']='Density'
+io['output.curve(positive_ion_density).yaxis.description']='Density distribution of ions'
+io['output.curve(positive_ion_density).yaxis.units']='M'
 
-if exitStatus==0
-	# Label output graph with title, x-axis label,
-	# Positive density profile
-	io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
-	io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
-	io['output.curve(positive_ion_density).xaxis.label']='z'
-	io['output.curve(positive_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
-	io['output.curve(positive_ion_density).xaxis.units']='nm'
-	io['output.curve(positive_ion_density).yaxis.label']='Density'
-	io['output.curve(positive_ion_density).yaxis.description']='Density distribution of ions'
-	io['output.curve(positive_ion_density).yaxis.units']='M'
+try:
+	fid = open('data/p_density_profile'+simulation_params+'.dat','r')
+	info = fid.readlines()
+	fid.close()
+except:
+	sys.stderr.write('Can not find the positive density results file')
 
-	try:
-		fid = open('data/p_density_profile'+simulation_params+'.dat','r')
-		info = fid.readlines()
-		fid.close()
-	except:
-		sys.stderr.write('Can not find the positive density results file')
+# add density profile to xy data
+xList = []
+yList = []
+for line in info:
+	proLine=" ".join(line.split())
+	d,m,e = proLine.split()
+	xList.append(float(d))
+	yList.append(float(m))
 
-	# add density profile to xy data
-	xList = []
-	yList = []
-	for line in info:
-		proLine=" ".join(line.split())
-		print proLine
-		d,m,e = proLine.split()
-		xList.append(float(d))
-		yList.append(float(m))
+io['output.curve(positive_ion_density).component.xy']=(xList, yList)
 
-	io['output.curve(positive_ion_density).component.xy']=(xList, yList)
+# Negative density profile
+io['output.curve(negative_ion_density).about.label']='Density of Negative Ions'
+io['output.curve(negative_ion_density).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
+io['output.curve(negative_ion_density).xaxis.label']='z'
+io['output.curve(negative_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(negative_ion_density).xaxis.units']='nm'
+io['output.curve(negative_ion_density).yaxis.label']='Density'
+io['output.curve(negative_ion_density).yaxis.description']='Density distribution of ions'
+io['output.curve(negative_ion_density).yaxis.units']='M'
 
-	# Negative density profile
-	io['output.curve(negative_ion_density).about.label']='Density of Negative Ions'
-	io['output.curve(negative_ion_density).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
-	io['output.curve(negative_ion_density).xaxis.label']='z'
-	io['output.curve(negative_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
-	io['output.curve(negative_ion_density).xaxis.units']='nm'
-	io['output.curve(negative_ion_density).yaxis.label']='Density'
-	io['output.curve(negative_ion_density).yaxis.description']='Density distribution of ions'
-	io['output.curve(negative_ion_density).yaxis.units']='M'
-
-	try:
-		fid = open('data/n_density_profile'+simulation_params+'.dat','r')
-		info = fid.readlines()
-		fid.close()
-	except:
-		sys.stderr.write('Can not find the negative density results file')
+try:
+	fid = open('data/n_density_profile'+simulation_params+'.dat','r')
+	info = fid.readlines()
+	fid.close()
+except:
+	sys.stderr.write('Can not find the negative density results file')
 		
-	# add density profile to xy data
-	xList = []
-	yList = []
-	for line in info:
-		proLine=" ".join(line.split())
-		print proLine
-		d,m,e = proLine.split()
-		xList.append(float(d))
-		yList.append(float(m))
-
-	io['output.curve(negative_ion_density).component.xy']=(xList, yList)
-
-else
-	sys.stderr.write('md_simulation_confined_ions application terminated without completion')
-    sys.exit(1);
+# add density profile to xy data
+xList = []
+yList = []
+for line in info:
+	proLine=" ".join(line.split())
+	d,m,e = proLine.split()
+	xList.append(float(d))
+	yList.append(float(m))
 	
+io['output.curve(negative_ion_density).component.xy']=(xList, yList)
 		
 # Close the input file handler
 io.close()
