@@ -46,9 +46,9 @@ except:
     sys.exit(1);
 	
 
-Rappture.Utils.progress(10,"Simulation Started")
-Rappture.Utils.progress(25,"Simulation Running...")	
-Rappture.Utils.progress(100,"Simulation Finished")	
+#Rappture.Utils.progress(10,"Simulation Started")
+#Rappture.Utils.progress(25,"Simulation Running...")	
+#Rappture.Utils.progress(100,"Simulation Finished")	
 	
 	
 	
