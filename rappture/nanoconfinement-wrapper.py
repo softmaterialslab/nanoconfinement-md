@@ -73,5 +73,5 @@ for line in info:
 #os.remove('indeck'); os.remove('out.dat')
 	
 Rappture.result(driver)
-sss;
+
 sys.exit(0)
