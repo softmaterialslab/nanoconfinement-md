@@ -9,6 +9,10 @@
 import Rappture
 import sys, os, commands, string
 
+# open the XML file containing the run parameters
+driver = Rappture.library(sys.argv[1])
+
+
 # Parse the rappture generated XML file to extract user input values
 user_inputs = Rappture.PyXml(sys.argv[1])
 
@@ -43,5 +47,34 @@ try:
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
+	
+	
+driver.put('../data/nano.dat',out)
+
+fid = open('../data/nano.dat','r')
+info = fid.readlines()
+fid.close()
+
+# Label output graph with title, x-axis label,
+# y-axis lable, and y-axis units
+driver.put('output.curve(positive_ion_density).about.label','Density of Positive Ions')
+driver.put('output.curve(positive_ion_density).about.description','Distribution of positive ions confined within the nanoparticle surfaces')
+driver.put('output.curve(positive_ion_density).xaxis.label','z')
+driver.put('output.curve(positive_ion_density).xaxis.description','Distance measure between the two Surfaces (z = 0 is the midpoint)')
+driver.put('output.curve(positive_ion_density).xaxis.units','nm')
+driver.put('output.curve(positive_ion_density).yaxis.label','Density')
+driver.put('output.curve(positive_ion_density).yaxis.description','Density distribution of ions')
+driver.put('output.curve(positive_ion_density).yaxis.units','M')
+
+# skip over the first 4 header lines
+for line in info:
+	#f,E = string.split(line[:-1])
+	#f,E = float(f),float(E)
+	#xy = "%g %g\n" % (f,E)
+	driver.put('output.curve(positive_ion_density).component.xy',line,append=1)
+	
+#os.remove('indeck'); os.remove('out.dat')
+	
+Rappture.result(driver)
 
 sys.exit(0)
