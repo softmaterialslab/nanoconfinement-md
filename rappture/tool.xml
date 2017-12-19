@@ -101,18 +101,18 @@
     <output>
         <curve id="positive_ion_density">
             <about>
-                <label>Density of Positive Ions</label>
-                <description>Distribution of positive ions confined within the nanoparticle surfaces</description>
+                <label></label>
+                <description></description>
             </about>
             <xaxis>
-                <label>z</label>
-                <description>Distance measure between the two Surfaces (z = 0 is the midpoint)</description>
-                <units>nm</units>
+                <label></label>
+                <description></description>
+                <units></units>
             </xaxis>
             <yaxis>
-                <label>Density</label>
-                <description>Density distribution of ions</description>
-                <units>M</units>
+                <label></label>
+                <description></description>
+                <units></units>
             </yaxis>
 			<component>
 			<xy>
