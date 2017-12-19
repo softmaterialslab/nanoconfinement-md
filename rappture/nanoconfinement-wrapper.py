@@ -35,7 +35,7 @@ print "simulation_steps is %s" % simulation_steps
 
 
 try:
-    Rappture.tools.executeCommand(
+     exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
         ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
          salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
     # exitStatus, stdOut, stdErr = Rappture.tools.executeCommand(
