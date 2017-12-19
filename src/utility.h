@@ -30,7 +30,7 @@ const double unitmass = 23 * 1.67 * pow(10.0, -24);				// Unit of mass (mass of 
 const double unittime = sqrt(unitmass * unitlength * pow(10.0,-7) * unitlength / unitenergy);	// Unit of time (length expressed in cms), result in seconds
 const double kB = 1;								// Boltzmann constant in reduced units
 const double scalefactor = epsilon_water * lB_water / unitlength;		// Reduced units lead to this scale factor for Coloumb interaction
-const string rootDirectory = "../";
+const string rootDirectory = "";
 
 class UTILITY 
 {
