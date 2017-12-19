@@ -34,7 +34,7 @@ print " ion_diameter is %s" % ion_diameter
 simulation_steps = io['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps
 
-simulation_params="_%.2f" % confinement_length+"_%d" % positive_valency+"_%d" % negative_valency+"_%.2f" % salt_concentration+"_%.3f" % ion_diameter+"_%d" % simulation_steps;
+simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
 
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
