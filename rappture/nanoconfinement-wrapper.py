@@ -67,7 +67,7 @@ fid.close()
 xList = []
 yList = []
 for line in info:
-	proLine=" ".join(sentence.split())
+	proLine=" ".join(line.split())
 	f,E = proLine.split()
 	xList.append(float(f))
 	yList.append(float(E))
