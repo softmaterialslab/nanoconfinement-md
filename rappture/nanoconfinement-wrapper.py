@@ -67,10 +67,9 @@ fid.close()
 xList = []
 yList = []
 for line in info:
-	f,E = string.split(' ')
+	f,E = line.split(' ')
 	xList.append(float(f))
 	yList.append(float(E))
-	driver.put('output.curve(positive_ion_density).component.xy',line,append=1)
 
 io['output.curve(positive_ion_density).component.xy']=(xList, yList)
 		
