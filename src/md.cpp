@@ -121,9 +121,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         // compute density profile
         if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
-            if(verbose)
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
-                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
+                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote,verbose);
         }
 
         //percentage calculation
