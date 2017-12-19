@@ -10,7 +10,7 @@
 #include "functions.h"
 
 void
-md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams) {
+md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams, bool &verbose) {
 
     // initialization
     std::vector<vector<VECTOR3D> > forceMatrix(ion.size());
@@ -121,6 +121,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         // compute density profile
         if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
+            if(verbose)
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
                                     mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
         }

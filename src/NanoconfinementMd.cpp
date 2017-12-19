@@ -233,7 +233,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     }
 
     // Car-Parrinello Molecular Dynamics
-    md(ion, box, real_bath, bin, mdremote,simulationParams);
+    md(ion, box, real_bath, bin, mdremote, simulationParams, verbose);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
     cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
