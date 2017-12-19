@@ -6,6 +6,7 @@
 #   to do higher level data manipulation to marshall user inputs.
 #
 # ----------------------------------------------------------------------
+
 import Rappture
 import sys, os, commands, string
 
@@ -33,72 +34,86 @@ print " ion_diameter is %s" % ion_diameter
 simulation_steps = io['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps
 
+simulation_params="_%.2f" % confinement_length+"_%d" % positive_valency+"_%d" % negative_valency+"_%.2f" % salt_concentration+"_%.3f" % ion_diameter+"_%d" % simulation_steps;
 
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
         ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
-         salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
+         salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-SP', simulation_params, '-v', False], streamOutput=True)
 
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
 
-# Label output graph with title, x-axis label,
-# Positive density profile
-io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
-io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
-io['output.curve(positive_ion_density).xaxis.label']='z'
-io['output.curve(positive_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
-io['output.curve(positive_ion_density).xaxis.units']='nm'
-io['output.curve(positive_ion_density).yaxis.label']='Density'
-io['output.curve(positive_ion_density).yaxis.description']='Density distribution of ions'
-io['output.curve(positive_ion_density).yaxis.units']='M'
+if exitStatus
+	# Label output graph with title, x-axis label,
+	# Positive density profile
+	io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
+	io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
+	io['output.curve(positive_ion_density).xaxis.label']='z'
+	io['output.curve(positive_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+	io['output.curve(positive_ion_density).xaxis.units']='nm'
+	io['output.curve(positive_ion_density).yaxis.label']='Density'
+	io['output.curve(positive_ion_density).yaxis.description']='Density distribution of ions'
+	io['output.curve(positive_ion_density).yaxis.units']='M'
 
-fid = open('data/p_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
-info = fid.readlines()
-fid.close()
+	try:
+		fid = open('data/p_density_profile'+simulation_params+'.dat','r')
+		info = fid.readlines()
+		fid.close()
+	except:
+		sys.stderr.write('Can not find the positive density results file')
 
-# add density profile to xy data
-xList = []
-yList = []
-for line in info:
-	proLine=" ".join(line.split())
-	print proLine
-	d,m,e = proLine.split()
-	xList.append(float(d))
-	yList.append(float(m))
+	# add density profile to xy data
+	xList = []
+	yList = []
+	for line in info:
+		proLine=" ".join(line.split())
+		print proLine
+		d,m,e = proLine.split()
+		xList.append(float(d))
+		yList.append(float(m))
 
-io['output.curve(positive_ion_density).component.xy']=(xList, yList)
+	io['output.curve(positive_ion_density).component.xy']=(xList, yList)
 
-# Negative density profile
-io['output.curve(negative_ion_density).about.label']='Density of Negative Ions'
-io['output.curve(negative_ion_density).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
-io['output.curve(negative_ion_density).xaxis.label']='z'
-io['output.curve(negative_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
-io['output.curve(negative_ion_density).xaxis.units']='nm'
-io['output.curve(negative_ion_density).yaxis.label']='Density'
-io['output.curve(negative_ion_density).yaxis.description']='Density distribution of ions'
-io['output.curve(negative_ion_density).yaxis.units']='M'
+	# Negative density profile
+	io['output.curve(negative_ion_density).about.label']='Density of Negative Ions'
+	io['output.curve(negative_ion_density).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
+	io['output.curve(negative_ion_density).xaxis.label']='z'
+	io['output.curve(negative_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+	io['output.curve(negative_ion_density).xaxis.units']='nm'
+	io['output.curve(negative_ion_density).yaxis.label']='Density'
+	io['output.curve(negative_ion_density).yaxis.description']='Density distribution of ions'
+	io['output.curve(negative_ion_density).yaxis.units']='M'
 
-fid = open('data/n_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
-info = fid.readlines()
-fid.close()
+	try:
+		fid = open('data/n_density_profile'+simulation_params+'.dat','r')
+		info = fid.readlines()
+		fid.close()
+	except:
+		sys.stderr.write('Can not find the negative density results file')
+		
+	# add density profile to xy data
+	xList = []
+	yList = []
+	for line in info:
+		proLine=" ".join(line.split())
+		print proLine
+		d,m,e = proLine.split()
+		xList.append(float(d))
+		yList.append(float(m))
 
-# add density profile to xy data
-xList = []
-yList = []
-for line in info:
-	proLine=" ".join(line.split())
-	print proLine
-	d,m,e = proLine.split()
-	xList.append(float(d))
-	yList.append(float(m))
+	io['output.curve(negative_ion_density).component.xy']=(xList, yList)
 
-io['output.curve(negative_ion_density).component.xy']=(xList, yList)
-
+else
+	sys.stderr.write('md_simulation_confined_ions application terminated without completion')
+    sys.exit(1);
+	
 		
 # Close the input file handler
 io.close()
 
 sys.exit(0)
+
+			
