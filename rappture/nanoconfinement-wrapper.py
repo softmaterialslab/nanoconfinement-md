@@ -38,20 +38,10 @@ try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
         ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
          salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
-    # exitStatus, stdOut, stdErr = Rappture.tools.executeCommand(
-    #     ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
-    #      salt_concentration, '-d', ion_diameter, '-S', simulation_steps], streamOutput=True)
+
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
-	
-
-#Rappture.Utils.progress(10,"Simulation Started")
-#Rappture.Utils.progress(25,"Simulation Running...")	
-#Rappture.Utils.progress(100,"Simulation Finished")	
-	
-	
-	
 	
 
 # Label output graph with title, x-axis label,
