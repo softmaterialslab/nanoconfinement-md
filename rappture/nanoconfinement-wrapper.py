@@ -49,9 +49,7 @@ except:
     sys.exit(1);
 	
 
-fid = open('../data/p_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
-info = fid.readlines()
-fid.close()
+
 # Label output graph with title, x-axis label,
 # y-axis lable, and y-axis units
 driver.put('output.curve(positive_ion_density).about.label','Density of Positive Ions')
@@ -63,14 +61,7 @@ driver.put('output.curve(positive_ion_density).yaxis.label','Density')
 driver.put('output.curve(positive_ion_density).yaxis.description','Density distribution of ions')
 driver.put('output.curve(positive_ion_density).yaxis.units','M')
 
-# skip over the first 4 header lines
-for line in info:
-	#f,E = string.split(line[:-1])
-	#f,E = float(f),float(E)
-	#xy = "%g %g\n" % (f,E)
-	driver.put('output.curve(positive_ion_density).component.xy',line,append=1)
-	
-#os.remove('indeck'); os.remove('out.dat')
+
 	
 Rappture.result(driver)
 
