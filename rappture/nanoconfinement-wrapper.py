@@ -48,13 +48,10 @@ except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
-	
-driver.put('../data/nano.dat',out)
 
-fid = open('../data/nano.dat','r')
+fid = open('../data/p_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
 info = fid.readlines()
 fid.close()
-
 # Label output graph with title, x-axis label,
 # y-axis lable, and y-axis units
 driver.put('output.curve(positive_ion_density).about.label','Density of Positive Ions')
