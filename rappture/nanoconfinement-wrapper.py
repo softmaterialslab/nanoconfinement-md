@@ -10,7 +10,7 @@ import Rappture
 import sys, os, commands, string
 
 # open the XML file containing the run parameters
-driver = Rappture.library(sys.argv[1])
+driver = Rappture.PyXml(sys.argv[1])
 
 
 # Parse the rappture generated XML file to extract user input values
