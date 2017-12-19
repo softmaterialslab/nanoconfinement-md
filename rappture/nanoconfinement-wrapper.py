@@ -13,28 +13,26 @@ import sys, os, commands, string
 driver = Rappture.library(sys.argv[1])
 
 # Parse the rappture generated XML file to extract user input values
-user_inputs = Rappture.PyXml(sys.argv[1])
+io = Rappture.PyXml(sys.argv[1])
 
-salt_concentration = user_inputs['input.group(physical).number(salt_concentration).current'].value
+salt_concentration = io['input.group(physical).number(salt_concentration).current'].value
 print "salt concentration is %s" % salt_concentration
 
-positive_valency = user_inputs['input.group(physical).integer(positive_valency).current'].value
+positive_valency = io['input.group(physical).integer(positive_valency).current'].value
 print "positive valency is %s" % positive_valency
 
-negative_valency = user_inputs['input.group(physical).integer(negative_valency).current'].value
+negative_valency = io['input.group(physical).integer(negative_valency).current'].value
 print "negative_valency  s %s" % negative_valency
 
-confinement_length = user_inputs['input.group(physical).number(confinement_length).current'].value
+confinement_length = io['input.group(physical).number(confinement_length).current'].value
 print " confinement_length is %s" % confinement_length
 
-ion_diameter = user_inputs['input.group(physical).number(ion_diameter).current'].value
+ion_diameter = io['input.group(physical).number(ion_diameter).current'].value
 print " ion_diameter is %s" % ion_diameter
 
-simulation_steps = user_inputs['input.group(computing).integer(simulation_steps).current'].value
+simulation_steps = io['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps
 
-# Close the input file handler
-user_inputs.close()
 
 try:
     print Rappture.tools.executeCommand(
@@ -51,26 +49,34 @@ except:
 
 # Label output graph with title, x-axis label,
 # y-axis lable, and y-axis units
-driver.put('output.curve(positive_ion_density).about.label','Density of Positive Ions')
-driver.put('output.curve(positive_ion_density).about.description','Distribution of positive ions confined within the nanoparticle surfaces')
-driver.put('output.curve(positive_ion_density).xaxis.label','z')
-driver.put('output.curve(positive_ion_density).xaxis.description','Distance measure between the two Surfaces (z = 0 is the midpoint)')
-driver.put('output.curve(positive_ion_density).xaxis.units','nm')
-driver.put('output.curve(positive_ion_density).yaxis.label','Density')
-driver.put('output.curve(positive_ion_density).yaxis.description','Density distribution of ions')
-driver.put('output.curve(positive_ion_density).yaxis.units','M')
+
+io['output.curve(positive_ion_density).about.label']='Density of Positive Ions'
+io['output.curve(positive_ion_density).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
+io['output.curve(positive_ion_density).xaxis.label']='z'
+io['output.curve(positive_ion_density).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(positive_ion_density).xaxis.units']='nm'
+io['output.curve(positive_ion_density).yaxis.label']='Density'
+io['output.curve(positive_ion_density).yaxis.description']='Density distribution of ions'
+io['output.curve(positive_ion_density).yaxis.units']='M'
 
 fid = open('data/p_density_profile_3.00_1_-1_0.50_0.714_5000.dat','r')
 info = fid.readlines()
 fid.close()
 
 # add density profile to xy data
+xList = []
+yList = []
+for item in list:
+    new_list.append(float(item))
 for line in info:
+	f,E = string.split(' ')
+	xList.append(float(f))
+	yList.append(float(E))
 	driver.put('output.curve(positive_ion_density).component.xy',line,append=1)
-	
-#os.remove('indeck'); os.remove('out.dat')
-	
-Rappture.result(driver)
 
-#print driver.xml()
+io['output.curve(positive_ion_density).component.xy']=(xList, yList)
+		
+# Close the input file handler
+io.close()
 
+sys.exit(0)
