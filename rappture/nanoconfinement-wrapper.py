@@ -66,8 +66,6 @@ fid.close()
 # add density profile to xy data
 xList = []
 yList = []
-for item in list:
-    new_list.append(float(item))
 for line in info:
 	f,E = string.split(' ')
 	xList.append(float(f))
