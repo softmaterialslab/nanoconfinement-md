@@ -79,7 +79,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "compute additional (md)")
             ("md_writedensity,w", value<int>(&mdremote.writedensity)->default_value(100000), "write density files")
             ("md_movie_freq,m", value<int>(&mdremote.moviefreq)->default_value(10000), "compute additional (md)")
-            ("simulation_params,''", value<string>(&simulationParams)->default_value(""),"Simulation parameters")
+            ("simulation_params,SP", value<string>(&simulationParams)->default_value(""),"Simulation parameters")
             ("verbose,v", value<bool>(&verbose)->default_value(true),"verbose true: provides detailed output")
             //("config,conf", value<string>(&config_file)->default_value("input_config.cfg"),
             // "name of a file of a configuration.")
