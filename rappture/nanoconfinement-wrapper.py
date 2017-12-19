@@ -72,4 +72,6 @@ for line in info:
 	
 Rappture.result(driver)
 
+print driver.xml()
+
 sys.exit(0)
