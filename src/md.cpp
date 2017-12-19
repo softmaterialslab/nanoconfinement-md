@@ -129,7 +129,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
         //percentage output
         if(percentage!=percentagePre){
-            printf("=RAPPTURE-PROGRESS=>%0.1fSimulation Running...\n",percentage);
+            printf("=RAPPTURE-PROGRESS=>%0.1f Simulation Running...\n",percentage);
             percentagePre=percentage;
         }
 
