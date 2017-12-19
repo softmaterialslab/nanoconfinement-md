@@ -92,9 +92,9 @@
                     <label>Simulation Steps</label>
                     <description>Computing parameters related to the simulation</description>
                 </about>
-                <min>5000</min>
+                <min>2000</min>
                 <max>5000000</max>
-                <default>5000</default>
+                <default>2000</default>
             </integer>
         </group>
     </input>

@@ -69,9 +69,9 @@ yList = []
 for line in info:
 	proLine=" ".join(line.split())
 	print proLine
-	f,E = proLine.split()
-	xList.append(float(f))
-	yList.append(float(E))
+	d,m,e = proLine.split()
+	xList.append(float(d))
+	yList.append(float(m))
 
 io['output.curve(positive_ion_density).component.xy']=(xList, yList)
 		
