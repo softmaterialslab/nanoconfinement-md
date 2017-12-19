@@ -46,6 +46,13 @@ except:
     sys.exit(1);
 	
 
+Rappture.Utils.progress(10,"Simulation Started")
+Rappture.Utils.progress(25,"Simulation Running...")	
+Rappture.Utils.progress(100,"Simulation Finished")	
+	
+	
+	
+	
 
 # Label output graph with title, x-axis label,
 # Positive density profile
