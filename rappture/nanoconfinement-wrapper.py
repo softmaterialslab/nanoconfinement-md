@@ -36,8 +36,6 @@ print "simulation_steps is %s" % simulation_steps
 
 simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
 
-print simulation_params
-
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
         ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
