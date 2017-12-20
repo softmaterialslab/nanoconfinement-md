@@ -36,6 +36,9 @@ print "simulation_steps is %s" % simulation_steps
 
 simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
 
+if not os.path.exists('data'):
+    os.makedirs('data')
+
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
         ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
@@ -65,6 +68,7 @@ try:
 	fid.close()
 except:
 	sys.stderr.write('Can not find the positive density results file')
+	sys.exit(1);
 
 # add density profile to xy data
 xList = []
@@ -93,6 +97,7 @@ try:
 	fid.close()
 except:
 	sys.stderr.write('Can not find the negative density results file')
+	sys.exit(1);
 		
 # add density profile to xy data
 xList = []
