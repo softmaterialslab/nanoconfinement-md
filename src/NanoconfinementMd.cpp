@@ -28,7 +28,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     CONTROL mdremote;            // remote control for md
     string config_file ="input_config.cfg";         //Configuration file path holder
     string simulationParams;
-    char simulationParamsTemp[200];
+    bool verbose;
 
     // Different parts of the system
     vector <PARTICLE> saltion_in;        // salt ions inside
@@ -79,11 +79,11 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "compute additional (md)")
             ("md_writedensity,w", value<int>(&mdremote.writedensity)->default_value(100000), "write density files")
             ("md_movie_freq,m", value<int>(&mdremote.moviefreq)->default_value(10000), "compute additional (md)")
+            ("simulation_params,f", value<string>(&simulationParams)->default_value(""),"Simulation parameters")
+            ("verbose,v", value<bool>(&verbose)->default_value(true),"verbose true: provides detailed output")
             //("config,conf", value<string>(&config_file)->default_value("input_config.cfg"),
             // "name of a file of a configuration.")
             ;
-
-
 
     // Declare a group of options that will be
     // allowed both on command line and in
@@ -133,9 +133,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     mdremote.writedensity=mdremote.steps*0.1;
     }
 
-    //creating simulation parameters to create the output file names
-    sprintf(simulationParamsTemp, "_%.2f_%d_%d_%.2f_%.3f_%d", bz,pz_in,nz_in,salt_conc_in,saltion_diameter_in,mdremote.steps);
-    simulationParams=string(simulationParamsTemp);
     // Set up the system
     T = 1;        // set temperature
     box.ein = ein;
@@ -236,7 +233,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     }
 
     // Car-Parrinello Molecular Dynamics
-    md(ion, box, real_bath, bin, mdremote,simulationParams);
+    md(ion, box, real_bath, bin, mdremote, simulationParams, verbose);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
     cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;

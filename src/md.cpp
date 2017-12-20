@@ -10,7 +10,7 @@
 #include "functions.h"
 
 void
-md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams) {
+md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams, bool &verbose) {
 
     // initialization
     std::vector<vector<VECTOR3D> > forceMatrix(ion.size());
@@ -122,15 +122,19 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
-                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
+                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote,verbose);
         }
 
         //percentage calculation
         percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
         //percentage output
         if(percentage!=percentagePre){
-            printf("Simulation Completion %0.1f %%\n",percentage);
-            percentagePre=percentage;
+            printf("Simulation Completion : %0.1f %%\n",percentage);
+			if(!verbose){
+				int progressBarVal=(int) (percentage+0.5);
+				printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
+			}
+			percentagePre=percentage;
         }
 
     }
