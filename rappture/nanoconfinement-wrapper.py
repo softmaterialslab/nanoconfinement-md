@@ -66,6 +66,7 @@ try:
 	fid = open('data/p_density_profile'+simulation_params+'.dat','r')
 	info = fid.readlines()
 	fid.close()
+	os.remove('data/p_density_profile'+simulation_params+'.dat') 
 except:
 	sys.stderr.write('Can not find the positive density results file')
 	sys.exit(1);
@@ -95,9 +96,13 @@ try:
 	fid = open('data/n_density_profile'+simulation_params+'.dat','r')
 	info = fid.readlines()
 	fid.close()
+	os.remove('data/n_density_profile'+simulation_params+'.dat') 
 except:
 	sys.stderr.write('Can not find the negative density results file')
 	sys.exit(1);
+	
+#remove the data folder
+os.rmdir('data')
 		
 # add density profile to xy data
 xList = []
