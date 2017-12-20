@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------
 
 import Rappture
-import sys, os, commands, string
+import sys, os, commands, string, shutil
 
 # open the XML file containing the run parameters
 driver = Rappture.library(sys.argv[1])
@@ -35,6 +35,9 @@ simulation_steps = io['input.group(computing).integer(simulation_steps).current'
 print "simulation_steps is %s" % simulation_steps
 
 simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
+
+if not os.path.exists('data'):
+    os.makedirs('data')
 
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
@@ -63,8 +66,10 @@ try:
 	fid = open('data/p_density_profile'+simulation_params+'.dat','r')
 	info = fid.readlines()
 	fid.close()
+	os.remove('data/p_density_profile'+simulation_params+'.dat') 
 except:
 	sys.stderr.write('Can not find the positive density results file')
+	sys.exit(1);
 
 # add density profile to xy data
 xList = []
@@ -91,8 +96,14 @@ try:
 	fid = open('data/n_density_profile'+simulation_params+'.dat','r')
 	info = fid.readlines()
 	fid.close()
+	os.remove('data/n_density_profile'+simulation_params+'.dat') 
 except:
 	sys.stderr.write('Can not find the negative density results file')
+	sys.exit(1);
+	
+#remove the data folder
+#os.rmdir('data')
+shutil.rmtree('data')
 		
 # add density profile to xy data
 xList = []
