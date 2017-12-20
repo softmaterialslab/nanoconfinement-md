@@ -130,8 +130,10 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         //percentage output
         if(percentage!=percentagePre){
             printf("Simulation Completion : %0.1f %%\n",percentage);
-			int progressBarVal=(int) (percentage+0.5);
-			printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
+			if(!verbose){
+				int progressBarVal=(int) (percentage+0.5);
+				printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
+			}
 			percentagePre=percentage;
         }
 
