@@ -26,5 +26,4 @@ kramdown:
 
 # filter used to process markdown. note that kramdown differs from github-flavored markdown in some subtle ways
 
-
-theme: jekyll-theme-minimal
+remote_theme: tomjoht/documentation-theme-jekyll
