@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------
 
 import Rappture
-import sys, os, commands, string
+import sys, os, commands, string, shutil
 
 # open the XML file containing the run parameters
 driver = Rappture.library(sys.argv[1])
@@ -102,7 +102,8 @@ except:
 	sys.exit(1);
 	
 #remove the data folder
-os.rmdir('data')
+#os.rmdir('data')
+shutil.rmtree('data')
 		
 # add density profile to xy data
 xList = []
