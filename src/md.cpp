@@ -38,20 +38,24 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     // Output cpmd essentials
 
     cout << "\n";
-    cout << "M D" << " on " << endl;
-    cout << "Initial ion kinetic energy " << particle_ke << endl;
-    cout << "Inital potential energy " << potential_energy << endl;
-    cout << "Initial system energy " << particle_ke + potential_energy << endl;
-    cout << "Chain length (L+1) implementation " << real_bath.size() << endl;
-    cout << "Main thermostat temperature " << real_bath[0].T << endl;
-    cout << "Main thermostat mass " << real_bath[0].Q << endl;
-    cout << "Number of bins used for computing density profiles " << bin.size() << endl;
-    cout << "Tme step " << mdremote.timestep << endl;
-    cout << "Number of steps " << mdremote.steps << endl;
-    cout << "Production begins at " << mdremote.hiteqm << endl;
-    cout << "Sampling frequency " << mdremote.freq << endl;
-    cout << "Extra computation every " << mdremote.extra_compute << " steps" << endl;
-    cout << "Write density profile every " << mdremote.writedensity << endl;
+    cout << "Propagation of ions using Molecular Dynamics method" << " begins " << endl;
+    cout << "Time step in the simulation " << mdremote.timestep << endl;
+    cout << "Total number of simulation steps " << mdremote.steps << endl;
+    
+    if (verbose)
+    {
+      cout << "Initial ion kinetic energy " << particle_ke << endl;
+      cout << "Inital potential energy " << potential_energy << endl;
+      cout << "Initial system energy " << particle_ke + potential_energy << endl;
+      cout << "Chain length (L+1) implementation " << real_bath.size() << endl;
+      cout << "Main thermostat temperature " << real_bath[0].T << endl;
+      cout << "Main thermostat mass " << real_bath[0].Q << endl;
+      cout << "Number of bins used for computing density profiles " << bin.size() << endl;
+      cout << "Production begins at " << mdremote.hiteqm << endl;
+      cout << "Sampling frequency " << mdremote.freq << endl;
+      cout << "Extra computation every " << mdremote.extra_compute << " steps" << endl;
+      cout << "Write density profile every " << mdremote.writedensity << endl;
+    }
 
     // for movie
     int moviestart = 1;                    // starting point of the movie
@@ -108,14 +112,14 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         //! ends
 
         // extra computations
-        if (num == 1 || num % mdremote.extra_compute == 0) {
+        if ((num == 1 || (num % mdremote.extra_compute == 0)) && verbose) {
             energy_samples++;
             compute_n_write_useful_data(num, ion, real_bath, box);
-            write_basic_files(num, ion, real_bath, box);
+            //write_basic_files(num, ion, real_bath, box);	// this is for debug purpose
         }
 
         // make a movie
-        if (num >= moviestart && num % mdremote.moviefreq == 0)
+        if (num >= moviestart && num % mdremote.moviefreq == 0 && verbose)
             make_movie(num, ion, box);
 
         // compute density profile
@@ -181,8 +185,12 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     for (unsigned int i = 0; i < ion.size(); i++)
         final_configuration << ion[i].posvec << endl;
 
-    cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
-    cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
+    if (verbose)
+    {
+      cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
+      cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
+    } 
+    cout << "Dynamics of ions simulated for " << mdremote.steps * mdremote.timestep * unittime * 1e9 << " nanoseconds" << endl;
 
     return;
 }
