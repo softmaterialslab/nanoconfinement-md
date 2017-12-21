@@ -92,9 +92,9 @@
                     <label>Simulation Steps</label>
                     <description>Computing parameters related to the simulation</description>
                 </about>
-                <min>2000</min>
+                <min>20000</min>
                 <max>5000000</max>
-                <default>2000</default>
+                <default>20000</default>
             </integer>
         </group>
 		<image id='ions_distribution'>

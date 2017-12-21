@@ -8,4 +8,4 @@ What does this code do
 * Users can extract the ionic structure (density profile) for a wide variety of ionic and environmental parameters
 * Unpolarized surfaces are assumed and standard molecular dynamics is used to propagrate the dynamics of ions
 
-For further details please refer to the [documentation][https://softmaterialslab.github.io/nanoconfinement-md/] 
+For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/) 

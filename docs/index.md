@@ -10,7 +10,8 @@ permalink: index.html
 
 This nanoconfinement code empowers users to simulate ions confined between material surfaces that are nanometers apart, and extract the associated ionic structure. The app facilitates investigations for a wide array of ionic and environmental parameters using standard molecular dynamics (MD) method for unpolarizable surfaces.
 
-## Deploying the tool to NanoHub Cyber Platform
+## Deploying the tool to NanoHUB
+For details on this code has been deployed to NanoHUB Cyber Platform refer [NanoHUB Deployment](nanohub_deployment)
 
 ## Using the tool
 
