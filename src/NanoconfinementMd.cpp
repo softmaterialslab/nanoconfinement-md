@@ -38,18 +38,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     // Analysis
     vector <DATABIN> bin;            // bins
 
-    cout << "\nProgram starts\n";
-    cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
-    cout
-            << "The default values are for a short run (~15 minutes on a single processor) that captures essential features; research-level simulations require larger number of steps (or compute time) which can be changed by changing -S. This leads to changing other parameters as well to avoid large-size data files."
-            << endl;
-    cout
-            << "The default app simulates a total of 324 ions; for a faster run to test the app and understand what it produces select salt concentration (-c) to be 0.01 (so you can type and ENTER ./md_simulation_confined_ions -c 0.01). In this case, 32 salt ions corresponding to a density of 0.01 M are confined between two surfaces 3 nanometers apart. This should finish within 2 minutes on a single processor."
-            << endl;
-    cout
-            << "OpenMP acceleration is built in the app which is essential for any research-intensive simulation; default is 1 processor."
-            << endl;
-    cout << "-----------------------------------------------------" << endl;
+    cout << "\nSimulation begins\n";
+
 
     // Get input values from the user
     //options_description desc("Usage:\nrandom_mesh <options>");
@@ -62,9 +52,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "box length in x direction in nanometers")    // enter in nanometers
             ("by,Y", value<double>(&by)->default_value(15.3153),
              "box length in y direction in nanometers")    // enter in nanometers
-            ("epsilon_in,e", value<double>(&ein)->default_value(80.1),
+            ("epsilon_in,e", value<double>(&ein)->default_value(80),
              "dielectric const inside")        // must have ein = eout
-            ("epsilon_out,E", value<double>(&eout)->default_value(80.1),
+            ("epsilon_out,E", value<double>(&eout)->default_value(80),
              "dielectric const outside")        // must have ein = eout
             ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(1),
              "for interface discretization width")    // enter a perfect square
@@ -107,9 +97,18 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     variables_map vm;
     store(parse_command_line(argc, argv, cmdline_options), vm);
     notify(vm);
+    
+    if (verbose)
+    {
+      cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
+      cout << "The default app simulates a total of 424 ions" << endl;
+    }
+    
+    cout << "OpenMP acceleration is built in this app" << endl;
+    cout << "-----------------------------------------------------" << endl;
 
     ifstream ifs(config_file.c_str());
-    if (!ifs)
+    if (!ifs && verbose)
     {
         cout << "can not open config file: " << config_file << "\n";
         //return 0;
@@ -129,8 +128,13 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     if(paraMap){
     bx = sqrt(212/0.6022/salt_conc_in/bz);
     by=bx;
-    mdremote.hiteqm=mdremote.steps*0.1;
+    if (mdremote.steps < 100000)		// minimum mdremote.steps is 20000
+      mdremote.hiteqm = 10000;
+    else
+      mdremote.hiteqm=mdremote.steps*0.1;		
     mdremote.writedensity=mdremote.steps*0.1;
+    mdremote.extra_compute = mdremote.steps*0.01;
+    mdremote.moviefreq = mdremote.steps*0.01;
     }
 
     // Set up the system
@@ -147,48 +151,47 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     box.discretize(saltion_diameter_in / unitlength, fraction_diameter);
 
     // output to screen the parameters of the problem
-    cout << "Dielectric constant of water is taken to be " << epsilon_water << endl;
-#pragma omp parallel default(none)
-    {
-        if (omp_get_thread_num() == 0) {
-            printf("Number of processors used (the app comes with OpenMP parallelization) %d\n",
-                   omp_get_num_threads());
-            printf("Make sure that number of grid points and ions is greater than %d\n", omp_get_num_threads());
-        }
-    }
+    cout << "Ions are confined by nanomaterial surfaces in aqueous solvent" << endl;
+    cout << "Material surfaces modeled as thin planar interfaces" << endl;
+    cout << "Solvent modeled as implicit media" << endl;
+    cout << "Ions modeled as finite-size, soft spheres" << endl;
+    cout << "Dielectric constant of water " << epsilon_water << endl;
+
     //cout << "Number of processors used (the app comes with OpenMP parallelization)  " << THREADSIZE << endl;
     //cout << "Make sure that number of grid points and ions is greater than  " << THREADSIZE << endl;
     cout << "Unit of length is " << unitlength << " nanometers"
          << endl; // half Bjerrum length; close to Na ion radius
     cout << "Unit of mass is " << unitmass << " grams" << endl; // mass of sodium atom in CGS; in grams
     cout << "Unit of energy is " << unitenergy << " ergs (CGS)" << endl; // kB room_T
-    cout << "Unit of time is " << unittime << " s"
+    cout << "Unit of time is " << unittime << " seconds"
          << endl; // reduced units (LJ); you can derive from above 3 units.
-    cout << "Reduced units: scalefactor entering in Coloumb interaction is " << scalefactor << endl;
-    cout << "Box dimensions (in reduced units) x | y | z " << setw(15) << box.lx << setw(15) << box.ly << setw(15)
-         << box.lz << endl;
-    cout << "Box dimensions (in nanometers) x | y | z " << setw(15) << bx << setw(15) << by << setw(15) << bz
-         << endl;
-    cout << "Permittivity inside " << box.ein << endl;
+    cout << "Simulation employs reduced units to measure physical quantities" << endl;
+    cout << "Simulation box dimensions (in reduced units) x | y | z " << "  " << box.lx << " | " << box.ly << " | " << box.lz << endl;
+    cout << "Box dimensions (in nanometers) x | y | z " << "  " << bx << " | " << by << " | " << bz << endl;
+    cout << "Note: periodic boundaries in x and y direcitons " << endl;
+    cout << "Permittivity inside the confinement (channel) " << box.ein << endl;
     cout << "Permittivity outside " << box.eout << endl;
-    cout << "Contrast strength " << 2 * (box.eout - box.ein) / (box.eout + box.ein) << endl;
-    cout << "Positive ion valency inside " << pz_in << endl;
-    cout << "Negative ion valency inside " << nz_in << endl;
-    cout << "Salt ion diameter inside " << saltion_diameter_in / unitlength << endl;
-    cout << "Salt concentration inside " << salt_conc_in << " M" << endl;
-    cout << "Debye length inside " << box.inv_kappa_in << endl;
-    cout << "Mean separation inside " << box.mean_sep_in << endl;
-    cout << "Number of salt ions inside " << saltion_in.size() << endl;
-    cout << "Temperature " << T << endl;
-    cout << "Binning width (uniform) " << bin[0].width << endl;
-    cout << "Number of bins " << bin.size() << endl;
-    cout << "Number of points discretizing the left and right z planar walls/interfaces/surfaces "
-         << box.leftplane.size() << "  " << box.rightplane.size() << endl;
-
+    cout << "Dielectric contrast across interfaces " << 2 * (box.eout - box.ein) / (box.eout + box.ein) << endl;
+    cout << "Positive (+) ion valency " << pz_in << endl;
+    cout << "Negative (-) ion valency " << nz_in << endl;
+    cout << "Ion diameter (both + and - ions have the same diameter) " << saltion_diameter_in / unitlength << endl;
+    cout << "Ion (salt) concentration (c) inside " << salt_conc_in << " M" << endl;
+    cout << "Note: we define c = total number of negative ions / volume" << endl;
+    cout << "Debye length " << box.inv_kappa_in << endl;
+    cout << "Mean separation between ions " << box.mean_sep_in << endl;
+    cout << "Temperature (in Kelvin) " << room_temperature << endl;
+   
+    if (verbose)
+    {
+      cout << "Scalefactor entering in Coloumb interaction is " << scalefactor << endl;
+      cout << "Binning width (uniform) " << bin[0].width << endl;
+      cout << "Number of bins " << bin.size() << endl;
+      cout << "Number of points discretizing the left and right planar walls/interfaces/surfaces " << box.leftplane.size() << "  " << box.rightplane.size() << endl;
+    }
     // write to files
 
     // initial configuration
-	string initial_configurationPath= rootDirectory+"outfiles/initialconfig.dat";
+    string initial_configurationPath= rootDirectory+"outfiles/initial_configuration.dat";
     ofstream initial_configuration(initial_configurationPath.c_str());
     for (unsigned int i = 0; i < ion.size(); i++)
         initial_configuration << "ion" << setw(5) << ion[i].id << setw(15) << "charge" << setw(5) << ion[i].q
@@ -206,19 +209,33 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double totalions = 0;
     for (unsigned int b = 0; b < initial_density.size(); b++)
         totalions += initial_density.at(b) * bin[b].volume;
-    cout << "total ions " << totalions << ", should be " << ion.size() << endl;
     int totalpions = 0, totalnions = 0;
-    for (unsigned int i = 0; i < ion.size(); i++) {
-        if (ion[i].valency > 0)
-            totalpions += 1;
-        else if (ion[i].valency < 0)
-            totalnions += 1;
+    for (unsigned int i = 0; i < ion.size(); i++) 
+    {
+      if (ion[i].valency > 0)
+	  totalpions += 1;
+      else if (ion[i].valency < 0)
+	  totalnions += 1;
     }
-    cout << "Total positive ions " << totalpions << endl;
-    cout << "Total negative ions " << totalnions << endl;
-
-    // some calculations before simulation begins
-    cout << "Total charge inside the sphere " << box.total_charge_inside(ion) << endl;
+    
+    if (verbose)
+    {
+      cout << "Number of ions " << totalions << endl;
+      cout << "Number of positive ions " << totalpions << endl;
+      cout << "Number of negative ions " << totalnions << endl;
+    }
+    
+    cout << "Total charge inside the confinement " << box.total_charge_inside(ion) << endl;
+    cout << "System simulated is electroneutral " << endl;
+    
+    #pragma omp parallel default(none)
+    {
+      if (omp_get_thread_num() == 0) 
+      {
+	printf("Number of processors used %d\n", omp_get_num_threads());
+	printf("Check: ions are greater than number of processors %d\n", omp_get_num_threads());
+      }
+    }
 
     // prepare for md : make real baths
     vector <THERMOSTAT> real_bath;
@@ -236,11 +253,16 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     md(ion, box, real_bath, bin, mdremote, simulationParams, verbose);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
-    cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
-    // Perform the following calculation when testing for how frequently you should sample data to ensure the samples are decorrelated
-    //auto_correlation_function();
-
-    cout << "Program ends \n\n";
+    if (verbose)
+    {
+      cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
+      // Perform the following calculation when testing for how frequently you should sample data to ensure the samples are decorrelated
+      //auto_correlation_function();
+    }
+    
+    cout << "Converged results for ionic densities expected with ~ 1500 nanoseconds of ion dynamics" << endl;
+    cout << "Accordingly, we recommend using ~ 1000000 simulation steps to obtain smoother, converged profiles " << endl;
+    cout << "Simulation ends \n\n";
 
     return 0;
 }
