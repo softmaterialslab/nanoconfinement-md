@@ -28,7 +28,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     CONTROL mdremote;            // remote control for md
     string config_file ="input_config.cfg";         //Configuration file path holder
     string simulationParams;
-    bool verbose;
 
     // Different parts of the system
     vector <PARTICLE> saltion_in;        // salt ions inside
@@ -70,7 +69,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("md_writedensity,w", value<int>(&mdremote.writedensity)->default_value(100000), "write density files")
             ("md_movie_freq,m", value<int>(&mdremote.moviefreq)->default_value(10000), "compute additional (md)")
             ("simulation_params,f", value<string>(&simulationParams)->default_value(""),"Simulation parameters")
-            ("verbose,v", value<bool>(&verbose)->default_value(true),"verbose true: provides detailed output")
+            ("verbose,v", value<bool>(&mdremote.verbose)->default_value(true),"verbose true: provides detailed output")
             //("config,conf", value<string>(&config_file)->default_value("input_config.cfg"),
             // "name of a file of a configuration.")
             ;
@@ -98,7 +97,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     store(parse_command_line(argc, argv, cmdline_options), vm);
     notify(vm);
     
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
       cout << "The default app simulates a total of 424 ions" << endl;
@@ -108,7 +107,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     cout << "-----------------------------------------------------" << endl;
 
     ifstream ifs(config_file.c_str());
-    if (!ifs && verbose)
+    if (!ifs && mdremote.verbose)
     {
         cout << "can not open config file: " << config_file << "\n";
         //return 0;
@@ -181,7 +180,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     cout << "Mean separation between ions " << box.mean_sep_in << endl;
     cout << "Temperature (in Kelvin) " << room_temperature << endl;
    
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "Scalefactor entering in Coloumb interaction is " << scalefactor << endl;
       cout << "Binning width (uniform) " << bin[0].width << endl;
@@ -218,7 +217,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 	  totalnions += 1;
     }
     
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "Number of ions " << totalions << endl;
       cout << "Number of positive ions " << totalpions << endl;
@@ -250,10 +249,10 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     }
 
     // Car-Parrinello Molecular Dynamics
-    md(ion, box, real_bath, bin, mdremote, simulationParams, verbose);
+    md(ion, box, real_bath, bin, mdremote, simulationParams);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
       // Perform the following calculation when testing for how frequently you should sample data to ensure the samples are decorrelated

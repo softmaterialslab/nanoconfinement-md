@@ -180,7 +180,7 @@ inline void compute_density_profile(int cpmdstep, double density_profile_samples
 				    vector<double>& mean_negativeion_density,
 				    vector<double>& mean_sq_negativeion_density,
 				    vector<PARTICLE>& ion, INTERFACE& box, 
-				    vector<DATABIN>& bin, CONTROL& cpmdremote,bool &verbose)
+				    vector<DATABIN>& bin, CONTROL& cpmdremote)
 {
   vector<double> sample_positiveion_density;
   vector<double> sample_negativeion_density;
@@ -209,7 +209,7 @@ inline void compute_density_profile(int cpmdstep, double density_profile_samples
     mean_sq_negativeion_density.at(b) = mean_sq_negativeion_density.at(b) + sample_negativeion_density.at(b)*sample_negativeion_density.at(b);
   
   // write files
-  if ((cpmdstep % cpmdremote.writedensity == 0)&& verbose)
+  if ((cpmdstep % cpmdremote.writedensity == 0)&& cpmdremote.verbose)
   {
     char datap[200], datan[200];
     sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
