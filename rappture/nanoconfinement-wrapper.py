@@ -106,15 +106,39 @@ except:
 shutil.rmtree('data')
 		
 # add density profile to xy data
-xList = []
-yList = []
+xListN = []
+yListN = []
 for line in info:
 	proLine=" ".join(line.split())
 	d,m,e = proLine.split()
-	xList.append(float(d))
-	yList.append(float(m))
+	xListN.append(float(d))
+	yListN.append(float(m))
 	
-io['output.curve(negative_ion_density).component.xy']=(xList, yList)
+io['output.curve(negative_ion_density).component.xy']=(xListN, yListN)
+
+#multi curve for combined +/- density profiles
+io['output.curve(positive_ion_density_Combined).about.label']='Density of Positive Ions'
+io['output.curve(positive_ion_density_Combined).about.group']='Density of Positive/Negative Ions'
+io['output.curve(positive_ion_density_Combined).about.description']='Distribution of positive ions confined within the nanoparticle surfaces'
+io['output.curve(positive_ion_density_Combined).xaxis.label']='z'
+io['output.curve(positive_ion_density_Combined).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(positive_ion_density_Combined).xaxis.units']='nm'
+io['output.curve(positive_ion_density_Combined).yaxis.label']='Density'
+io['output.curve(positive_ion_density_Combined).yaxis.description']='Density distribution of ions'
+io['output.curve(positive_ion_density_Combined).yaxis.units']='M'
+io['output.curve(positive_ion_density_Combined).component.xy']=(xList, yList)
+
+io['output.curve(negative_ion_density_Combined).about.label']='Density of Negative Ions'
+io['output.curve(negative_ion_density_Combined).about.group']='Density of Positive/Negative Ions'
+io['output.curve(negative_ion_density_Combined).about.description']='Distribution of negative ions confined within the nanoparticle surfaces'
+io['output.curve(negative_ion_density_Combined).xaxis.label']='z'
+io['output.curve(negative_ion_density_Combined).xaxis.description']='Distance measure between the two Surfaces (z = 0 is the midpoint)'
+io['output.curve(negative_ion_density_Combined).xaxis.units']='nm'
+io['output.curve(negative_ion_density_Combined).yaxis.label']='Density'
+io['output.curve(negative_ion_density_Combined).yaxis.description']='Density distribution of ions'
+io['output.curve(negative_ion_density_Combined).yaxis.units']='M'
+io['output.curve(negative_ion_density_Combined).component.xy']=(xListN, yListN)
+
 		
 # Close the input file handler
 io.close()
