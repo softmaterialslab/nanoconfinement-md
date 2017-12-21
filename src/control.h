@@ -6,6 +6,7 @@
 class CONTROL
 {
   public:
+    bool verbose;
     double fakemass;		// fictitious mass used in molecular dynamics // not relevant for this code
     double timestep;		// timestep used in molecular dynamics
     int steps;			// number of steps in molecular dynamics

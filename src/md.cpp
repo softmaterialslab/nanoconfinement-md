@@ -10,7 +10,7 @@
 #include "functions.h"
 
 void
-md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams, bool &verbose) {
+md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams) {
 
     // initialization
     std::vector<vector<VECTOR3D> > forceMatrix(ion.size());
@@ -42,7 +42,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     cout << "Time step in the simulation " << mdremote.timestep << endl;
     cout << "Total number of simulation steps " << mdremote.steps << endl;
     
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "Initial ion kinetic energy " << particle_ke << endl;
       cout << "Inital potential energy " << potential_energy << endl;
@@ -112,28 +112,27 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         //! ends
 
         // extra computations
-        if ((num == 1 || (num % mdremote.extra_compute == 0)) && verbose) {
+        if ((num == 1 || (num % mdremote.extra_compute == 0)) && mdremote.verbose) {
             energy_samples++;
             compute_n_write_useful_data(num, ion, real_bath, box);
             //write_basic_files(num, ion, real_bath, box);	// this is for debug purpose
         }
 
         // make a movie
-        if (num >= moviestart && num % mdremote.moviefreq == 0 && verbose)
+        if (num >= moviestart && num % mdremote.moviefreq == 0 && mdremote.verbose)
             make_movie(num, ion, box);
 
         // compute density profile
         if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
-            compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
-                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote,verbose);
+            compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density, mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
         }
 
         //percentage calculation
         percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
         //percentage output
         if(percentage!=percentagePre){
-			if(!verbose){
+			if(!mdremote.verbose){
 				int progressBarVal=(int) (percentage+0.5);
 				printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
 			} else {
@@ -185,7 +184,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     for (unsigned int i = 0; i < ion.size(); i++)
         final_configuration << ion[i].posvec << endl;
 
-    if (verbose)
+    if (mdremote.verbose)
     {
       cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
       cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
