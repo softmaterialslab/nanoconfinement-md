@@ -13,7 +13,7 @@ Another rich avenue to explore is to tune the valency of positive ions (paramete
 
 Effects of changing other physical attributes such as confinement length and ion size are also available for users to explore. We invite users to take an inside look at what happens to the self-assembly of ions in these nanoscale channels by investigating the interplay of electrostatic effects and steric (or entropic) effects caused due to confinement, and measuring associated density profiles. 
 
-While we provide a default of 20000 steps for users to get started on exploring different featurs of the app by obtaining immediate results, converged results of smooth profiles are expected for around 1 million steps.
+While we provide a default of 20000 steps for users to get started on exploring different features of the app by obtaining immediate results, converged results of smooth profiles are expected for around 1 million steps.
         </about>
         <command>python @tool/nanoconfinement-wrapper.py @driver</command>
     </tool>
