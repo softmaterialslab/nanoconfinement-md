@@ -1,3 +1,11 @@
+---
+title: "Nanohub Open Questions"
+keywords: nanoconfinement
+topnav: topnav
+hide_sidebar: true
+permalink: openquestions.html
+---
+
 List of issues and open questions regarding nanohub integration:
 
 1. How to enable copy on workspace?
