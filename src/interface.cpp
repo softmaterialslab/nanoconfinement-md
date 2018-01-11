@@ -105,14 +105,17 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
-  string list_salt_ions_insidePath= rootDirectory+"outfiles/salt_ions_inside.xyz";
-  ofstream list_salt_ions_inside(list_salt_ions_insidePath.c_str(), ios::out);
-  list_salt_ions_inside << saltion_in.size() << endl;
-  list_salt_ions_inside << "salt ions inside" << endl;
-  for (unsigned int i = 0; i < saltion_in.size(); i++)
-    list_salt_ions_inside << "Si" << setw(15) << saltion_in[i].posvec << endl;
-  list_salt_ions_inside.close(); 
-  
+  mpi::environment env;
+  mpi::communicator world;
+  if (world.rank() == 0) {
+	  string list_salt_ions_insidePath= rootDirectory+"outfiles/salt_ions_inside.xyz";
+	  ofstream list_salt_ions_inside(list_salt_ions_insidePath.c_str(), ios::out);
+	  list_salt_ions_inside << saltion_in.size() << endl;
+	  list_salt_ions_inside << "salt ions inside" << endl;
+	  for (unsigned int i = 0; i < saltion_in.size(); i++)
+		list_salt_ions_inside << "Si" << setw(15) << saltion_in[i].posvec << endl;
+	  list_salt_ions_inside.close(); 
+  }
   gsl_rng_free (rnr);
   
   return;
@@ -151,36 +154,38 @@ void INTERFACE::discretize(double ion_diameter, double f)
       rightplane.push_back(VERTEX(position,area,normal));
     }
   }
-  
-  string listleftplanePath= rootDirectory+"outfiles/leftplane.xyz";
-  ofstream listleftplane(listleftplanePath.c_str(), ios::out);
-  listleftplane << "ITEM: TIMESTEP" << endl;
-  listleftplane << 0 << endl;
-  listleftplane << "ITEM: NUMBER OF ATOMS" << endl;
-  listleftplane << leftplane.size() << endl;
-  listleftplane << "ITEM: BOX BOUNDS" << endl;
-  listleftplane << -0.5*lx << "\t" << 0.5*lx << endl;
-  listleftplane << -0.5*ly << "\t" << 0.5*ly << endl;
-  listleftplane << -0.5*lz << "\t" << 0.5*lz << endl;
-  listleftplane << "ITEM: ATOMS index type x y z" << endl;
-  for (unsigned int k = 0; k < leftplane.size(); k++) 
-    listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
-  listleftplane.close();  
-  
-  string listrightplanePath= rootDirectory+"outfiles/rightplane.xyz";
-  ofstream listrightplane(listrightplanePath.c_str(), ios::out);
-  listrightplane << "ITEM: TIMESTEP" << endl;
-  listrightplane << 0 << endl;
-  listrightplane << "ITEM: NUMBER OF ATOMS" << endl;
-  listrightplane << rightplane.size() << endl;
-  listrightplane << "ITEM: BOX BOUNDS" << endl;
-  listrightplane << -0.5*lx << "\t" << 0.5*lx << endl;
-  listrightplane << -0.5*ly << "\t" << 0.5*ly << endl;
-  listrightplane << -0.5*lz << "\t" << 0.5*lz << endl;
-  listrightplane << "ITEM: ATOMS index type x y z" << endl;
-  for (unsigned int k = 0; k < rightplane.size(); k++) 
-    listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec << endl;
-  listrightplane.close();  
-  
+  mpi::environment env;
+  mpi::communicator world;
+  if (world.rank() == 0) {
+	  string listleftplanePath= rootDirectory+"outfiles/leftplane.xyz";
+	  ofstream listleftplane(listleftplanePath.c_str(), ios::out);
+	  listleftplane << "ITEM: TIMESTEP" << endl;
+	  listleftplane << 0 << endl;
+	  listleftplane << "ITEM: NUMBER OF ATOMS" << endl;
+	  listleftplane << leftplane.size() << endl;
+	  listleftplane << "ITEM: BOX BOUNDS" << endl;
+	  listleftplane << -0.5*lx << "\t" << 0.5*lx << endl;
+	  listleftplane << -0.5*ly << "\t" << 0.5*ly << endl;
+	  listleftplane << -0.5*lz << "\t" << 0.5*lz << endl;
+	  listleftplane << "ITEM: ATOMS index type x y z" << endl;
+	  for (unsigned int k = 0; k < leftplane.size(); k++) 
+		listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
+	  listleftplane.close();  
+	  
+	  string listrightplanePath= rootDirectory+"outfiles/rightplane.xyz";
+	  ofstream listrightplane(listrightplanePath.c_str(), ios::out);
+	  listrightplane << "ITEM: TIMESTEP" << endl;
+	  listrightplane << 0 << endl;
+	  listrightplane << "ITEM: NUMBER OF ATOMS" << endl;
+	  listrightplane << rightplane.size() << endl;
+	  listrightplane << "ITEM: BOX BOUNDS" << endl;
+	  listrightplane << -0.5*lx << "\t" << 0.5*lx << endl;
+	  listrightplane << -0.5*ly << "\t" << 0.5*ly << endl;
+	  listrightplane << -0.5*lz << "\t" << 0.5*lz << endl;
+	  listrightplane << "ITEM: ATOMS index type x y z" << endl;
+	  for (unsigned int k = 0; k < rightplane.size(); k++) 
+		listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec << endl;
+	  listrightplane.close();  
+  }
   return;
 }

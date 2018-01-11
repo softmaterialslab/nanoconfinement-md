@@ -1,5 +1,3 @@
-// This is a header file that contains functions that compute the forces on particles
-
 #ifndef _FORCES_H
 #define _FORCES_H
 
@@ -8,6 +6,8 @@
 #include "interface.h"
 #include "functions.h"
 
-void for_md_calculate_force(vector<PARTICLE>&, INTERFACE&, char, vector<vector<VECTOR3D> >&, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &);
+void for_md_calculate_force(vector <PARTICLE> &, INTERFACE &, char, unsigned int, unsigned int, vector <VECTOR3D> &,
+                            vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &,
+                            vector <VECTOR3D> &,vector <VECTOR3D> &);
 
 #endif 

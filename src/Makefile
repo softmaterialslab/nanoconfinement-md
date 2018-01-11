@@ -9,9 +9,9 @@ homedir = home
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
-CC = g++ -O3 -g -Wall -fopenmp
+CC = CC -O3 -g -Wall -fopenmp
 
-LFLAG = -lgsl -lgslcblas -lm -lboost_program_options
+LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
 
 CFLAG = -c
 

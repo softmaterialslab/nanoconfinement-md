@@ -28,7 +28,9 @@ void bin_ions(vector<PARTICLE>&, INTERFACE&, vector<double>&, vector<DATABIN>&);
 void initialize_particle_velocities(vector<PARTICLE>&, vector<THERMOSTAT>&);
 
 // compute and write useful data in cpmd
-void compute_n_write_useful_data(int, vector<PARTICLE>&, vector<THERMOSTAT>&, INTERFACE&);
+void compute_n_write_useful_data(int, vector <PARTICLE> &, vector <THERMOSTAT> &, INTERFACE &, unsigned int, unsigned int,
+                            vector<double> &, vector<double> &,
+                            vector<double> &, vector<double> &, vector<double> &, vector<double> &);
 
 // make movie
 void make_movie(int num, vector<PARTICLE>& ion, INTERFACE& box);
@@ -136,21 +138,24 @@ inline void update_chain_xi(unsigned int j, vector<THERMOSTAT>& bath, double dt,
 
 inline void write_basic_files(int cpmdstep, vector<PARTICLE>& ion, vector<THERMOSTAT>& real_bath, INTERFACE& box)
 {
+	mpi::environment env;
+	mpi::communicator world;
+	if (world.rank() == 0) {
 
-
-  string list_positionPath= rootDirectory+"outfiles/ion_position.dat";
-  string list_velocityPath= rootDirectory+"outfiles/ion_velocity.dat";
-  string list_forcePath= rootDirectory+"outfiles/ion_force.dat";
-  string list_bathPath= rootDirectory+"outfiles/bath_values.dat";
-  ofstream list_position (list_positionPath.c_str(), ios::app);
-  ofstream list_velocity (list_velocityPath.c_str(), ios::app);
-  ofstream list_force (list_forcePath.c_str(), ios::app);
-  ofstream list_bath (list_bathPath.c_str(), ios::app);
-  
-  list_position << cpmdstep << setw(15) << ion[0].posvec << setw(15) << ion[1].posvec << endl; 
-  list_velocity << cpmdstep << setw(15) << ion[0].velvec << setw(15) << ion[1].velvec << endl; 
-  list_force << cpmdstep << setw(15) << ion[0].forvec << setw(15) << ion[1].forvec << endl; 
-  list_bath << cpmdstep << setw(15) << real_bath[0].xi << setw(15) << real_bath[0].eta << endl;
+	  string list_positionPath= rootDirectory+"outfiles/ion_position.dat";
+	  string list_velocityPath= rootDirectory+"outfiles/ion_velocity.dat";
+	  string list_forcePath= rootDirectory+"outfiles/ion_force.dat";
+	  string list_bathPath= rootDirectory+"outfiles/bath_values.dat";
+	  ofstream list_position (list_positionPath.c_str(), ios::app);
+	  ofstream list_velocity (list_velocityPath.c_str(), ios::app);
+	  ofstream list_force (list_forcePath.c_str(), ios::app);
+	  ofstream list_bath (list_bathPath.c_str(), ios::app);
+	  
+	  list_position << cpmdstep << setw(15) << ion[0].posvec << setw(15) << ion[1].posvec << endl; 
+	  list_velocity << cpmdstep << setw(15) << ion[0].velvec << setw(15) << ion[1].velvec << endl; 
+	  list_force << cpmdstep << setw(15) << ion[0].forvec << setw(15) << ion[1].forvec << endl; 
+	  list_bath << cpmdstep << setw(15) << real_bath[0].xi << setw(15) << real_bath[0].eta << endl;
+	}
   return;
 }
 
@@ -211,23 +216,27 @@ inline void compute_density_profile(int cpmdstep, double density_profile_samples
   // write files
   if ((cpmdstep % cpmdremote.writedensity == 0)&& cpmdremote.verbose)
   {
-    char datap[200], datan[200];
-    sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
-    sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
-	
-	string p_density_profile, n_density_profile;
-    p_density_profile=rootDirectory+string(datap);
-    n_density_profile=rootDirectory+string(datan);
-	
-    ofstream outdenp, outdenn;
-    outdenp.open(p_density_profile.c_str());
-    outdenn.open(n_density_profile.c_str());
-    for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
-      outdenp << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_positiveion_density.at(b)/density_profile_samples << endl;
-    for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
-      outdenn << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_negativeion_density.at(b)/density_profile_samples << endl;
-    outdenp.close();
-    outdenn.close();
+	mpi::environment env;
+	mpi::communicator world;
+	if (world.rank() == 0) {
+		char datap[200], datan[200];
+		sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
+		sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
+		
+		string p_density_profile, n_density_profile;
+		p_density_profile=rootDirectory+string(datap);
+		n_density_profile=rootDirectory+string(datan);
+		
+		ofstream outdenp, outdenn;
+		outdenp.open(p_density_profile.c_str());
+		outdenn.open(n_density_profile.c_str());
+		for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
+		  outdenp << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_positiveion_density.at(b)/density_profile_samples << endl;
+		for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
+		  outdenn << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_negativeion_density.at(b)/density_profile_samples << endl;
+		outdenp.close();
+		outdenn.close();
+	}
   } 
   return;
 }
