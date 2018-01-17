@@ -9,7 +9,7 @@ homedir = home
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
-CC = mpich -O3 -g -Wall -fopenmp
+CC = mpicxx -O3 -g -Wall -fopenmp
 
 LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
 
