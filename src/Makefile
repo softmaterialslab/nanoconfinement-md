@@ -3,7 +3,7 @@
 
 PROG = md_simulation_confined_ions
 BIN = ../bin/
-HOME = ../
+APPHOME = ../
 bindir = bin
 homedir = home
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
@@ -11,25 +11,26 @@ OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenerg
 # do not use -fopenmp unless parallelizing properly. 
 CC = mpicxx -O3 -g -Wall -fopenmp
 
-LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
+LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
 
-CFLAG = -c
+CFLAG = -I${BOOST_INCDIR}
 
 OFLAG = -o
 
 all: $(PROG)
 
-install: all
+install:
+	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make all
 	@echo "Installing $(PROG) into $(bindir) directory on Rappture/nanohub"; mv -f $(PROG) $(BIN)
 
 local-install: all
-	@echo "Installing $(PROG) into $(homedir) directory on your local machine"; mv -f $(PROG) $(HOME); mkdir $(HOME)outfiles
+	@echo "Installing $(PROG) into $(homedir) directory on your local machine"; mv -f $(PROG) $(APPHOME); mkdir $(APPHOME)outfiles
 
 $(PROG) : $(OBJ)
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
 
 %.o : %.cpp
-	$(CC) -c $(LFLAG) $< -o $@
+	$(CC) -c $(CFLAG) $< -o $@
 
 main.o: NanoconfinementMd.h
 NanoconfinementMd.o: NanoconfinementMd.h utility.h interface.h particle.h vertex.h databin.h control.h functions.h thermostat.h
@@ -43,8 +44,10 @@ clean:
 	rm -f *.o $(PROG) 
 
 dataclean:
-	rm -f ../outfiles/*.dat ../outfiles/*.xyz ../outfiles/*.lammpstrj ../data/*.dat $(BIN)$(PROG) $(HOME)$(PROG); rmdir $(HOME)outfiles
+	rm -f ../outfiles/*.dat ../outfiles/*.xyz ../outfiles/*.lammpstrj ../data/*.dat
+	rm -rf $(APPHOME)outfiles
 
-distclean: clean dataclean
+distclean: clean
+	rm -f $(BIN)$(PROG)
 
 .PHONY: all install clean distclean
