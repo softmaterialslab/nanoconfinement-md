@@ -43,7 +43,7 @@ os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-        ['md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+        ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
          salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
