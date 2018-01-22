@@ -9,13 +9,15 @@ homedir = home
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 
 # do not use -fopenmp unless parallelizing properly. 
-CC = mpicxx -O3 -g -Wall -fopenmp
+nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp
+nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
+nanoHUBCFLAG = -I${BOOST_INCDIR}
+nanoHUBOFLAG = -o
 
-LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
-
-CFLAG = -I${BOOST_INCDIR}
-
-OFLAG = -o
+BigRed2CC = CC -O3 -g -Wall -fopenmp
+BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
+BigRed2CFLAG = -c
+BigRed2OFLAG = -o
 
 all: $(PROG)
 
@@ -27,10 +29,10 @@ local-install: all
 	@echo "Installing $(PROG) into $(homedir) directory on your local machine"; mv -f $(PROG) $(APPHOME); mkdir $(APPHOME)outfiles
 
 $(PROG) : $(OBJ)
-	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LIBS) $(LFLAG)
+	$(nanoHUBCC) $(nanoHUBOFLAG) $(PROG) $(OBJ) $(nanoHUBLFLAG)
 
 %.o : %.cpp
-	$(CC) -c $(CFLAG) $< -o $@
+	$(nanoHUBCC) -c $(nanoHUBCFLAG) $< -o $@
 
 main.o: NanoconfinementMd.h
 NanoconfinementMd.o: NanoconfinementMd.h utility.h interface.h particle.h vertex.h databin.h control.h functions.h thermostat.h
