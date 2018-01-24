@@ -12,8 +12,14 @@
 #include "thermostat.h"
 #include "energies.h"
 
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 60
+
 // general functions
 // -----------------
+
+// display progress bar (code from the internet)
+void ProgressBar(double);
 
 // overloaded << to print 3d vectors
 ostream& operator<<(ostream&, VECTOR3D);

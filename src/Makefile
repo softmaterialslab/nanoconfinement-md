@@ -69,6 +69,6 @@ dataclean:
 	rm -rf $(APPHOME)outfiles
 
 distclean: clean
-	rm -f $(BIN)$(PROG)
+	rm -f $(BIN)$(PROG) $(APPHOME)$(PROG)
 
 .PHONY: all install clean distclean
