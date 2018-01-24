@@ -7,7 +7,21 @@
 
 class DATABIN
 {
-  public:
+private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & n;
+        ar & width;
+        ar & volume;
+        ar & lower;
+        ar & higher;
+    }
+
+
+public:
     
     // members
     int n;		// number of ions in the bin

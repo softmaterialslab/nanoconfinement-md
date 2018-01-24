@@ -10,6 +10,33 @@
 
 class INTERFACE
 {
+
+  private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+      ar & posvec;
+      ar & ein;
+      ar & eout;
+      ar & em;
+      ar & ed;
+      ar & lx;
+      ar & ly;
+      ar & lz;
+      ar & lB_in;
+      ar & lB_out;
+      ar & inv_kappa_in;
+      ar & inv_kappa_out;
+      ar & mean_sep_in;
+      ar & mean_sep_out;
+      ar & width;
+      ar & leftplane;
+      ar & rightplane;
+
+    }
+
   public:
 
   VECTOR3D posvec;		// position vector of the inteface, for sphere its center

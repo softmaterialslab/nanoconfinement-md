@@ -5,8 +5,31 @@
 
 class CONTROL
 {
-  public:
-    bool verbose;
+private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+		ar & verbose;
+        ar & fakemass;
+        ar & timestep;
+        ar & steps;
+        ar & hiteqm;
+        ar & freq;
+        ar & on;
+        ar & anneal;
+        ar & annealfreq;
+        ar & extra_compute;
+        ar & verify;
+        ar & writeverify;
+        ar & writedensity;
+        ar & moviefreq;
+    }
+
+
+public:
+	bool verbose;
     double fakemass;		// fictitious mass used in molecular dynamics // not relevant for this code
     double timestep;		// timestep used in molecular dynamics
     int steps;			// number of steps in molecular dynamics
