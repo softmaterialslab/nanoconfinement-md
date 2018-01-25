@@ -221,3 +221,13 @@ void auto_correlation_function()
   }
   return;
 }
+
+// display progress
+void ProgressBar(double fraction_completed)
+{
+    int val = (int) (fraction_completed * 100);
+    int lpad = (int) (fraction_completed * PBWIDTH);
+    int rpad = PBWIDTH - lpad;
+    printf("\r%3d%% |%.*s%*s|", val, lpad, PBSTR, rpad, "");
+    fflush(stdout);
+}
