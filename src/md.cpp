@@ -170,10 +170,13 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
                 {
 					int progressBarVal=(int) (percentage+0.5);
 					printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
-				}
-                double fraction_completed = percentage/100;
-                ProgressBar(fraction_completed);
-				percentagePre=percentage;
+				}else
+                {
+                    double fraction_completed = percentage/100;
+                    ProgressBar(fraction_completed);
+                    percentagePre=percentage;
+                }
+
 			}
 		}
     }
