@@ -39,7 +39,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     initialize_particle_velocities(ion, real_bath);    // particle velocities initialized
     for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                            lj_ion_left_wall, lj_ion_rightdummy,
-                           lj_ion_right_wall,sendForceVector);        // force on particles and fake degrees initialized
+                           lj_ion_right_wall,sendForceVector);        // force on particles initialized
     long double particle_ke = particle_kinetic_energy(ion);// compute initial kinetic energy
 
     long double potential_energy;
@@ -54,15 +54,17 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     // compute initial potential energy
     potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
 
-	// Output cpmd essentials
-    if (world.rank() == 0) {
+	// Output md essentials
+    if (world.rank() == 0)
+    {
 		cout << "\n";
 		cout << "Propagation of ions using Molecular Dynamics method" << " begins " << endl;
 		cout << "Time step in the simulation " << mdremote.timestep << endl;
 		cout << "Total number of simulation steps " << mdremote.steps << endl;
 		
-		// Output cpmd essentials
-		if (mdremote.verbose) {
+		// Output md essentials
+		if (mdremote.verbose)
+        {
 		  cout << "Initial ion kinetic energy " << particle_ke << endl;
 		  cout << "Inital potential energy " << potential_energy << endl;
 		  cout << "Initial system energy " << particle_ke + potential_energy << endl;
@@ -87,7 +89,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     vector<double> mean_negativeion_density;            // average density profile
     vector<double> mean_sq_positiveion_density;            // average of square of density
     vector<double> mean_sq_negativeion_density;            // average of square of density
-    for (unsigned int b = 0; b < bin.size(); b++) {
+    for (unsigned int b = 0; b < bin.size(); b++)
+    {
         mean_positiveion_density.push_back(0.0);
         mean_negativeion_density.push_back(0.0);
         mean_sq_positiveion_density.push_back(0.0);
@@ -122,7 +125,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
             ion[i].update_position(mdremote.timestep);
         for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                                lj_ion_left_wall, lj_ion_rightdummy,
-                               lj_ion_right_wall,sendForceVector);        // force on particles and fake degrees initialized
+                               lj_ion_right_wall,sendForceVector);        // force on particles initialized
         //#pragma omp parallel for schedule(dynamic) private(i)
         for (i = 0; i < ion.size(); i++)
             ion[i].new_update_velocity(mdremote.timestep, real_bath[0], expfac_real);
@@ -138,10 +141,10 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         //! ends
 
         // extra computations
-        if (num == 1 || num % mdremote.extra_compute == 0) {
+        if (num == 1 || num % mdremote.extra_compute == 0)
+        {
             energy_samples++;
             compute_n_write_useful_data(num, ion, real_bath, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
-            write_basic_files(num, ion, real_bath, box);
         }
 
         // make a movie
@@ -149,26 +152,27 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
             make_movie(num, ion, box);
 
         // compute density profile
-        if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
+        if (num >= mdremote.hiteqm && (num % mdremote.freq == 0))
+        {
             density_profile_samples++;
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
                                     mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
         }
-		
-		if (world.rank() == 0) {
+
+		if (world.rank() == 0)
+        {
 			//percentage calculation
 			percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
 			//percentage output
-			if(percentage!=percentagePre){
-				if(!mdremote.verbose){
+			if(percentage!=percentagePre)
+            {
+				if(!mdremote.verbose)
+                {
 					int progressBarVal=(int) (percentage+0.5);
 					printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
-				} else 
-                {
-					//printf("Simulation Completion : %0.1f %%\n",percentage);
-                    double fraction_completed = percentage/100;
-                    ProgressBar(fraction_completed);
 				}
+                double fraction_completed = percentage/100;
+                ProgressBar(fraction_completed);
 				percentagePre=percentage;
 			}
 		}

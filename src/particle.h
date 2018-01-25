@@ -75,6 +75,7 @@ class PARTICLE
   {
     posvec = ( posvec + (velvec ^ dt) );
     // the following lines implement periodic boundary conditions in x and y direction; system confined in z
+    // while is a better condition than if because it ensures that the particle comes back to the main cell; but it is costly
     if(posvec.x > lx/2)
       posvec.x -= lx;
     if(posvec.x < -lx/2)

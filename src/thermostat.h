@@ -29,7 +29,7 @@ public:
   // members
   double Q;			// mass of the thermostat
   double T;			// temperature to be set by thermostat
-  int dof;			// degrees of freedom
+  unsigned long dof;			// degrees of freedom
   double xi;			// thermostat variable
   double eta;			// thermostat variable - useful for computing extended energy
   double pe;			// potential energy of thermostat
@@ -39,7 +39,7 @@ public:
   // member functions
   
   // make a thermostat
-  THERMOSTAT(double initial_mass = 0.0, double initial_temperature = 0.0, int initial_dof = 0, double initial_xi = 0.0, double initial_eta = 0.0, double initial_hold = 0.0) 
+  THERMOSTAT(double initial_mass = 0.0, double initial_temperature = 0.0, unsigned long initial_dof = 0, double initial_xi = 0.0, double initial_eta = 0.0, double initial_hold = 0.0)
   {
     Q = initial_mass;
     T = initial_temperature;

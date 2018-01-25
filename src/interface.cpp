@@ -156,7 +156,8 @@ void INTERFACE::discretize(double ion_diameter, double f)
   }
   mpi::environment env;
   mpi::communicator world;
-  if (world.rank() == 0) {
+  if (world.rank() == 0)
+  {
 	  string listleftplanePath= rootDirectory+"outfiles/leftplane.xyz";
 	  ofstream listleftplane(listleftplanePath.c_str(), ios::out);
 	  listleftplane << "ITEM: TIMESTEP" << endl;
