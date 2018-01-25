@@ -10,7 +10,6 @@
 
 class INTERFACE
 {
-
   private:
     friend class boost::serialization::access;
 
@@ -73,17 +72,18 @@ class INTERFACE
   double total_charge_inside(vector<PARTICLE>& ion)
   {
     double charge = 0;
-    for (unsigned int i = 0; i < ion.size(); i++)
+    for (unsigned long i = 0; i < ion.size(); i++)
     {
-      double r = 0.5*ion[i].diameter;
-      if (ion[i].posvec.x < lx-r && ion[i].posvec.x > -lx+r)
-      {	
-	if (ion[i].posvec.y < ly-r && ion[i].posvec.y > -ly+r)
-	{	
-	  if (ion[i].posvec.z < lz-r && ion[i].posvec.z > -lz+r) 
-	    charge += ion[i].q;
-	}
-      }	
+      double r = 0.5 * ion[i].diameter;
+      if ((ion[i].posvec.x <= lx - r && ion[i].posvec.x >= -lx + r) &&
+          (ion[i].posvec.y <= ly - r && ion[i].posvec.y >= -ly + r) &&
+          (ion[i].posvec.z <= lz - r && ion[i].posvec.z >= -lz + r))
+        charge += ion[i].q;
+      else
+      {
+        charge = -1;
+        break;
+      }
     }
     return charge;
   }

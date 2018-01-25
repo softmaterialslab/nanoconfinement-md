@@ -42,13 +42,20 @@ void compute_n_write_useful_data(int, vector <PARTICLE> &, vector <THERMOSTAT> &
 void make_movie(int num, vector<PARTICLE>& ion, INTERFACE& box);
 
 // compute density profile
-void compute_density_profile(int, double, vector<double>&, vector<double>&, vector<PARTICLE>&, INTERFACE&, vector<DATABIN>&, CONTROL&);
+void compute_density_profile(int cpmdstep, double density_profile_samples,
+                             vector<double>& mean_positiveion_density,
+                             vector<double>& mean_sq_positiveion_density,
+                             vector<double>& mean_negativeion_density,
+                             vector<double>& mean_sq_negativeion_density,
+                             vector<PARTICLE>& ion, INTERFACE& box,
+                             vector<DATABIN>& bin, CONTROL& cpmdremote);
 
 // post analysis : compute R
 double compute_MD_trust_factor_R(int);
 
 // post analysis : auto correlation function
 void auto_correlation_function();
+
 
 // functions useful in computing forces and energies
 // -------------------------------------------------
@@ -142,29 +149,6 @@ inline void update_chain_xi(unsigned int j, vector<THERMOSTAT>& bath, double dt,
 // functions that write data files
 // -------------------------------
 
-inline void write_basic_files(int cpmdstep, vector<PARTICLE>& ion, vector<THERMOSTAT>& real_bath, INTERFACE& box)
-{
-	mpi::environment env;
-	mpi::communicator world;
-	if (world.rank() == 0) {
-
-	  string list_positionPath= rootDirectory+"outfiles/ion_position.dat";
-	  string list_velocityPath= rootDirectory+"outfiles/ion_velocity.dat";
-	  string list_forcePath= rootDirectory+"outfiles/ion_force.dat";
-	  string list_bathPath= rootDirectory+"outfiles/bath_values.dat";
-	  ofstream list_position (list_positionPath.c_str(), ios::app);
-	  ofstream list_velocity (list_velocityPath.c_str(), ios::app);
-	  ofstream list_force (list_forcePath.c_str(), ios::app);
-	  ofstream list_bath (list_bathPath.c_str(), ios::app);
-	  
-	  list_position << cpmdstep << setw(15) << ion[0].posvec << setw(15) << ion[1].posvec << endl; 
-	  list_velocity << cpmdstep << setw(15) << ion[0].velvec << setw(15) << ion[1].velvec << endl; 
-	  list_force << cpmdstep << setw(15) << ion[0].forvec << setw(15) << ion[1].forvec << endl; 
-	  list_bath << cpmdstep << setw(15) << real_bath[0].xi << setw(15) << real_bath[0].eta << endl;
-	}
-  return;
-}
-
 // bin ions to get density profile
 inline void bin_ions(vector<PARTICLE>& ion, INTERFACE& box, vector<double>& density, vector<DATABIN>& bin)
 {
@@ -181,69 +165,6 @@ inline void bin_ions(vector<PARTICLE>& ion, INTERFACE& box, vector<double>& dens
   for (unsigned int bin_num = 0; bin_num < bin.size(); bin_num++)
     density.push_back(bin[bin_num].n / bin[bin_num].volume);			// push_back is the culprit, array goes out of bound
 									// volume now measured in inverse Molars, such that density is in M
-  return;
-}
-
-// compute density profile
-inline void compute_density_profile(int cpmdstep, double density_profile_samples,
-				    vector<double>& mean_positiveion_density, 
-				    vector<double>& mean_sq_positiveion_density,
-				    vector<double>& mean_negativeion_density,
-				    vector<double>& mean_sq_negativeion_density,
-				    vector<PARTICLE>& ion, INTERFACE& box, 
-				    vector<DATABIN>& bin, CONTROL& cpmdremote)
-{
-  vector<double> sample_positiveion_density;
-  vector<double> sample_negativeion_density;
-  
-  vector<PARTICLE> positiveion;
-  vector<PARTICLE> negativeion;
-  
-  for (unsigned int i = 0; i < ion.size(); i++)
-  {
-    if (ion[i].valency > 0)
-      positiveion.push_back(ion.at(i));
-    else if (ion[i].valency < 0)
-      negativeion.push_back(ion.at(i));
-  }
-      
-  bin_ions(positiveion, box, sample_positiveion_density, bin);
-  bin_ions(negativeion, box, sample_negativeion_density, bin);
-  
-  for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
-    mean_positiveion_density.at(b) = mean_positiveion_density.at(b) + sample_positiveion_density.at(b);
-  for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
-    mean_negativeion_density.at(b) = mean_negativeion_density.at(b) + sample_negativeion_density.at(b);
-  for (unsigned int b = 0; b < sample_positiveion_density.size(); b++)
-    mean_sq_positiveion_density.at(b) = mean_sq_positiveion_density.at(b) + sample_positiveion_density.at(b)*sample_positiveion_density.at(b);
-  for (unsigned int b = 0; b < sample_negativeion_density.size(); b++)
-    mean_sq_negativeion_density.at(b) = mean_sq_negativeion_density.at(b) + sample_negativeion_density.at(b)*sample_negativeion_density.at(b);
-  
-  // write files
-  if ((cpmdstep % cpmdremote.writedensity == 0)&& cpmdremote.verbose)
-  {
-	mpi::environment env;
-	mpi::communicator world;
-	if (world.rank() == 0) {
-		char datap[200], datan[200];
-		sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
-		sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
-		
-		string p_density_profile, n_density_profile;
-		p_density_profile=rootDirectory+string(datap);
-		n_density_profile=rootDirectory+string(datan);
-		
-		ofstream outdenp, outdenn;
-		outdenp.open(p_density_profile.c_str());
-		outdenn.open(n_density_profile.c_str());
-		for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
-		  outdenp << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_positiveion_density.at(b)/density_profile_samples << endl;
-		for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
-		  outdenn << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_negativeion_density.at(b)/density_profile_samples << endl;
-		outdenp.close();
-		outdenn.close();
-	}
-  } 
   return;
 }
 

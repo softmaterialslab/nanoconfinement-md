@@ -1,11 +1,11 @@
-// Last update: April 5, 2013
 // This is main.
 // This is MD simulation of an electrolyte confined within planar walls
-// There is no dielectric contrast between the walls. This is uniform dielectric medium.
+// Uniform dielectric media are assumed
 // Problem : Compute density profiles of ions trapped within planar walls
 /* Useful studies :	
 		     1. Role of valency of ions
 		     2. Role of varying salt concentration
+		     3. Useful parameters via boost: -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 10000
 */
 #include "NanoconfinementMd.h"
 
@@ -32,7 +32,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     // Different parts of the system
     vector <PARTICLE> saltion_in;        // salt ions inside
     vector <PARTICLE> ion;            // all ions in the system
-    INTERFACE box;            // interface, z planes hard walls; rest periodic boundaries
 
     // Analysis
     vector <DATABIN> bin;            // bins
@@ -121,49 +120,47 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         store(parse_config_file(ifs, config), vm);
         notify(vm);
     }
-	if (world.rank() == 0) {
-		if (vm.count("help")) {
+	if (world.rank() == 0)
+	{
+		if (vm.count("help"))
+		{
 			std::cout << cmdline_options << "\n";
 			return 0;
 		}
 	}
     //X and Y mapping
-    if(paraMap){
-    bx = sqrt(212/0.6022/salt_conc_in/bz);
-    by=bx;
-    if (mdremote.steps < 100000)		// minimum mdremote.steps is 20000
-      mdremote.hiteqm = 10000;
-    else
-      mdremote.hiteqm=mdremote.steps*0.1;		
-    mdremote.writedensity=mdremote.steps*0.1;
-    mdremote.extra_compute = mdremote.steps*0.01;
-    mdremote.moviefreq = mdremote.steps*0.01;
+    if(paraMap)
+	{
+    	bx = sqrt(212/0.6022/salt_conc_in/bz);
+    	by=bx;
+    	if (mdremote.steps < 100000)		// minimum mdremote.steps is 20000
+      		mdremote.hiteqm = 10000;
+    	else
+      		mdremote.hiteqm =(int)(mdremote.steps*0.1);
+    	mdremote.writedensity =(int)(mdremote.steps*0.1);
+    	mdremote.extra_compute = (int)(mdremote.steps*0.01);
+    	mdremote.moviefreq = (int)(mdremote.steps*0.01);
     }
 
     // Set up the system
-    T = 1;        // set temperature
-    box.ein = ein;
-    box.eout = eout;
+    T = 1;        // set temperature (in reduced units; see utility.h)
+    INTERFACE box = INTERFACE(VECTOR3D(0,0,0),ein,eout); // interface, z planes hard walls; rest periodic boundaries
     box.set_up(salt_conc_in, 0, pz_in, 0, bx / unitlength, by / unitlength, bz / unitlength);
     box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, saltion_diameter_in, ion);
     make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
     vector<double> initial_density;
     bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
 
-	//  box.number_of_vertices = total_gridpoints;
-    box.discretize(saltion_diameter_in / unitlength, fraction_diameter);
+	box.discretize(saltion_diameter_in / unitlength, fraction_diameter);
 
-	if (world.rank() == 0) {
-	
+	if (world.rank() == 0)
+	{
 		// output to screen the parameters of the problem
 		cout << "Ions are confined by nanomaterial surfaces in aqueous solvent" << endl;
 		cout << "Material surfaces modeled as thin planar interfaces" << endl;
 		cout << "Solvent modeled as implicit media" << endl;
 		cout << "Ions modeled as finite-size, soft spheres" << endl;
 		cout << "Dielectric constant of water " << epsilon_water << endl;
-
-		//cout << "Number of processors used (the app comes with OpenMP parallelization)  " << THREADSIZE << endl;
-		//cout << "Make sure that number of grid points and ions is greater than  " << THREADSIZE << endl;
 		cout << "Unit of length is " << unitlength << " nanometers"
 			 << endl; // half Bjerrum length; close to Na ion radius
 		cout << "Unit of mass is " << unitmass << " grams" << endl; // mass of sodium atom in CGS; in grams
@@ -188,21 +185,12 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 	   
 		if (mdremote.verbose)
 		{
-		  cout << "Scalefactor entering in Coloumb interaction is " << scalefactor << endl;
 		  cout << "Binning width (uniform) " << bin[0].width << endl;
 		  cout << "Number of bins " << bin.size() << endl;
 		  cout << "Number of points discretizing the left and right planar walls/interfaces/surfaces " << box.leftplane.size() << "  " << box.rightplane.size() << endl;
 		}
 		
 		// write to files
-
-		// initial configuration
-		string initial_configurationPath= rootDirectory+"outfiles/initial_configuration.dat";
-		ofstream initial_configuration(initial_configurationPath.c_str());
-		for (unsigned int i = 0; i < ion.size(); i++)
-			initial_configuration << "ion" << setw(5) << ion[i].id << setw(15) << "charge" << setw(5) << ion[i].q
-								  << setw(15) << "position" << setw(15) << ion[i].posvec << endl;
-		initial_configuration.close();
 
 		// initial density
 		string density_profilePath= rootDirectory+"outfiles/initial_density_profile.dat";
@@ -231,14 +219,21 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		  cout << "Number of negative ions " << totalnions << endl;
 		}
 		
-		cout << "Total charge inside the confinement " << box.total_charge_inside(ion) << endl;
-		cout << "System simulated is electroneutral " << endl;
+		if (box.total_charge_inside(ion)==0)
+			cout << "System simulated is electroneutral-- total charge inside is 0" << endl;
+		else
+		{
+			cout << "System not electroneutral; aborting" << endl;
+			cout << "Total charge inside the confinement " << box.total_charge_inside(ion) << endl;
+			return 0;
+		}
 		
-		unsigned int numOfNodes = world.size();
+		int numOfNodes = world.size();
 		 
 		#pragma omp parallel default(shared)
 		{
-		   if (omp_get_thread_num() == 0) {
+		   if (omp_get_thread_num() == 0)
+           {
                 printf("Number of nodes used %d, number of processors used %d (the app comes with MPI and OpenMP (Hybrid) parallelization)\n",
                        numOfNodes, omp_get_num_threads());
                 printf("Make sure that number of grid points and ions is greater than %d\n",
@@ -246,23 +241,26 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             }
 		}
 	}
+
     // prepare for md : make real baths
     vector <THERMOSTAT> real_bath;
     if (chain_length_real == 1)
-        real_bath.push_back(THERMOSTAT(0, T, 3 * ion.size(), 0.0, 0, 0));
-    else {
-        real_bath.push_back(THERMOSTAT(Q, T, 3 * ion.size(), 0, 0, 0));
+        real_bath.push_back((THERMOSTAT(0, T, 3 * ion.size(), 0.0, 0, 0)));
+    else
+    {
+        real_bath.push_back((THERMOSTAT(Q, T, 3 * ion.size(), 0, 0, 0)));
         while (real_bath.size() != chain_length_real - 1)
-            real_bath.push_back(THERMOSTAT(Q / (3 * ion.size()), T, 1, 0, 0, 0));
-        real_bath.push_back(THERMOSTAT(0, T, 3 * ion.size(), 0.0, 0, 0));
+            real_bath.push_back((THERMOSTAT(Q / (3 * ion.size()), T, 1, 0, 0, 0)));
+        real_bath.push_back((THERMOSTAT(0, T, 3 * ion.size(), 0.0, 0, 0)));
         // final bath is dummy bath (dummy bath always has zero mass)
     }
 
-    // Car-Parrinello Molecular Dynamics
+    // Simulation using Molecular Dynamics
     md(ion, box, real_bath, bin, mdremote, simulationParams);
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
-	if (world.rank() == 0) {
+	if (world.rank() == 0)
+    {
 		if (mdremote.verbose)
 		{
 		  cout << "MD trust factor R (should be < 0.05) is " << compute_MD_trust_factor_R(mdremote.hiteqm) << endl;
@@ -271,7 +269,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		}
 		
 		cout << "Converged results for ionic densities expected with ~ 1500 nanoseconds of ion dynamics" << endl;
-		cout << "Accordingly, we recommend using ~ 1000000 simulation steps to obtain smoother, converged profiles " << endl;
+		cout << "Accordingly, we recommend using ~ 1000,000 simulation steps to obtain smoother, converged profiles " << endl;
 		cout << "Simulation ends \n\n";
 	}
     return 0;

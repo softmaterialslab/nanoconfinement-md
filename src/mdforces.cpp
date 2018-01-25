@@ -96,9 +96,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
     // interaction with the left plane hard wall
 
     // make a dummy particle with the same diameter as the ion and touching left of the left wall s. t. it is closest to the ion
-    //vector<VECTOR3D> lj_ion_leftdummy (ion.size(), VECTOR3D(0,0,0));
 
-//#pragma omp parallel for schedule(dynamic) private(i, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
     for (i = lowerBound; i <= upperBound; i++) {
         flj = VECTOR3D(0, 0, 0);
         if (ion[i].posvec.z < -0.5 * box.lz +
@@ -125,8 +123,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
     }
 
     // ion interacting with discretized left wall
-    //vector<VECTOR3D> lj_ion_left_wall (ion.size(), VECTOR3D(0,0,0));
-#pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
+    #pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
     {
 #pragma omp for schedule(dynamic) nowait
         for (i = lowerBound; i <= upperBound; i++) {
@@ -163,8 +160,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
     //interaction with the right plane hard wall
 
     //make a dummy particle with the same diameter as the ion and touching right of the right wall s. t. it is closest to the ion
-    //vector<VECTOR3D> lj_ion_rightdummy (ion.size(), VECTOR3D(0,0,0));
-    //#pragma omp parallel for schedule(dynamic) private(i, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
+
     for (i = lowerBound; i <= upperBound; i++) {
         flj = VECTOR3D(0, 0, 0);
         if (ion[i].posvec.z > 0.5 * box.lz -
@@ -191,7 +187,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
     }
 
     // ion interacting with discretized right wall
-//vector<VECTOR3D> lj_ion_right_wall (ion.size(), VECTOR3D(0,0,0));
+
 #pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
     {
 #pragma omp for schedule(dynamic) nowait

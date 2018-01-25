@@ -12,7 +12,7 @@ ostream& operator<<(ostream& os, VECTOR3D vec)
 // make bins
 void make_bins(vector<DATABIN>& bin, INTERFACE& box, double bin_width)
 {
-  unsigned int number_of_bins = int(box.lz / bin_width);	
+  int number_of_bins = int(box.lz / bin_width);
   bin.resize(number_of_bins);
   for (unsigned int bin_num = 0; bin_num < bin.size(); bin_num++)
     bin[bin_num].set_up(bin_num, bin_width, box.lx, box.ly, box.lz);
@@ -117,6 +117,69 @@ void compute_n_write_useful_data(int cpmdstep, vector <PARTICLE> &ion, vector <T
 	  }
  }
 
+// compute density profile of ions
+void compute_density_profile(int cpmdstep, double density_profile_samples,
+                                    vector<double>& mean_positiveion_density,
+                                    vector<double>& mean_sq_positiveion_density,
+                                    vector<double>& mean_negativeion_density,
+                                    vector<double>& mean_sq_negativeion_density,
+                                    vector<PARTICLE>& ion, INTERFACE& box,
+                                    vector<DATABIN>& bin, CONTROL& cpmdremote)
+{
+    vector<double> sample_positiveion_density;
+    vector<double> sample_negativeion_density;
+
+    vector<PARTICLE> positiveion;
+    vector<PARTICLE> negativeion;
+
+    for (unsigned int i = 0; i < ion.size(); i++)
+    {
+        if (ion[i].valency > 0)
+            positiveion.push_back(ion.at(i));
+        else if (ion[i].valency < 0)
+            negativeion.push_back(ion.at(i));
+    }
+
+    bin_ions(positiveion, box, sample_positiveion_density, bin);
+    bin_ions(negativeion, box, sample_negativeion_density, bin);
+
+    for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
+        mean_positiveion_density.at(b) = mean_positiveion_density.at(b) + sample_positiveion_density.at(b);
+    for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
+        mean_negativeion_density.at(b) = mean_negativeion_density.at(b) + sample_negativeion_density.at(b);
+    for (unsigned int b = 0; b < sample_positiveion_density.size(); b++)
+        mean_sq_positiveion_density.at(b) = mean_sq_positiveion_density.at(b) + sample_positiveion_density.at(b)*sample_positiveion_density.at(b);
+    for (unsigned int b = 0; b < sample_negativeion_density.size(); b++)
+        mean_sq_negativeion_density.at(b) = mean_sq_negativeion_density.at(b) + sample_negativeion_density.at(b)*sample_negativeion_density.at(b);
+
+    // write files
+    if ((cpmdstep % cpmdremote.writedensity == 0)&& cpmdremote.verbose)
+    {
+        mpi::environment env;
+        mpi::communicator world;
+        if (world.rank() == 0) {
+            char datap[200], datan[200];
+            sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
+            sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
+
+            string p_density_profile, n_density_profile;
+            p_density_profile=rootDirectory+string(datap);
+            n_density_profile=rootDirectory+string(datan);
+
+            ofstream outdenp, outdenn;
+            outdenp.open(p_density_profile.c_str());
+            outdenn.open(n_density_profile.c_str());
+            for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
+                outdenp << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_positiveion_density.at(b)/density_profile_samples << endl;
+            for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
+                outdenn << (-box.lz/2+b*bin[b].width) * unitlength << setw(15) << mean_negativeion_density.at(b)/density_profile_samples << endl;
+            outdenp.close();
+            outdenn.close();
+        }
+    }
+    return;
+}
+
 // compute MD trust factor R
 double compute_MD_trust_factor_R(int hiteqm)
 {
@@ -165,7 +228,8 @@ double compute_MD_trust_factor_R(int hiteqm)
   double R = ext_sd / ke_sd;
   	mpi::environment env;
 	mpi::communicator world;
-  if (world.rank() == 0) {
+  if (world.rank() == 0)
+  {
 	  string outPath= rootDirectory+"outfiles/R.dat";
 	  ofstream out (outPath.c_str());
 	  out << "Sample size " << ext.size() << endl;
