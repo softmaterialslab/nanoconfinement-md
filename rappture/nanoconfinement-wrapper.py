@@ -26,10 +26,10 @@ negative_valency = io['input.group(physical).integer(negative_valency).current']
 print "negative_valency  s %s" % negative_valency
 
 confinement_length = io['input.group(physical).number(confinement_length).current'].value
-print " confinement_length is %s" % confinement_length
+print "confinement_length is %s" % confinement_length
 
 ion_diameter = io['input.group(physical).number(ion_diameter).current'].value
-print " ion_diameter is %s" % ion_diameter
+print "ion_diameter is %s" % ion_diameter
 
 simulation_steps = io['input.group(computing).integer(simulation_steps).current'].value
 print "simulation_steps is %s" % simulation_steps

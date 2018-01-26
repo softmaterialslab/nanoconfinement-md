@@ -1,0 +1,2 @@
+This is a job script to submit a job in BigRed2.
+Copy this script, executable, data and outfiles folders to the directory where you need to run your job.

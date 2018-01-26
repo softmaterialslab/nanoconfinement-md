@@ -105,7 +105,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		  cout << "The default app simulates a total of 424 ions" << endl;
 		}
 		
-		cout << "OpenMP acceleration is built in this app" << endl;
+		cout << "MPI/OpenMP hybrid acceleration is built in this app" << endl;
 		cout << "-----------------------------------------------------" << endl;
 	}
 	
