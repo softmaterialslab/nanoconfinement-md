@@ -24,15 +24,8 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
     ├── scripts			# Script files for cloud/cluster platforms
     ├── src			# Source files of your project
     └── README.md		# Readme file of your project
-### A typical top-level directory layout
-    .
-    ├── build                   # Compiled files (alternatively `dist`)
-    ├── docs                    # Documentation files (alternatively `doc`)
-    ├── src                     # Source files (alternatively `lib` or `app`)
-    ├── test                    # Automated tests (alternatively `spec` or `tests`)
-    ├── tools                   # Tools and utilities
-    ├── LICENSE
-    └── README.md
+    
+*  You should convert your project to the above directory structure.
 
 ## Build Instructions - Makefile
 * You need to create a Makefile to bulid and install the project. This Makefile is kept inside src folder. Example Makefile is provided below.
