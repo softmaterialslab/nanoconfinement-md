@@ -113,7 +113,10 @@ distclean: clean
 ## Rapptureizing a tool
 The following workflow explains how to generate a GUI for your application using a XML file and write a wrapper script to pass the input parameters to your program from the rappture GUI and to pass the output from your program to rappture GUI.
 ### GUI Rendering
-Rappture allows you to render a GUI using a XML file (tool.xml) . This file should be kept inside the rappture folder in your directory stucture. This tool.xml file should have markup tags for input/output parameters, reference to the wrapper script and a description about your application. Example tool.xml file is provided below and most markup tags are self explanatory.
+* Rappture allows you to render a GUI using a XML file (tool.xml).
+* This file should be kept inside the rappture folder in your directory stucture.
+* This tool.xml file should have markup tags for input/output parameters, reference to the wrapper script and a description about your application.
+* Example tool.xml file is provided below and most markup tags are self explanatory.
 ```xml
 <?xml version="1.0"?>
 <run>
@@ -221,12 +224,27 @@ Rappture allows you to render a GUI using a XML file (tool.xml) . This file shou
 </run>
 ```
 ### Wrapper Scripts 
-
-### Input Parameters 
+* You can select your preferred programming language to write the wrapper script and here, we explain how to write this wrapper script using programming language Python. 
+#### Input Parameters 
+* In this wrapper script, you need to get the input parameters from the rappture GUI (generated using tool.xml) using the input element name you have used in the tool.xml. An example is provided below.
+```python
+io = Rappture.PyXml(sys.argv[1])
+salt_concentration = io['input.group(physical).number(salt_concentration).current'].value
+```
+#### How to link the executable in the wrapper script
+* Your executable should be in the bin directory after you do a make-insall. You can link the executable to the wrapper script using a rappture provided library function executeCommand. Follwoing code segment explains how to execute the program. 
+```python
+try:
+     exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
+        ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+         salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+except:
+    sys.stderr.write('Error during execution of md_simulation_confined_ions')
+    sys.exit(1);
+ ```
+#### Output Plots
 
 ### Executing the applications 
-
-### Output Plots
 
 ## Deployment Workflow
 
