@@ -230,6 +230,8 @@ GEM
 
 PLATFORMS
   ruby
+  python
+  bash
 
 DEPENDENCIES
   github-pages
