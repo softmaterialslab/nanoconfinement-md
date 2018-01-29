@@ -13,20 +13,19 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
 * Tool developers can then submit a ticket to request workspace (Linux desktop in a browser) access
  using the HELP button at the top of any nanoHUB page.
 
-## Source Code Directory Structure
+## Convert the project Directory Structure
 *  You should convert your project to the above directory structure.
+### A typical top-level directory layout
     .
     ├── bin			# Executable will be installed here
     ├── data			# folder for output data
     ├── docs			# Documentation files
-    ├── examples                # Example test programs or result files
+    ├── examples		# Example test programs or result files
     ├── middleware		# NanoHub-Rappture specific folder where invoke file is kept
     ├── rappture		# NanoHub-Rappture specific folder where tool.xml and wrapper script are kept	
     ├── scripts			# Script files for cloud/cluster platforms
     ├── src			# Source files of your project
-    └── README.md		# Readme file of your project
-    
-
+    └── README.md		# Readme file of your project  
 
 ## Build Instructions - Makefile
 * You need to create a Makefile to bulid and install the project. This Makefile is kept inside src folder. Example Makefile is provided below.
