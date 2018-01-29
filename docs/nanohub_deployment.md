@@ -18,12 +18,12 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
 ### A typical top-level directory layout
     .
     ├── bin			# Executable will be installed here
-    ├── data			# folder for output data
-    ├── docs			# Documentation files
+    ├── data		# folder for output data
+    ├── docs		# Documentation files
     ├── examples		# Example test programs or result files
     ├── middleware		# NanoHub-Rappture specific folder where invoke file is kept
     ├── rappture		# NanoHub-Rappture specific folder where tool.xml and wrapper script are kept	
-    ├── scripts			# Script files for cloud/cluster platforms
+    ├── scripts		# Script files for cloud/cluster platforms
     ├── src			# Source files of your project
     └── README.md		# Readme file of your project  
 
