@@ -14,7 +14,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
  using the HELP button at the top of any nanoHUB page.
 
 ## Convert the project Directory Structure
-*  You should convert your project to the above directory structure.
+*  You should convert your project to the following directory structure.
 ### A typical top-level directory layout
     .
     ├── bin			# Executable will be installed here
@@ -111,9 +111,115 @@ distclean: clean
 
 
 ## Rapptureizing a tool
-
-### GUI Rendering 
-
+The following workflow explains how to generate a GUI for your application using a XML file and write a wrapper script to pass the input parameters to your program from the rappture GUI and to pass the output from your program to rappture GUI.
+### GUI Rendering
+Rappture allows you to render a GUI using a XML file (tool.xml) . This file should be kept inside the rappture folder in your directory stucture. This tool.xml file should have markup tags for input/output parameters, reference to the wrapper script and a description about your application. Example tool.xml file is provided below and most markup tags are self explanatory.
+```xml
+<?xml version="1.0"?>
+<run>
+    <tool>
+        <title>Ions in Nanoconfinement</title>
+        <about><!--Describe your project here--></about>
+        <command>python @tool/nanoconfinement-wrapper.py @driver</command>
+    </tool>
+    <input>
+        <group id="physical">
+            <about>
+                <label>Physical</label>
+                <description>Physical parameters specific to the material system</description>
+            </about>
+            <number id="salt_concentration">
+                <about>
+                    <label>Salt Concentration (c in M)</label>
+                    <description>Salt concentration of the solution</description>
+                </about>
+                <min>0.3</min>
+                <max>0.9</max>
+                <default>0.5</default>
+            </number>
+            <integer id="positive_valency">
+                <about>
+                    <label>Positive Ion Valency (z)</label>
+                    <description>Valency (charge) of the positive ions</description>
+                </about>
+                <min>1</min>
+                <max>3</max>
+                <default>1</default>
+                <preset>
+                    <value>1</value>
+                    <label>1(monovalent)</label>
+                </preset>
+                <preset>
+                    <value>2</value>
+                    <label>2(divalent)</label>
+                </preset>
+                <preset>
+                    <value>3</value>
+                    <label>3(trivalent)</label>
+                </preset>
+            </integer>
+            <integer id="negative_valency">
+                <about>
+                    <label>Negative Ion Valency</label>
+                    <description>Valency (charge) of the negative ions</description>
+                </about>
+                <min>-3</min>
+                <max>-1</max>
+                <default>-1</default>
+                <preset>
+                    <value>-1</value>
+                    <label>-1</label>
+                </preset>
+                <preset>
+                    <value>-2</value>
+                    <label>-2</label>
+                </preset>
+                <preset>
+                    <value>-3</value>
+                    <label>-3</label>
+                </preset>
+            </integer>
+            <number id="confinement_length">
+                <about>
+                    <label>Confinement Length (nm)</label>
+                    <description>Length of Nanoscale Confinement</description>
+                </about>
+                <min>2</min>
+                <max>4</max>
+                <default>3</default>
+            </number>
+            <number id="ion_diameter">
+                <about>
+                    <label>Ion Diameter (nm)</label>
+                    <description>Diameter of Ions</description>
+                </about>
+                <min>0.5</min>
+                <max>0.8</max>
+                <default>0.714</default>
+            </number>
+        </group>
+        <group id="computing">
+            <about>
+                <label>Computing</label>
+                <description>Computing parameters which effect algorithm</description>
+            </about>
+            <integer id="simulation_steps">
+                <about>
+                    <label>Simulation Steps</label>
+                    <description>Computing parameters related to the simulation</description>
+                </about>
+                <min>20000</min>
+                <max>5000000</max>
+                <default>20000</default>
+            </integer>
+        </group>
+		<image id='ions_distribution'>
+			<resize>height=300</resize>
+			<current> <!--Base64 version of your image--></current>
+		</image>
+    </input>
+</run>
+```
 ### Wrapper Scripts 
 
 ### Input Parameters 
