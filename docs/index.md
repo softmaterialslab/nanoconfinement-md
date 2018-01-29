@@ -51,6 +51,6 @@ The nanoconfinement code is open source and can optionally be built from source 
 * Finally type the following command and it will submit the job.
     * qsub iu_cluster_job_script.pbs 
 * You can check the status of the job by typing the following command.
-    * qstat -u <IU username>
+    * qstat -u "IU_username"
 * Once the simulation has finished, data and outflies folders will contain the simulation results. You may check final density profile form data folder against the example desity profile provided in nanoconfinement-md /examples/ density_plots folder.
 
