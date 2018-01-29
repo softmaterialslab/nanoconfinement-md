@@ -425,7 +425,7 @@ sys.exit(0)
 /usr/bin/invoke_app "$@" -C rappture -t nanoconfinement
 
  ```
-### Executing the applications 
+### Executing the application
 * Log in to nanoHUB account and launch workspace tool. This will provide you a remote login to a nanoHUB VM.
 * git clone your project in to a directory in your workspace.
 * Go to home/src directory and (cd home/src/)
