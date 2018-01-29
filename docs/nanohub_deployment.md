@@ -16,6 +16,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
 ## Convert the project Directory Structure
 *  You should convert your project to the following directory structure.
 ### A typical top-level directory layout
+
     .
     ├── bin			# Executable will be installed here
     ├── data		# folder for output data
