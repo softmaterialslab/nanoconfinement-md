@@ -18,7 +18,8 @@ Another rich avenue to explore is to tune the valency of positive ions (paramete
 
 Effects of changing other physical attributes such as confinement length and ion size are also available for users to explore. We invite users to take an inside look at what happens to the self-assembly of ions in these nanoscale channels by investigating the interplay of electrostatic effects and steric (or entropic) effects caused due to confinement, and measuring associated density profiles.
 
-## Deploying the app to NanoHUB
-For details on this code has been deployed to NanoHUB Cyber Platform refer [NanoHUB Deployment](nanohub_deployment)
+## Deploying the app on NanoHUB
+To deploy the app on nanoHUB Cyber Platform, refer to [NanoHUB Deployment](nanohub_deployment)
 
-## Deploying the computational codes to BigRed2
+## Deploying the computational codes on Clusters (BigRed2)
+To deploy the codes on supercomputing clusters (e.g. BigRed2), refer to [Cluster Deployment](cluster_bigred2_deployment)
