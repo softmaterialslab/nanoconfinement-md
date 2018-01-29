@@ -24,7 +24,8 @@ The nanoconfinement code is open source and can optionally be built from source 
 * Go to nanoconfinement-md /src directory and (cd nanoconfinement-md/src/)
 * You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into home directory (That is nanoconfinement-md)
     * make cluster-install
-* Now you are ready to run the executable with aprun command using any of the following methods : 
+* Now you are ready to run the executable with aprun command using any of the following methods:
+
 #### Using a debug gpu queue.
 * Request a debug GPU using the following command. This will provide you 64 processing nodes with 1 hour wall time.
     * qsub -I -l nodes=4:ppn=16,walltime=01:00:00 -q debug_gpu
@@ -34,6 +35,7 @@ The nanoconfinement code is open source and can optionally be built from source 
     * module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl
 * execute the program using following command : 
     * time aprun -n 4 -d 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000
+
 #### Using a jobscript
 * Copy the executable sample script file given in the nanoconfinement-md /scripts folder to the home directory (that is nanoconfinement-md /).
 * If you need to change the computational parameter or the physical parameters, you may edit the jobscript file.
