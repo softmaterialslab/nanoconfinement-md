@@ -14,6 +14,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
  using the HELP button at the top of any nanoHUB page.
 
 ## Source Code Directory Structure
+*  You should convert your project to the above directory structure.
     .
     ├── bin			# Executable will be installed here
     ├── data			# folder for output data
@@ -25,7 +26,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
     ├── src			# Source files of your project
     └── README.md		# Readme file of your project
     
-*  You should convert your project to the above directory structure.
+
 
 ## Build Instructions - Makefile
 * You need to create a Makefile to bulid and install the project. This Makefile is kept inside src folder. Example Makefile is provided below.
