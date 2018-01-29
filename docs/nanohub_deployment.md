@@ -223,7 +223,7 @@ The following workflow explains how to generate a GUI for your application using
     </input>
 </run>
 ```
-### Wrapper Scripts 
+### Wrapper Script 
 * You can select your preferred programming language to write the wrapper script and here, we explain how to write this wrapper script using programming language Python. 
 #### Input Parameters 
 * In this wrapper script, you need to get the input parameters from the rappture GUI (generated using tool.xml) using the input element name you have used in the tool.xml. An example is provided below.
@@ -416,9 +416,26 @@ io['output.curve(negative_ion_density_Combined).component.xy']=(xListN, yListN)
 io.close()
 
 sys.exit(0)
+ ```
+### Invoke File
+* You also need to create a file name "invoke" under the middleware directory to make an entry point to load the tool.xml. Follwoing bash file is an example for the invoke file.
+```bash
+#!/bin/sh
+
+/usr/bin/invoke_app "$@" -C rappture -t nanoconfinement
 
  ```
 ### Executing the applications 
+* Log in to nanoHUB account and launch workspace tool. This will provide you a remote login to a nanoHUB VM.
+* git clone your project in to a directory in your workspace.
+* Go to home/src directory and (cd home/src/)
+* You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into the home/bin directory (That is nanoconfinement-md/bin/ in our case)
+    * make nanoHUB-install
+* Then go back to home directory (nanoconfinement-md/) using “cd ..” command.
+* Now you are ready to run the program with nanoHUB rapture framework using following command :
+    * ./middleware/invoke
+* This will start a GUI where you may change the computational parameter or the physical parameters as you desire and finally press the Simulate button on the top right hand section on the GUI.
+* Once the simulation has finished, density profiles will be plotted on the right hand side of the GUI.
 
 ## Deployment Workflow
 
