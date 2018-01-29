@@ -20,7 +20,7 @@ For details on this code has been deployed to NanoHUB Cyber Platform refer [Nano
 The nanoconfinement code is open source and can optionally be built from source and used locally or on computer clusters. The following cluster build instructions should serve as a reference. 
 
 ### Building on IU BigRed 2 Cluster 
-
+#### Notes
 * By default BR2 cluster environment has Cray programming environment module (PrgEnv-cray) loaded 
 * Nanoconfinement code has dependency to Boost libraries which requires GNU programming environment
     * Switch modules to GNU - ```module swap PrgEnv-cray PrgEnv-gnu```
@@ -30,3 +30,4 @@ The nanoconfinement code is open source and can optionally be built from source 
     * ```module load gsl```
 * Built the code
     * ```make```
+  
