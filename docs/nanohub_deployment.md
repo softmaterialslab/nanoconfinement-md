@@ -1,19 +1,19 @@
 ---
-title: "Deploying Tools to NanoHUB"
+title: "Deploying Apps on NanoHUB"
 keywords: NanoBio, NCN, NanoHUB
 topnav: topnav
 hide_sidebar: true
-summary: This is a quick cheat sheet based on recent experiences and is by no means a substitute to any of NanoHUB documentations. Use this for quick reference but refer to official documentation for detailed guidance. 
+summary: This is a quick cheat sheet based on recent experiences and is by no means a substitute to any of nanoHUB documentations. Use this for quick reference but refer to official documentation for detailed guidance. 
 ---
 
-NanoHUB facilitates multiple options to enable user interactivity with the tools. The following steps are particularly tuned for NSF funded NCN nodes to deploy tools to NanoHUB Cyber Platform. The steps outlined illustrate one particular approach. These may or may not apply to your use case. Contact NanoHUB support for appropriateness of these instructions to your use case. 
+nanoHUB facilitates multiple options to enable user interactivity with the simulation tools (apps). The following steps are particularly tuned for NSF-funded NCN nodes to deploy tools to nanoHUB Cyber Platform. The steps outlined illustrate one particular approach. These may or may not apply to your use case. Contact nanoHUB support for appropriate instructions to your use case. 
 
-## Set up workspace
-* You need to create “affiliated institution” accounts and use your university credentials to sign in to NanoHUB account.
+## Set up Workspace
+* You need to create “affiliated institution” accounts and use your university credentials to sign in to your nanoHUB account.
 * Tool developers can then submit a ticket to request workspace (Linux desktop in a browser) access
  using the HELP button at the top of any nanoHUB page.
 
-## Convert the project Directory Structure
+## Change the Project Directory Structure
 *  You should convert your project to the following directory structure.
 
 ### A typical top-level directory layout
@@ -30,7 +30,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
     └── README.md		# Readme file of your project  
 
 ## Build Instructions - Makefile
-* You need to create a Makefile to bulid and install the project. This Makefile is kept inside src folder. Example Makefile is provided below but you need to modify this to match the library requirements of your program.
+* You need to create a Makefile to bulid and install the project. This Makefile is kept inside the src folder. Example Makefile is provided below but you need to modify this to match the library requirements of your program.
 
 ```bash
 # This is a makefile.
@@ -110,8 +110,8 @@ distclean: clean
 
 ```
 
-## Rapptureizing a tool
-The following workflow explains how to generate a GUI for your application using a XML file and write a wrapper script to pass the input parameters to your program from the rappture GUI and to pass the output from your program to rappture GUI.
+## From Code to App via Rappture
+The following workflow explains how to generate a GUI for your application using an XML file and writing a wrapper script. The wrapper script enables the passing of the input parameters to your program from the rappture GUI and the transfer of the output from your program to the rappture GUI.
 
 ### GUI Rendering
 * Rappture allows you to render a GUI using a XML file (tool.xml).
@@ -227,7 +227,7 @@ The following workflow explains how to generate a GUI for your application using
 ```
 
 ### Wrapper Script 
-* You can select your preferred programming language to write the wrapper script and here, we explain how to write this wrapper script using programming language Python. 
+* You can select your preferred programming language to write the wrapper script and here, we explain how to write this wrapper script using Python. 
 
 #### Input Parameters 
 * In this wrapper script, you need to get the input parameters from the rappture GUI (generated using tool.xml) using the input element name you have used in the tool.xml. An example is provided below.
@@ -238,7 +238,7 @@ salt_concentration = io['input.group(physical).number(salt_concentration).curren
 ```
 
 #### How to link the executable in the wrapper script
-* Your executable should be in the bin directory after you do a make-insall. You can link the executable to the wrapper script using a rappture provided library function executeCommand. Follwoing code segment explains how to execute the program. 
+* Your executable should be in the bin directory after you do a make-insall. You can link the executable to the wrapper script using a rappture provided library function executeCommand. The following code segment explains how to execute the program. 
 
 ```python
 try:
@@ -250,7 +250,7 @@ except:
     sys.exit(1);
  ```
 #### Output Plots
-* After your program was executed, you can reder graphs for the standard output and application produced data files. Follwoing code segment explains how to append the output to the GUI. 
+* After your program was executed, you can render graphs for the standard output and data files produced by the application. The follwoing code segment explains how to append the output to the GUI. 
 
 ```python
 # Setting standard output to GUI	
@@ -428,7 +428,7 @@ sys.exit(0)
  ```
  
 ### Invoke File
-* You also need to create a file name "invoke" under the middleware directory to make an entry point to load the tool.xml. Follwoing bash file is an example for the invoke file.
+* You also need to create a file named "invoke" under the middleware directory to make an entry point to load the tool.xml. Follwoing bash file is an example for the invoke file.
 
 ```bash
 #!/bin/sh
@@ -439,15 +439,16 @@ sys.exit(0)
  
 ### Executing the application
 * Log in to nanoHUB account and launch workspace tool. This will provide you a remote login to a nanoHUB VM.
-* git clone your project in to a directory in your workspace.
+* We recommend hosting your project as a GitHub open-source repository. git clone your project in to a directory in your workspace.
 * Go to home/src directory and (cd home/src/)
-* You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into the home/bin directory (That is nanoconfinement-md/bin/ in our case)
+* You should provide the following make command to make the project. This will create the executable and Install the executable (e.g. in this case md_simulation_confined_ions) into the home/bin directory (e.g. nanoconfinement-md/bin/ in our case)
     * make nanoHUB-install
 * Then go back to home directory (nanoconfinement-md/) using “cd ..” command.
 * Now you are ready to run the program with nanoHUB rapture framework using following command :
     * ./middleware/invoke
-* This will start a GUI where you may change the computational parameter or the physical parameters as you desire and finally press the Simulate button on the top right hand section on the GUI.
+* This will start a GUI where you may change the parameters (physical, computing) as desired, and click Simulate button on the top right of the GUI.
 * Once the simulation has finished, density profiles will be plotted on the right hand side of the GUI.
+* You can monitor changes to your GUI as you modify the code via the above procedure by updating the git project.
 
 ## Deployment Workflow
 
@@ -473,7 +474,7 @@ Status progress: Registered &rarr; Created &rarr; Updated &rarr; Installed &rarr
     * Publications 
 * Updating Source Code
     * Changes to the source code should be communicated to the administrators from the tool status page. Once an update is requested the tool status is changed back to Updated. 
-    * NanoHUB tool administrators manually re-deploy the modified code. 
+    * nanoHUB tool administrators manually re-deploy the modified code. 
     * The status will be changed to Installed. 
 * Once the code is tested and working, the tool owner can approve the tool. 
 * The last step is to publish the tool for registered users to see and use it.
