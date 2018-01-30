@@ -5,5 +5,5 @@ topnav:
   items:
     - title: GitHub Source
       external_url: https://github.com/softmaterialslab/nanoconfinement-md
-    - title: NanoHub Tool Page
+    - title: nanoHUB App Page
       external_url: https://nanohub.org/tools/nanoconfinement/
