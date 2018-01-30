@@ -22,4 +22,4 @@ Effects of changing other physical attributes such as confinement length and ion
 To deploy the code as a user-friendly app on nanoHUB Cyber Platform, refer to [nanoHUB Deployment](nanohub_deployment)
 
 ## Deploying the simulation code on Clusters (BigRed2)
-To deploy the code on supercomputing clusters (e.g. BigRed2) and extract accelerated performance, refer to [Cluster Deployment](cluster_bigred2_deployment)
+To deploy the code on supercomputing clusters (e.g. BigRed2) to obtain accelerated performance and simulate larger systems for longer times, refer to [Cluster Deployment](cluster_bigred2_deployment)
