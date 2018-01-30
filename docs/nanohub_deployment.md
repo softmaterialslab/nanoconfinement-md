@@ -15,6 +15,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
 
 ## Convert the project Directory Structure
 *  You should convert your project to the following directory structure.
+
 ### A typical top-level directory layout
 
     .
@@ -30,6 +31,7 @@ NanoHUB facilitates multiple options to enable user interactivity with the tools
 
 ## Build Instructions - Makefile
 * You need to create a Makefile to bulid and install the project. This Makefile is kept inside src folder. Example Makefile is provided below but you need to modify this to match the library requirements of your program.
+
 ```bash
 # This is a makefile.
 # Use option -p in CC for profiling with gprof
@@ -108,16 +110,15 @@ distclean: clean
 
 ```
 
-## Rappture vs Jupyter 
-
-
 ## Rapptureizing a tool
 The following workflow explains how to generate a GUI for your application using a XML file and write a wrapper script to pass the input parameters to your program from the rappture GUI and to pass the output from your program to rappture GUI.
+
 ### GUI Rendering
 * Rappture allows you to render a GUI using a XML file (tool.xml).
 * This file should be kept inside the rappture folder in your directory stucture.
 * This tool.xml file should have markup tags for input/output parameters, reference to the wrapper script and a description about your application.
 * Example tool.xml file is provided below and most markup tags are self explanatory.
+
 ```xml
 <?xml version="1.0"?>
 <run>
@@ -224,16 +225,21 @@ The following workflow explains how to generate a GUI for your application using
     </input>
 </run>
 ```
+
 ### Wrapper Script 
 * You can select your preferred programming language to write the wrapper script and here, we explain how to write this wrapper script using programming language Python. 
+
 #### Input Parameters 
 * In this wrapper script, you need to get the input parameters from the rappture GUI (generated using tool.xml) using the input element name you have used in the tool.xml. An example is provided below.
+
 ```python
 io = Rappture.PyXml(sys.argv[1])
 salt_concentration = io['input.group(physical).number(salt_concentration).current'].value
 ```
+
 #### How to link the executable in the wrapper script
 * Your executable should be in the bin directory after you do a make-insall. You can link the executable to the wrapper script using a rappture provided library function executeCommand. Follwoing code segment explains how to execute the program. 
+
 ```python
 try:
      exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
@@ -245,6 +251,7 @@ except:
  ```
 #### Output Plots
 * After your program was executed, you can reder graphs for the standard output and application produced data files. Follwoing code segment explains how to append the output to the GUI. 
+
 ```python
 # Setting standard output to GUI	
 io['output.log']=stdOutput	
@@ -418,14 +425,17 @@ io.close()
 
 sys.exit(0)
  ```
+ 
 ### Invoke File
 * You also need to create a file name "invoke" under the middleware directory to make an entry point to load the tool.xml. Follwoing bash file is an example for the invoke file.
+
 ```bash
 #!/bin/sh
 
 /usr/bin/invoke_app "$@" -C rappture -t nanoconfinement
 
  ```
+ 
 ### Executing the application
 * Log in to nanoHUB account and launch workspace tool. This will provide you a remote login to a nanoHUB VM.
 * git clone your project in to a directory in your workspace.
