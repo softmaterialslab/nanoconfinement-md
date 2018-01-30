@@ -1,6 +1,6 @@
 ---
-title: "Deploying Apps on NanoHUB"
-keywords: NanoBio, NCN, NanoHUB
+title: "Deploying Apps on nanoHUB"
+keywords: Engineered nanoBIO, NCN, nanoHUB
 topnav: topnav
 hide_sidebar: true
 summary: This is a quick cheat sheet based on recent experiences and is by no means a substitute to any of nanoHUB documentations. Use this for quick reference but refer to official documentation for detailed guidance. 
