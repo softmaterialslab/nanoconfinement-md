@@ -42,13 +42,15 @@ if not os.path.exists('data'):
 
 os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
+runName='nanoconfine'
+
 try:
      #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
      #   ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
      #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
 	 
 	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-	 ['submit','--venue','standby@conte','-w','25','-n','10','-N','20', '--runName','nanoconfine', '--inputfile','data', 'nanoconfinement-r21',
+	 ['submit','--venue','standby@conte','-w','25','-n','10', '--runName',runName, '--inputfile','data', 'nanoconfinement-r21',
 		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
 		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
  		 
@@ -56,8 +58,17 @@ except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
+# Reading standard output from the file
+try:
+	fid = open(runName+'.stdout','r')
+	info = fid.readlines()
+	fid.close()
+	os.remove(runName+'.stdout') 
+except:
+	sys.stderr.write('Can not find the positive density results file')
+	sys.exit(1);
 # Setting standard output to GUI	
-io['output.log']=stdOutput	
+io['output.log']=info	
 		
 # Label output graph with title, x-axis label,
 # Positive density profile
