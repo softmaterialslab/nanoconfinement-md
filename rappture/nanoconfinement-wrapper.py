@@ -36,15 +36,22 @@ print "simulation_steps is %s" % simulation_steps
 
 simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
 
+shutil.rmtree('data',True)
 if not os.path.exists('data'):
     os.makedirs('data')
 
 os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
 try:
-     exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-        ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
-         salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+     #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
+     #   ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+     #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+	 
+	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
+	 ['submit','--venue','standby@conte','-w','25','-n','10','-N','20', '--runName','nanoconfine', '--inputfile','data', 'nanoconfinement-r21',
+		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
+		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+ 		 
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
