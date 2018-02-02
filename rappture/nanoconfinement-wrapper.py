@@ -68,7 +68,7 @@ except:
 	sys.stderr.write('Can not find the positive density results file')
 	sys.exit(1);
 # Setting standard output to GUI	
-io['output.log']=info	
+io['output.log']='\n'.join(info)
 		
 # Label output graph with title, x-axis label,
 # Positive density profile
