@@ -65,7 +65,7 @@ try:
 	fid.close()
 	os.remove(runName+'.stdout') 
 except:
-	sys.stderr.write('Can not find the positive density results file')
+	sys.stderr.write('Can not find the .stdout file')
 	sys.exit(1);
 # Setting standard output to GUI	
 io['output.log']='\n'.join(info)
