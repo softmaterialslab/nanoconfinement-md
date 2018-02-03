@@ -47,7 +47,7 @@ runName='nanoconfine'
 mpi_processors=round((int(simulation_steps) + 333333)/333333)
 total_processors=str(int(mpi_processors*16))
 
-walltime = str(round(int((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
+walltime = str(int(round((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
 
 print "Requested walltime is %s" % walltime
 print "Requested total_processors are %s" % total_processors
