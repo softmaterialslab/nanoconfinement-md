@@ -23,7 +23,7 @@ positive_valency = io['input.group(physical).integer(positive_valency).current']
 print "positive valency is %s" % positive_valency
 
 negative_valency = io['input.group(physical).integer(negative_valency).current'].value
-print "negative_valency  s %s" % negative_valency
+print "negative_valency is %s" % negative_valency
 
 confinement_length = io['input.group(physical).number(confinement_length).current'].value
 print "confinement_length is %s" % confinement_length
@@ -50,8 +50,8 @@ total_processors=str(int(mpi_processors*16))
 walltime = str(round(int((16*(1+(5.25 * math.exp(-mpi_processors/1.78))))))
 
 
-print "Requested walltime = %s" % walltime
-print "Requested total_processors = %s" % total_processors
+print "Requested walltime is %s" % walltime
+print "Requested total_processors are %s" % total_processors
 
 try:
      #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
