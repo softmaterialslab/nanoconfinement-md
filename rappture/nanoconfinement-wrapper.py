@@ -45,15 +45,13 @@ os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 runName='nanoconfine'
 
 mpi_processors=round((int(simulation_steps) + 333333)/333333)
-total_processors=str(mpi_processors*16)
+total_processors=str(int(mpi_processors*16))
 
-walltime = str(round(16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))
+walltime = str(round(int((16*(1+(5.25 * math.exp(-mpi_processors/1.78))))))
 
-stringTest= str(45)
-print "walltimesssssssssssssssssssssssssssssssss %s" % stringTest
-print "walltime is %s" % walltime
-print "mpi_processors is %d" % mpi_processors
-print "total_processors is %s" % total_processors
+
+print "Requested walltime = %s" % walltime
+print "Requested total_processors = %s" % total_processors
 
 try:
      #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
