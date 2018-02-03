@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------
 
 import Rappture
-import sys, os, commands, string, shutil
+import sys, os, commands, string, shutil, math
 
 # open the XML file containing the run parameters
 driver = Rappture.library(sys.argv[1])
@@ -23,7 +23,7 @@ positive_valency = io['input.group(physical).integer(positive_valency).current']
 print "positive valency is %s" % positive_valency
 
 negative_valency = io['input.group(physical).integer(negative_valency).current'].value
-print "negative_valency  s %s" % negative_valency
+print "negative_valency is %s" % negative_valency
 
 confinement_length = io['input.group(physical).number(confinement_length).current'].value
 print "confinement_length is %s" % confinement_length
@@ -36,21 +36,48 @@ print "simulation_steps is %s" % simulation_steps
 
 simulation_params="_%.2f" % float(confinement_length)+"_%d" % int(positive_valency)+"_%d" % int(negative_valency)+"_%.2f" % float(salt_concentration)+"_%.3f" % float(ion_diameter)+"_%d" % int(simulation_steps);
 
+shutil.rmtree('data',True)
 if not os.path.exists('data'):
     os.makedirs('data')
 
 os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
+runName='nanoconfine'
+
+mpi_processors=int(round((int(simulation_steps) + 333333)/333333))
+total_processors=str(int(mpi_processors*16))
+
+#walltime = str(int(round((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
+walltime=str(int(round((int(simulation_steps) + 40000)/40000)+2))
+
+print "Requested walltime is %s" % walltime
+print "Requested total_processors are %s" % total_processors
+
 try:
-     exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-        ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
-         salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+     #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
+     #   ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
+     #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+	 
+	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
+	 ['submit','--venue','standby@conte','-w',walltime,'-n',total_processors, '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r21',
+		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
+		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
+ 		 
 except:
     sys.stderr.write('Error during execution of md_simulation_confined_ions')
     sys.exit(1);
 	
+# Reading standard output from the file
+try:
+	fid = open(runName+'.stdout','r')
+	info = fid.readlines()
+	fid.close()
+	os.remove(runName+'.stdout') 
+except:
+	sys.stderr.write('Can not find the .stdout file')
+	sys.exit(1);
 # Setting standard output to GUI	
-io['output.log']=stdOutput	
+io['output.log']='\n'.join(info)
 		
 # Label output graph with title, x-axis label,
 # Positive density profile
