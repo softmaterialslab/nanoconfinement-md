@@ -44,7 +44,7 @@ os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
 runName='nanoconfine'
 
-mpi_processors=round((simulation_steps+333333)/333333)
+mpi_processors=round((int(simulation_steps) + 333333)/333333)
 total_processors=mpi_processors*16
 
 walltime = round(16*(1+(5.25 * math.exp(-mpi_processors/1.78))))
