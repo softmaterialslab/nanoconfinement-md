@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------
 
 import Rappture
-import sys, os, commands, string, shutil
+import sys, os, commands, string, shutil, math
 
 # open the XML file containing the run parameters
 driver = Rappture.library(sys.argv[1])
@@ -44,13 +44,21 @@ os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
 runName='nanoconfine'
 
+mpi_processors=round((simulation_steps+333333)/333333)
+total_processors=mpi_processors*16
+
+walltime = round(16*(1+(5.25 * math.exp(-mpi_processors/1.78))))
+
+print "walltime is %s" % walltime
+print "mpi_processors is %s" % mpi_processors
+
 try:
      #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
      #   ['mpirun','-np','1','md_simulation_confined_ions', '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c',
      #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
 	 
 	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-	 ['submit','--venue','standby@conte','-w','25','-n','64', '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r21',
+	 ['submit','--venue','standby@conte','-w','25','-n',total_processors, '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r21',
 		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
 		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
  		 
