@@ -51,6 +51,7 @@ walltime = round(16*(1+(5.25 * math.exp(-mpi_processors/1.78))))
 
 print "walltime is %d" % walltime
 print "mpi_processors is %d" % mpi_processors
+print "total_processors is %d" % total_processors
 
 try:
      #exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
