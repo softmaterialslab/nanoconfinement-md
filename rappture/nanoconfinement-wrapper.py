@@ -44,10 +44,11 @@ os.system("use boost-1.62.0-mpich2-1.3-gnu-4.7.2")
 
 runName='nanoconfine'
 
-mpi_processors=round((int(simulation_steps) + 333333)/333333)
+mpi_processors=int(round((int(simulation_steps) + 333333)/333333))
 total_processors=str(int(mpi_processors*16))
 
-walltime = str(int(round((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
+#walltime = str(int(round((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
+walltime=str(int(round((int(simulation_steps) + 40000)/40000)))
 
 print "Requested walltime is %s" % walltime
 print "Requested total_processors are %s" % total_processors
