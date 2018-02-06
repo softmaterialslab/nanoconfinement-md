@@ -103,9 +103,9 @@ While we provide a default of 20000 steps for users to get started on exploring 
                     <label>Simulation Steps</label>
                     <description>Computing parameters related to the simulation</description>
                 </about>
-                <min>20000</min>
+                <min>100000</min>
                 <max>5000000</max>
-                <default>20000</default>
+                <default>100000</default>
             </integer>
         </group>
 		<image id='ions_distribution'>
