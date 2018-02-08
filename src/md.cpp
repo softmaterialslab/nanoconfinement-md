@@ -162,7 +162,10 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
 		if (world.rank() == 0)
         {
 			//percentage calculation
-			percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
+            if(!mdremote.verbose)
+			    percentage=roundf(num/(double)mdremote.steps*100);
+            else
+                percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
 			//percentage output
 			if(percentage!=percentagePre)
             {
@@ -174,8 +177,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
                 {
                     double fraction_completed = percentage/100;
                     ProgressBar(fraction_completed);
-                    percentagePre=percentage;
                 }
+                percentagePre=percentage;
 
 			}
 		}
