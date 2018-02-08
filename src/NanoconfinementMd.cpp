@@ -234,10 +234,10 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		{
 		   if (omp_get_thread_num() == 0)
            {
-                printf("Number of nodes used %d, number of processors used %d (the app comes with MPI and OpenMP (Hybrid) parallelization)\n",
-                       numOfNodes, omp_get_num_threads());
-                printf("Make sure that number of grid points and ions is greater than %d\n",
-                       omp_get_num_threads() * numOfNodes);
+		printf("The app comes with MPI and OpenMP (Hybrid) parallelization)\n");	   
+                printf("Number of MPI processes used %d\n", numOfNodes);
+		printf("Number of OpenMP threads per MPI process %d\n", omp_get_num_threads());
+                printf("Make sure that number of grid points and ions is greater than %d\n", omp_get_num_threads() * numOfNodes);
             }
 		}
 	}
