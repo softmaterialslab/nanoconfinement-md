@@ -24,3 +24,5 @@ Otherwise, there is importfile command which you need to execute as importfile z
 5. Can we get access to list of users who signed in an used the tools; and how did they sign in; detailed analytics to enable large-scale access?
 6. User-experience surveys; how do we gather user feedback?
 7. How does the user know that a new version has been updated? Can you automate this?
+
+8. How to increment rappture input parameters by any value?
