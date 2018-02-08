@@ -10,10 +10,10 @@ List of issues and open questions regarding nanohub integration:
 
 1. How to enable copy on workspace?
 
-The best solution is to ssh into your workspace 
-ssh -t username@nanohub.org session
-I used my nanohub account (not the IU username) above and the associated password. This lets you copy paste like any other ssh term.
-Otherwise, there is importfile command which you need to execute as importfile zz and follow the rest.
+* The best solution is to ssh into your workspace 
+* ssh -t username@nanohub.org session
+* I used my nanohub account (not the IU username) above and the associated password. This lets you copy paste like any other ssh term.
+* Otherwise, there is importfile command which you need to execute as importfile zz and follow the rest.
 
 2. Rappture progress bar text appears in runnning window-- how to avoid? How to make it more attractive? How to reduce buffering of std output? 
 
