@@ -9,7 +9,6 @@ permalink: openquestions.html
 List of issues and open questions regarding nanohub integration:
 
 1. How to enable copy on workspace?
-
 * The best solution is to ssh into your workspace 
 * ssh -t username@nanohub.org session
 * I used my nanohub account (not the IU username) above and the associated password. This lets you copy paste like any other ssh term.
