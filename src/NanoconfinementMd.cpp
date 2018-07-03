@@ -2,7 +2,7 @@
 // This is MD simulation of an electrolyte confined within planar walls
 // Uniform dielectric media are assumed
 // Problem : Compute density profiles of ions trapped within planar walls
-/* Useful studies :	
+/* Useful studies :
 		     1. Role of valency of ions
 		     2. Role of varying salt concentration
 		     3. Useful parameters via boost: -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 10000
@@ -55,7 +55,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "dielectric const inside")        // must have ein = eout
             ("epsilon_out,E", value<double>(&eout)->default_value(80),
              "dielectric const outside")        // must have ein = eout
-            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(1),
+            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(0.1),
              "for interface discretization width")    // enter a perfect square
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
@@ -96,7 +96,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     variables_map vm;
     store(parse_command_line(argc, argv, cmdline_options), vm);
     notify(vm);
-	
+
     if (world.rank() == 0)
     {
 		if (mdremote.verbose)
@@ -104,11 +104,11 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		  cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
 		  cout << "The default app simulates a total of 424 ions" << endl;
 		}
-		
+
 		cout << "MPI/OpenMP hybrid acceleration is built in this app" << endl;
 		cout << "-----------------------------------------------------" << endl;
 	}
-	
+
     ifstream ifs(config_file.c_str());
     if (!ifs && mdremote.verbose && world.rank() == 0)
     {
@@ -182,14 +182,14 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		cout << "Debye length " << box.inv_kappa_in << endl;
 		cout << "Mean separation between ions " << box.mean_sep_in << endl;
 		cout << "Temperature (in Kelvin) " << room_temperature << endl;
-	   
+
 		if (mdremote.verbose)
 		{
 		  cout << "Binning width (uniform) " << bin[0].width << endl;
 		  cout << "Number of bins " << bin.size() << endl;
 		  cout << "Number of points discretizing the left and right planar walls/interfaces/surfaces " << box.leftplane.size() << "  " << box.rightplane.size() << endl;
 		}
-		
+
 		// write to files
 
 		// initial density
@@ -204,21 +204,21 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		for (unsigned int b = 0; b < initial_density.size(); b++)
 			totalions += initial_density.at(b) * bin[b].volume;
 		int totalpions = 0, totalnions = 0;
-		for (unsigned int i = 0; i < ion.size(); i++) 
+		for (unsigned int i = 0; i < ion.size(); i++)
 		{
 		  if (ion[i].valency > 0)
 		  totalpions += 1;
 		  else if (ion[i].valency < 0)
 		  totalnions += 1;
 		}
-		
+
 		if (mdremote.verbose)
 		{
 		  cout << "Number of ions " << totalions << endl;
 		  cout << "Number of positive ions " << totalpions << endl;
 		  cout << "Number of negative ions " << totalnions << endl;
 		}
-		
+
 		if (box.total_charge_inside(ion)==0)
 			cout << "System simulated is electroneutral-- total charge inside is 0" << endl;
 		else
@@ -227,14 +227,14 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 			cout << "Total charge inside the confinement " << box.total_charge_inside(ion) << endl;
 			return 0;
 		}
-		
+
 		int numOfNodes = world.size();
-		 
+
 		#pragma omp parallel default(shared)
 		{
 		   if (omp_get_thread_num() == 0)
            {
-		printf("The app comes with MPI and OpenMP (Hybrid) parallelization)\n");	   
+		printf("The app comes with MPI and OpenMP (Hybrid) parallelization)\n");
                 printf("Number of MPI processes used %d\n", numOfNodes);
 		printf("Number of OpenMP threads per MPI process %d\n", omp_get_num_threads());
                 printf("Make sure that number of grid points and ions is greater than %d\n", omp_get_num_threads() * numOfNodes);
@@ -267,7 +267,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		  // Perform the following calculation when testing for how frequently you should sample data to ensure the samples are decorrelated
 		  //auto_correlation_function();
 		}
-		
+
 		cout << "Converged results for ionic densities expected with ~ 1500 nanoseconds of ion dynamics" << endl;
 		cout << "Accordingly, we recommend using ~ 1000,000 simulation steps to obtain smoother, converged profiles " << endl;
 		cout << "Simulation ends \n\n";
