@@ -32,33 +32,33 @@ const double dcut2 = 1.259921049;						// Cutoff distance in Lennard-Jones = 2 ^
 const double lB_water = 0.714;							// Bjerrum length in water, in nanometers
 const double epsilon_water = 80;						// Dielectric constant of water
 const double room_temperature = 298;						// Room temperature in Kelvin
-const double unitlength = 0.5*lB_water;						// Unit of length is this much nanometers
+extern double unitlength;						// Unit of length is this much nanometers
 const double unitenergy = 1.3807 * pow(10.0,-16) * room_temperature;		// Unit of energy (thermal energy at room temoperature in CGS)
 const double unitmass = 23 * 1.67 * pow(10.0, -24);				// Unit of mass (mass of sodium ion in CGS)
-const double unittime = sqrt(unitmass * unitlength * pow(10.0,-7) * unitlength / unitenergy);	// Unit of time (length expressed in cms), result in seconds
+extern double unittime;	// Unit of time (length expressed in cms), result in seconds
 const double kB = 1;								// Boltzmann constant in reduced units
-const double scalefactor = epsilon_water * lB_water / unitlength;		// Reduced units lead to this scale factor for Coloumb interaction
+extern double scalefactor;		// Reduced units lead to this scale factor for Coloumb interaction
 const string rootDirectory = "";
 
-class UTILITY 
+class UTILITY
 {
   public:
     unsigned long int seed;
     const gsl_rng_type * T;
     gsl_rng * r;
-    
-    UTILITY() 
+
+    UTILITY()
     {
       T = gsl_rng_default;
       r = gsl_rng_alloc(T);
-      
+
       gsl_rng_env_setup();
 //       srand((time(0)));                	// srand & time are built-in
 //       unsigned long int s = random();  	// gsl_rng_uniform will eventually
 //       gsl_rng_set(r,s); 		// seed the random number generator;
     }
-    
-    ~UTILITY() 
+
+    ~UTILITY()
     {
       gsl_rng_free(r);
     }
