@@ -59,7 +59,7 @@ try:
      #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
 	 
 	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-	 ['submit','--venue','rcac-standby','-w',walltime,'-n',total_processors, '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r32',
+	 ['submit','-w',walltime,'-n',total_processors, '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r32',
 		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
 		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
  		 
