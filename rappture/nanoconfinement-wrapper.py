@@ -45,10 +45,10 @@ if not os.path.exists('data'):
 runName='nanoconfine'
 
 mpi_processors=int(round((int(simulation_steps) + 333333)/333333))
-total_processors=str(int(mpi_processors*16))
+total_processors=str(int(mpi_processors*20))
 
 #walltime = str(int(round((16*(1+(5.25 * math.exp(-mpi_processors/1.78)))))))
-walltime=str(int(round((int(simulation_steps) + 40000)/40000)+15))
+walltime=str(int(round((int(simulation_steps) + 40000)/40000)+4))
 
 print "Requested walltime is %s" % walltime
 print "Requested total_processors are %s" % total_processors
@@ -59,7 +59,7 @@ try:
      #   salt_concentration, '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
 	 
 	 exitStatus,stdOutput,stdError = Rappture.tools.executeCommand(
-	 ['submit','-w',walltime,'-n',total_processors, '-N','16', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r32',
+	 ['submit','-w',walltime,'-n',total_processors, '-N','20', '--runName',runName, '--tailStdout', '--inputfile','data', 'nanoconfinement-r32',
 		 '-Z', confinement_length, '-p', positive_valency, '-n', negative_valency, '-c', salt_concentration, 
 		 '-d', ion_diameter, '-S', simulation_steps, '-f', simulation_params, '-v', 'false'], streamOutput=True)
  		 
