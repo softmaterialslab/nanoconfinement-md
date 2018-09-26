@@ -23,3 +23,6 @@ To deploy the code as a user-friendly app on nanoHUB Cyber Platform, refer to [n
 
 ## Deploying the simulation code on Clusters (BigRed2)
 To deploy the code on supercomputing clusters (e.g. BigRed2) to obtain accelerated performance and simulate larger systems for longer times, refer to [Cluster Deployment](cluster_bigred2_deployment)
+
+## Deploying the simulation code on Local Computer (Linux)
+To deploy the code on a local computer (e.g. Linux) to develop and debug, refer to [Linux Deployment](local_computer_deployment)
