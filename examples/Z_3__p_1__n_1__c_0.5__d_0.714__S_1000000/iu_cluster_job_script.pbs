@@ -1,9 +1,10 @@
 #! /bin/bash
-#PBS -l	nodes=4:ppn=16,walltime=2:00:00
+#PBS -l	nodes=4:ppn=16,walltime=1:00:00
 #PBS -q	gpu
 #PBS -m	ae
 #PBS -o	out.log
 #PBS -e	err.log
+#PBS -N	Z_3__p_1__n_1__c_0.5__d_0.714__S_1000000
 
 # below are the modules you will need to compile the code on bigred2 (see README)
 # uncomment the following 3 lines to load the modules at the time of job launch
