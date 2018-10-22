@@ -57,7 +57,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "dielectric const inside")        // must have ein = eout
             ("epsilon_out,E", value<double>(&eout)->default_value(80),
              "dielectric const outside")        // must have ein = eout
-            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(1),
+            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(0.04),
              "for interface discretization width")    // enter a perfect square
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
@@ -136,7 +136,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
       unitlength = saltion_diameter_in * 0.5;
       unittime = sqrt(unitmass * unitlength * pow(10.0,-7) * unitlength / unitenergy);
       scalefactor = epsilon_water * lB_water / unitlength;
-    	bx = sqrt(212/0.6022/salt_conc_in/bz);
+    	//bx = sqrt(212/0.6022/salt_conc_in/bz);
+      bx = 10.508;
     	by=bx;
     	if (mdremote.steps < 100000)		// minimum mdremote.steps is 20000
       		mdremote.hiteqm = 10000;
