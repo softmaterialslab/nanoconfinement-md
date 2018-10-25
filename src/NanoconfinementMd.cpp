@@ -133,7 +133,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     //X and Y mapping
     if(paraMap)
 	{
-      unitlength = saltion_diameter_in * 0.5;
+      unitlength = saltion_diameter_in;
       unittime = sqrt(unitmass * unitlength * pow(10.0,-7) * unitlength / unitenergy);
       scalefactor = epsilon_water * lB_water / unitlength;
     	bx = sqrt(212/0.6022/salt_conc_in/bz);
