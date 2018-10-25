@@ -228,8 +228,9 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 
         // total force on the particle = the electrostatic force + the Lennard-Jones force slave processes
         for (i = 0; i < sendForceVector.size(); i++) {
-            sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
-                                 lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
+        //    sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
+        //                         lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
+            sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_left_wall[i]+ lj_ion_right_wall[i];
         }
 
         //broadcasting using all gather = gather + broadcast
@@ -245,10 +246,12 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 
         // total force on the particle = the electrostatic force + the Lennard-Jones force in main processes
         for (i = lowerBound; i <= upperBound; i++)
+        //    ion[i].forvec =
+        //            sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_leftdummy[i - lowerBound] +
+        //            lj_ion_left_wall[i - lowerBound] + lj_ion_rightdummy[i - lowerBound] +
+        //            lj_ion_right_wall[i - lowerBound];
             ion[i].forvec =
-                    sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_leftdummy[i - lowerBound] +
-                    lj_ion_left_wall[i - lowerBound] + lj_ion_rightdummy[i - lowerBound] +
-                    lj_ion_right_wall[i - lowerBound];
+                    sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_left_wall[i - lowerBound] + lj_ion_right_wall[i - lowerBound];
 
     }
 
