@@ -136,7 +136,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
   {
     for (unsigned int i = 0; i < nx; i++)
     {
-      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,-0.5*lz);
+      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,(-0.5*lz-0.5*ion_diameter));
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,-1);
       leftplane.push_back(VERTEX(position,area,normal));
@@ -148,7 +148,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
   {
     for (unsigned int i = 0; i < nx; i++)
     {
-      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,0.5*lz);
+      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,(0.5*lz+0.5*ion_diameter));
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,1);
       rightplane.push_back(VERTEX(position,area,normal));
