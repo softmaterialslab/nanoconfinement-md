@@ -232,8 +232,9 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     total_lj_ion_ion = 0.5 * total_lj_ion_ion;
     // factor of half for double counting, same reasoning as electrostatic energy
 
-    potential = coulomb + total_lj_ion_ion + total_lj_ion_leftdummy + total_lj_ion_leftwall
-                       + total_lj_ion_rightdummy + total_lj_ion_rightwall;
+  //  potential = coulomb + total_lj_ion_ion + total_lj_ion_leftdummy + total_lj_ion_leftwall
+  //                     + total_lj_ion_rightdummy + total_lj_ion_rightwall;
+    potential = coulomb + total_lj_ion_ion + total_lj_ion_leftwall + total_lj_ion_rightwall;
 
     //MPI Operations
     if (world.size() > 1) {
@@ -247,4 +248,3 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
 
     return totalPotential;
 }
-
