@@ -170,7 +170,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
 	  listleftplane << -0.5*lz << "\t" << 0.5*lz << endl;
 	  listleftplane << "ITEM: ATOMS index type x y z" << endl;
 	  for (unsigned int k = 0; k < leftplane.size(); k++)
-		listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec << endl;
+		listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec.x <<  "  " <<  leftplane[k].posvec.y <<  "  " << (leftplane[k].posvec.z- 0.5 * ion_diameter) << endl;
 	  listleftplane.close();
 
 	  string listrightplanePath= rootDirectory+"outfiles/rightplane.xyz";
@@ -185,7 +185,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
 	  listrightplane << -0.5*lz << "\t" << 0.5*lz << endl;
 	  listrightplane << "ITEM: ATOMS index type x y z" << endl;
 	  for (unsigned int k = 0; k < rightplane.size(); k++)
-		listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec << endl;
+		listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << (rightplane[k].posvec.z + 0.5 * ion_diameter) << endl;
 	  listrightplane.close();
   }
   return;
