@@ -10,74 +10,75 @@
 #include "functions.h"
 
 void
-md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vector <DATABIN> &bin, CONTROL &mdremote, string &simulationParams) {
+md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<DATABIN> &bin, CONTROL &mdremote,
+   string &simulationParams) {
 
-	mpi::environment env;
-	mpi::communicator world;
+    mpi::environment env;
+    mpi::communicator world;
     //Boundary calculation
     unsigned int range = ion.size() / world.size() + 1.5;
     unsigned int lowerBound = world.rank() * range;
-    unsigned int upperBound = (world.rank()+1)*range - 1;
-    unsigned int extraElements=world.size()*range-ion.size();
-    unsigned int sizFVec = upperBound-lowerBound+1;
-    if (world.rank() == world.size() - 1){
+    unsigned int upperBound = (world.rank() + 1) * range - 1;
+    unsigned int extraElements = world.size() * range - ion.size();
+    unsigned int sizFVec = upperBound - lowerBound + 1;
+    if (world.rank() == world.size() - 1) {
         upperBound = ion.size() - 1;
-        sizFVec = upperBound-lowerBound+1+extraElements;
+        sizFVec = upperBound - lowerBound + 1 + extraElements;
     }
     if (world.size() == 1) {
         lowerBound = 0;
         upperBound = ion.size() - 1;
     }
-    std::vector <VECTOR3D> partialForceVector(ion.size()+extraElements, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> lj_ion_ion(sizFVec, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> lj_ion_leftdummy(sizFVec, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> lj_ion_left_wall(sizFVec, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> lj_ion_rightdummy(sizFVec, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> lj_ion_right_wall(sizFVec, VECTOR3D(0, 0, 0));
-    std::vector <VECTOR3D> sendForceVector(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> partialForceVector(ion.size() + extraElements, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> lj_ion_ion(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> lj_ion_leftdummy(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> lj_ion_left_wall(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> lj_ion_rightdummy(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> lj_ion_right_wall(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector<VECTOR3D> sendForceVector(sizFVec, VECTOR3D(0, 0, 0));
 
     initialize_particle_velocities(ion, real_bath);    // particle velocities initialized
     for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                            lj_ion_left_wall, lj_ion_rightdummy,
-                           lj_ion_right_wall,sendForceVector);        // force on particles initialized
+                           lj_ion_right_wall, sendForceVector);        // force on particles initialized
     long double particle_ke = particle_kinetic_energy(ion);// compute initial kinetic energy
 
     long double potential_energy;
 
-    vector <double> ion_energy(sizFVec, 0.0);
-    vector <double> lj_ion_ion_energy(sizFVec, 0.0);
-    vector <double> lj_ion_leftdummy_energy(sizFVec, 0.0);
-    vector <double> lj_ion_leftwall_energy(sizFVec, 0.0);
-    vector <double> lj_ion_rightdummy_energy(sizFVec, 0.0);
-    vector <double> lj_ion_rightwall_energy(sizFVec, 0.0);
+    vector<double> ion_energy(sizFVec, 0.0);
+    vector<double> lj_ion_ion_energy(sizFVec, 0.0);
+    vector<double> lj_ion_leftdummy_energy(sizFVec, 0.0);
+    vector<double> lj_ion_leftwall_energy(sizFVec, 0.0);
+    vector<double> lj_ion_rightdummy_energy(sizFVec, 0.0);
+    vector<double> lj_ion_rightwall_energy(sizFVec, 0.0);
 
     // compute initial potential energy
-    potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
+    potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy,
+                                         lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,
+                                         lj_ion_rightwall_energy);
 
-	// Output md essentials
-    if (world.rank() == 0)
-    {
-		cout << "\n";
-		cout << "Propagation of ions using Molecular Dynamics method" << " begins " << endl;
-		cout << "Time step in the simulation " << mdremote.timestep << endl;
-		cout << "Total number of simulation steps " << mdremote.steps << endl;
-		
-		// Output md essentials
-		if (mdremote.verbose)
-        {
-		  cout << "Initial ion kinetic energy " << particle_ke << endl;
-		  cout << "Inital potential energy " << potential_energy << endl;
-		  cout << "Initial system energy " << particle_ke + potential_energy << endl;
-		  cout << "Chain length (L+1) implementation " << real_bath.size() << endl;
-		  cout << "Main thermostat temperature " << real_bath[0].T << endl;
-		  cout << "Main thermostat mass " << real_bath[0].Q << endl;
-		  cout << "Number of bins used for computing density profiles " << bin.size() << endl;
-		  cout << "Production begins at " << mdremote.hiteqm << endl;
-		  cout << "Sampling frequency " << mdremote.freq << endl;
-		  cout << "Extra computation every " << mdremote.extra_compute << " steps" << endl;
-		  cout << "Write density profile every " << mdremote.writedensity << endl;
-		}
-	}
+    // Output md essentials
+    if (world.rank() == 0) {
+        cout << "\n";
+        cout << "Propagation of ions using Molecular Dynamics method" << " begins " << endl;
+        cout << "Time step in the simulation " << mdremote.timestep << endl;
+        cout << "Total number of simulation steps " << mdremote.steps << endl;
+
+        // Output md essentials
+        if (mdremote.verbose) {
+            cout << "Initial ion kinetic energy " << particle_ke << endl;
+            cout << "Inital potential energy " << potential_energy << endl;
+            cout << "Initial system energy " << particle_ke + potential_energy << endl;
+            cout << "Chain length (L+1) implementation " << real_bath.size() << endl;
+            cout << "Main thermostat temperature " << real_bath[0].T << endl;
+            cout << "Main thermostat mass " << real_bath[0].Q << endl;
+            cout << "Number of bins used for computing density profiles " << bin.size() << endl;
+            cout << "Production begins at " << mdremote.hiteqm << endl;
+            cout << "Sampling frequency " << mdremote.freq << endl;
+            cout << "Extra computation every " << mdremote.extra_compute << " steps" << endl;
+            cout << "Write density profile every " << mdremote.writedensity << endl;
+        }
+    }
     // for movie
     int moviestart = 1;                    // starting point of the movie
 
@@ -89,8 +90,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     vector<double> mean_negativeion_density;            // average density profile
     vector<double> mean_sq_positiveion_density;            // average of square of density
     vector<double> mean_sq_negativeion_density;            // average of square of density
-    for (unsigned int b = 0; b < bin.size(); b++)
-    {
+    for (unsigned int b = 0; b < bin.size(); b++) {
         mean_positiveion_density.push_back(0.0);
         mean_negativeion_density.push_back(0.0);
         mean_sq_positiveion_density.push_back(0.0);
@@ -99,8 +99,8 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
     double density_profile_samples = 0;            // number of samples used to estimate density profile
 
     long double expfac_real;                // exponential factors useful in velocity Verlet routine
-	
-	double percentage=0,percentagePre=-1;
+
+    double percentage = 0, percentagePre = -1;
 
 
     // Part II : Propagate
@@ -125,7 +125,7 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
             ion[i].update_position(mdremote.timestep);
         for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                                lj_ion_left_wall, lj_ion_rightdummy,
-                               lj_ion_right_wall,sendForceVector);        // force on particles initialized
+                               lj_ion_right_wall, sendForceVector);        // force on particles initialized
         //#pragma omp parallel for schedule(dynamic) private(i)
         for (i = 0; i < ion.size(); i++)
             ion[i].new_update_velocity(mdremote.timestep, real_bath[0], expfac_real);
@@ -141,10 +141,11 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
         //! ends
 
         // extra computations
-        if (num == 1 || num % mdremote.extra_compute == 0)
-        {
+        if (num == 1 || num % mdremote.extra_compute == 0) {
             energy_samples++;
-            compute_n_write_useful_data(num, ion, real_bath, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy, lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,lj_ion_rightwall_energy);
+            compute_n_write_useful_data(num, ion, real_bath, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy,
+                                        lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,
+                                        lj_ion_rightwall_energy);
         }
 
         // make a movie
@@ -152,38 +153,32 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
             make_movie(num, ion, box);
 
         // compute density profile
-        if (num >= mdremote.hiteqm && (num % mdremote.freq == 0))
-        {
+        if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
                                     mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
         }
 
-		if (world.rank() == 0)
-        {
-			//percentage calculation
-            if(!mdremote.verbose)
-			    percentage=roundf(num/(double)mdremote.steps*100);
+        if (world.rank() == 0) {
+            //percentage calculation
+            if (!mdremote.verbose)
+                percentage = roundf(num / (double) mdremote.steps * 100);
             else
-                percentage=roundf(num/(double)mdremote.steps*100 * 10) / 10;
-			//percentage output
-			if(percentage!=percentagePre)
-            {
-				if(!mdremote.verbose)
-                {
-					int progressBarVal=(int) (percentage+0.5);
-					printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n",progressBarVal);
-				}else
-                {
-                    double fraction_completed = percentage/100;
+                percentage = roundf(num / (double) mdremote.steps * 100 * 10) / 10;
+            //percentage output
+            if (percentage != percentagePre) {
+                if (!mdremote.verbose) {
+                    int progressBarVal = (int) (percentage + 0.5);
+                    printf("=RAPPTURE-PROGRESS=>%d Simulation Running...\n", progressBarVal);
+                } else {
+                    double fraction_completed = percentage / 100;
                     ProgressBar(fraction_completed);
                 }
-                percentagePre=percentage;
+                percentagePre = percentage;
 
-			}
-		}
+            }
+        }
     }
-
 
     // Part III : Analysis
     // 1. density profile
@@ -209,31 +204,99 @@ md(vector <PARTICLE> &ion, INTERFACE &box, vector <THERMOSTAT> &real_bath, vecto
 
     if (world.rank() == 0) {
         // 3. write results
-		string p_density_profile, n_density_profile;
-		p_density_profile=rootDirectory+"data/p_density_profile"+simulationParams+".dat";
-		n_density_profile=rootDirectory+"data/n_density_profile"+simulationParams+".dat";
-		ofstream list_p_profile(p_density_profile.c_str(), ios::out);
-		ofstream list_n_profile(n_density_profile.c_str(), ios::out);
-		for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)
-			list_p_profile << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
-						   << positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b)
-						   << endl; // change in the z coordinate, counted from leftwall
-		for (unsigned int b = 0; b < negativeion_density_profile.size(); b++)
-			list_n_profile << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
-						   << negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)
-						   << endl; // change in the z coordinate, counted from leftwall
+        string p_density_profile, n_density_profile;
+        p_density_profile = rootDirectory + "data/p_density_profile" + simulationParams + ".dat";
+        n_density_profile = rootDirectory + "data/n_density_profile" + simulationParams + ".dat";
+        ofstream list_p_profile(p_density_profile.c_str(), ios::out);
+        ofstream list_n_profile(n_density_profile.c_str(), ios::out);
 
-		string finalConFilePath= rootDirectory+"outfiles/final_configuration.dat";
-		ofstream final_configuration(finalConFilePath.c_str());
-		for (unsigned int i = 0; i < ion.size(); i++)
-			final_configuration << ion[i].posvec << endl;
+        std::map<double, std::string> positiveDenistyMap;
+        std::map<double, std::string> negativeDensityMap;
 
-		if (mdremote.verbose)
-		{
-		  cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
-		  cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
-		} 
-		cout << "Dynamics of ions simulated for " << mdremote.steps * mdremote.timestep * unittime * 1e9 << " nanoseconds" << endl;
+
+        for (unsigned int b = 0; b < positiveion_density_profile.size()-2; b++) {
+            std::ostringstream stringRow;
+            stringRow << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
+                      << positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b)
+                      << endl; // change in the z coordinate, counted from leftwall
+
+            positiveDenistyMap.insert(
+                    std::make_pair((-0.5 * box.lz + b * bin[b].width) * unitlength, stringRow.str()));
+
+        }
+        std::ostringstream stringRowLP, stringRowRP;
+        //Left Contact density for positive ions
+        stringRowLP << (-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
+                    << positiveion_density_profile.at(positiveion_density_profile.size() - 2) << setw(15)
+                    << p_error_bar.at(p_error_bar.size() - 2)
+                    << endl; // change in the z coordinate, counted from leftwall
+        positiveDenistyMap.insert(
+                std::make_pair((-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
+                               stringRowLP.str()));
+        //Right Contact density for positive ions
+        stringRowRP << (0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
+                    << positiveion_density_profile.at(positiveion_density_profile.size() - 1) << setw(15)
+                    << p_error_bar.at(p_error_bar.size() - 1)
+                    << endl;
+        positiveDenistyMap.insert(
+                std::make_pair((0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
+                               stringRowRP.str()));
+
+        for (unsigned int b = 0; b < negativeion_density_profile.size()-2; b++) {
+            std::ostringstream stringRow;
+            stringRow << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
+                      << negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)
+                      << endl; // change in the z coordinate, counted from leftwall
+            negativeDensityMap.insert(
+                    std::make_pair((-0.5 * box.lz + b * bin[b].width) * unitlength, stringRow.str()));
+        }
+        std::ostringstream stringRowLN, stringRowRN;
+        //Left Contact density for negative ions
+        stringRowLN << (-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
+                    << negativeion_density_profile.at(negativeion_density_profile.size() - 2) << setw(15)
+                    << n_error_bar.at(n_error_bar.size() - 2)
+                    << endl; // change in the z coordinate, counted from leftwall
+        negativeDensityMap.insert(
+                std::make_pair((-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
+                               stringRowLN.str()));
+        //Right Contact density for negative ions
+        stringRowRN << (0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
+                    << negativeion_density_profile.at(negativeion_density_profile.size() - 1) << setw(15)
+                    << n_error_bar.at(n_error_bar.size() - 1)
+                    << endl; // change in the z coordinate, counted from leftwall
+        negativeDensityMap.insert(
+                std::make_pair((0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
+                               stringRowRN.str()));
+
+        // Iterate through all elements in std::map to print final denisty plots
+        std::map<double, std::string>::iterator itp = positiveDenistyMap.begin();
+        while (itp != positiveDenistyMap.end()) {
+            list_p_profile << itp->second;
+            itp++;
+        }
+        std::map<double, std::string>::iterator itn = negativeDensityMap.begin();
+        while (itn != negativeDensityMap.end()) {
+            list_n_profile << itn->second;
+            itn++;
+        }
+        positiveDenistyMap.clear();
+        negativeDensityMap.clear();
+
+        list_p_profile.close();
+        list_n_profile.close();
+
+
+        string finalConFilePath = rootDirectory + "outfiles/final_configuration.dat";
+        ofstream final_configuration(finalConFilePath.c_str());
+        for (unsigned int i = 0; i < ion.size(); i++)
+            final_configuration << ion[i].posvec << endl;
+
+        if (mdremote.verbose) {
+            cout << "Number of samples used to compute energy" << setw(10) << energy_samples << endl;
+            cout << "Number of samples used to get density profile" << setw(10) << density_profile_samples << endl;
+        }
+        cout << "Dynamics of ions simulated for " << mdremote.steps * mdremote.timestep * unittime * 1e9
+             << " nanoseconds" << endl;
 
     }
     return;
