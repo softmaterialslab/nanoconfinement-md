@@ -153,11 +153,6 @@ inline void update_chain_xi(unsigned int j, vector<THERMOSTAT> &bath, double dt,
 inline void bin_ions(vector<PARTICLE> &ion, INTERFACE &box, vector<double> &density, vector<DATABIN> &bin) {
     double r;
     int bin_number;
-    double leftContact = ion[0].diameter / 2 - bin[0].width /
-                                               2; // This should have been -0.5*box.lz + ion[0].diameter/2 - bin[0].width/2, but r is shifted below;
-    double rightContact = box.lz - ion[0].diameter / 2 - bin[0].width /
-                                                         2; // This should have been 0.5*box.lz - ion[0].diameter/2 - bin[0].width/2, but r is shifted below;
-
 
     for (unsigned int bin_num = 0; bin_num < bin.size(); bin_num++)
         bin[bin_num].n = 0;
@@ -172,9 +167,9 @@ inline void bin_ions(vector<PARTICLE> &ion, INTERFACE &box, vector<double> &dens
     for (unsigned int i = 0; i < ion.size(); i++) {
         /*0th bin is for left wall; bin 0 starts at -0.5*box.lz respect to ion origin */
         r = 0.5 * box.lz + ion[i].posvec.z;
-        if (leftContact <= r && r < leftContact + bin[0].width)
+        if (bin[bin.size() - 2].lower <= ion[i].posvec.z && ion[i].posvec.z < bin[bin.size() - 2].higher)
             bin[bin.size() - 2].n = bin[bin.size() - 2].n + 1;
-        else if (rightContact <= r && r < rightContact + bin[0].width)
+        else if (bin[bin.size() - 1].lower <= ion[i].posvec.z && ion[i].posvec.z < bin[bin.size() - 1].higher)
             bin[bin.size() - 1].n = bin[bin.size() - 1].n + 1;
 
     }
