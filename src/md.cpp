@@ -214,59 +214,25 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         std::map<double, std::string> negativeDensityMap;
 
 
-        for (unsigned int b = 0; b < positiveion_density_profile.size()-2; b++) {
+        for (unsigned int b = 0; b < positiveion_density_profile.size(); b++) {
             std::ostringstream stringRow;
-            stringRow << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
+            stringRow << bin[b].midPoint * unitlength << setw(15)
                       << positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b)
                       << endl; // change in the z coordinate, counted from leftwall
 
             positiveDenistyMap.insert(
-                    std::make_pair((-0.5 * box.lz + b * bin[b].width) * unitlength, stringRow.str()));
+                    std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
 
         }
-        std::ostringstream stringRowLP, stringRowRP;
-        //Left Contact density for positive ions
-        stringRowLP << (-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
-                    << positiveion_density_profile.at(positiveion_density_profile.size() - 2) << setw(15)
-                    << p_error_bar.at(p_error_bar.size() - 2)
-                    << endl; // change in the z coordinate, counted from leftwall
-        positiveDenistyMap.insert(
-                std::make_pair((-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
-                               stringRowLP.str()));
-        //Right Contact density for positive ions
-        stringRowRP << (0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
-                    << positiveion_density_profile.at(positiveion_density_profile.size() - 1) << setw(15)
-                    << p_error_bar.at(p_error_bar.size() - 1)
-                    << endl;
-        positiveDenistyMap.insert(
-                std::make_pair((0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
-                               stringRowRP.str()));
 
-        for (unsigned int b = 0; b < negativeion_density_profile.size()-2; b++) {
+        for (unsigned int b = 0; b < negativeion_density_profile.size(); b++) {
             std::ostringstream stringRow;
-            stringRow << (-0.5 * box.lz + b * bin[b].width) * unitlength << setw(15)
+            stringRow << bin[b].midPoint * unitlength << setw(15)
                       << negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)
                       << endl; // change in the z coordinate, counted from leftwall
             negativeDensityMap.insert(
-                    std::make_pair((-0.5 * box.lz + b * bin[b].width) * unitlength, stringRow.str()));
+                    std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
         }
-        std::ostringstream stringRowLN, stringRowRN;
-        //Left Contact density for negative ions
-        stringRowLN << (-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
-                    << negativeion_density_profile.at(negativeion_density_profile.size() - 2) << setw(15)
-                    << n_error_bar.at(n_error_bar.size() - 2)
-                    << endl; // change in the z coordinate, counted from leftwall
-        negativeDensityMap.insert(
-                std::make_pair((-0.5 * box.lz + ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
-                               stringRowLN.str()));
-        //Right Contact density for negative ions
-        stringRowRN << (0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength << setw(15)
-                    << negativeion_density_profile.at(negativeion_density_profile.size() - 1) << setw(15)
-                    << n_error_bar.at(n_error_bar.size() - 1)
-                    << endl; // change in the z coordinate, counted from leftwall
-        negativeDensityMap.insert(
-                std::make_pair((0.5 * box.lz - ion[0].diameter / 2 - bin[0].width / 2) * unitlength,
-                               stringRowRN.str()));
 
         // Iterate through all elements in std::map to print final denisty plots
         std::map<double, std::string>::iterator itp = positiveDenistyMap.begin();
