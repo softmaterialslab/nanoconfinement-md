@@ -153,7 +153,17 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     box.set_up(salt_conc_in, 0, pz_in, 0, bx / unitlength, by / unitlength, bz / unitlength);
     box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, saltion_diameter_in, ion);
     make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
-    vector<double> initial_density;
+	/*This is to get contact point densities*/
+	double leftContact = -0.5*box.lz + 0.5*ion[0].diameter - 0.5*bin[0].width;
+	double rightContact = 0.5*box.lz - 0.5*ion[0].diameter - 0.5*bin[0].width;
+	bin[bin.size()-1].lower = leftContact;
+    bin[bin.size()-2].lower = rightContact;
+    bin[bin.size()-1].higher = leftContact + bin[0].width;
+    bin[bin.size()-2].higher = rightContact + bin[0].width;
+	bin[bin.size()-1].midPoint = 0.5 * (bin[bin.size()-1].lower + bin[bin.size()-1].higher);
+    bin[bin.size()-2].midPoint = 0.5 * (bin[bin.size()-2].lower + bin[bin.size()-2].higher);
+
+	vector<double> initial_density;
     bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
 
 	box.discretize(saltion_diameter_in / unitlength, fraction_diameter);
@@ -201,7 +211,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		string density_profilePath= rootDirectory+"outfiles/initial_density_profile.dat";
 		ofstream density_profile(density_profilePath.c_str(), ios::out);
 		for (unsigned int b = 0; b < initial_density.size(); b++)
-			density_profile << bin[b].lower << setw(15) << initial_density.at(b) << endl;
+			density_profile << bin[b].midPoint << setw(15) << initial_density.at(b) << endl;
 		density_profile.close();
 
 		// check point

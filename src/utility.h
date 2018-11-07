@@ -11,6 +11,10 @@
 #include<fstream>
 #include<cmath>
 #include<vector>
+#include <iostream>
+#include <map>
+#include <string>
+#include <iterator>
 #include<gsl/gsl_rng.h>
 #include<gsl/gsl_randist.h>
 
