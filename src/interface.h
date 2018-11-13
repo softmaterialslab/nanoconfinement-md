@@ -1,4 +1,4 @@
-// This is a header file for the INTERFACE class.  
+// This is a header file for the INTERFACE class.
 
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
@@ -49,25 +49,26 @@ class INTERFACE
   double lB_in;			// Bjerrum length inside
   double lB_out;		// Bjerrum length outside
   double inv_kappa_in;		// debye length inside
-  double inv_kappa_out;		// debye length outside	
+  double inv_kappa_out;		// debye length outside
   double mean_sep_in;		// mean separation inside
   double mean_sep_out;		// mean separation outside
-  
+
   double width;			// discretization width
   vector<VERTEX> leftplane;
   vector<VERTEX> rightplane;
-  
+
   void set_up(double, double, int, int, double, double, double);
   void put_saltions_inside(vector<PARTICLE>&, int, int, double, double, vector<PARTICLE>&);
   void discretize(double, double);
-  
+  void lammps(vector<PARTICLE>&, int, int, vector<PARTICLE>&, double);
+
   INTERFACE(VECTOR3D initial_posvec = VECTOR3D(0,0,0), double initial_ein = 1, double initial_eout = 1)
   {
     posvec = initial_posvec;
     ein = initial_ein;
     eout = initial_eout;
   }
-  
+
   // total charge inside
   double total_charge_inside(vector<PARTICLE>& ion)
   {
@@ -87,7 +88,7 @@ class INTERFACE
     }
     return charge;
   }
-  
+
   // total induced charge (should be 0 for this system)
   // this is not relevant in uniform dielectric but is retained to refer back to when looking at cpmd code for non-uniform media
   double total_induced_charge(vector<VERTEX>& s)
@@ -101,4 +102,3 @@ class INTERFACE
 };
 
 #endif
-

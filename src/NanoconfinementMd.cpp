@@ -256,6 +256,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             }
 		}
 	}
+  box.lammps(saltion_in, pz_in, nz_in,ion, saltion_diameter_in);
 
     // prepare for md : make real baths
     vector <THERMOSTAT> real_bath;
