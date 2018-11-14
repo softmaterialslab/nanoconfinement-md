@@ -196,6 +196,7 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
   string AtomType,ChargeType;
   mpi::environment env;
   mpi::communicator world;
+
   if (world.rank() == 0)
   {
   diameter = diameter / unitlength;
@@ -244,30 +245,35 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
 
   else if (pz == 0 && nz == 0) //The atom_style is atomic;
   {
-      Initial_Position << "2 atom types" << endl; //Type 1 is particles inside the box, Type 2 is the walls;
-      Initial_Position << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
-      Initial_Position << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
-      Initial_Position << -(0.5 * lz) - diameter << " " << (0.5 * lz) + diameter  <<  " " << "zlo zhi" << endl;
-      Initial_Position << " " << endl;
-      Initial_Position << "Atoms" << endl;
-      Initial_Position << " " << endl;
-      for (unsigned int i = 0; i < ion.size(); i++)
-      {
+    Initial_Position << "2 atom types" << endl; //Type 1 is particles inside the box, Type 2 is the walls;
+    Initial_Position << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
+    Initial_Position << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
+    Initial_Position << -(0.5 * lz) - diameter << " " << (0.5 * lz) + diameter  <<  " " << "zlo zhi" << endl;
+    Initial_Position << " " << endl;
+    Initial_Position << "Atoms" << endl;
+    Initial_Position << " " << endl;
+
+    for (unsigned int i = 0; i < ion.size(); i++)
+    {
         AtomType = "1";
         Initial_Position << i + 1 << "   " << AtomType << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
-      }
-      for (unsigned int j = 0; j < leftplane.size(); j++)
-      {
-        AtomType = "2";
-        Initial_Position << j + 1 + ion.size() << "   " << AtomType << "   " <<leftplane[j].posvec.x << "   " << leftplane[j].posvec.y << "   " << leftplane[j].posvec.z - (0.5 * diameter)<< endl;
-      }
-      for (unsigned int j = 0; h < rightplane.size();h++)
-      {
-        AtomType = "2";
-        Initial_Position << h + 1 + ion.size() + leftplane.size() << "   " << AtomType << "   " << rightplane[h].posvec.x << "   " << rightplane[h].posvec.y << "   " << rightplane[h].posvec.z + (0.5 * diameter)<< endl;
-      }
     }
-    Initial_Position.close();
+
+    for (unsigned int wj = 0; wj < leftplane.size(); wj++)
+    {
+        AtomType = "2";
+        Initial_Position << wj + 1 + ion.size() << "   " << AtomType << "   " << leftplane[wj].posvec.x << "   " << leftplane[wj].posvec.y << "   " << leftplane[wj].posvec.z - (0.5 * diameter)<< endl;
+    }
+
+    for (unsigned int wh = 0; wh < rightplane.size(); wh++)
+    {
+        AtomType = "2";
+        Initial_Position << wh + 1 + ion.size() + leftplane.size() << "   " << AtomType << "   " << rightplane[wh].posvec.x << "   " << rightplane[wh].posvec.y << "   " << rightplane[wh].posvec.z + (0.5 * diameter) << endl;
+    }
+  }
+
+  Initial_Position.close();
+
   }
   return;
 }
