@@ -190,3 +190,90 @@ void INTERFACE::discretize(double ion_diameter, double f)
   }
   return;
 }
+// creating data file for LAMMPS;
+void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double diameter)
+{
+  string AtomType,ChargeType;
+  mpi::environment env;
+  mpi::communicator world;
+
+  if (world.rank() == 0)
+  {
+  diameter = diameter / unitlength;
+  string InputLammpsPath= rootDirectory+"outfiles/ip.lammps.xyz";
+  ofstream listlammps(InputLammpsPath.c_str(), ios::out);
+  listlammps << "LAMMPS data file" << endl;
+  listlammps << ( leftplane.size()+ ion.size()+ leftplane.size()) << " atoms" << endl;
+
+  if (pz > 0 || nz < 0) //The atom_style is Charge;
+  {
+    listlammps << "3 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box, Type 3 is the walls;
+    listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
+    listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
+    listlammps << -(0.5 * lz) - diameter << " " << (0.5 * lz) + diameter  <<  " " << "zlo zhi" << endl;
+    listlammps << " " << endl;
+    listlammps << "Atoms" << endl;
+    listlammps << " " << endl;
+    for (unsigned int i = 0; i < ion.size(); i++)
+    {
+      if (ion[i].valency > 0)
+      {
+        AtomType = "1";
+        ChargeType = "1.0";
+      }
+      else if (ion[i].valency < 0)
+      {
+        AtomType = "2";
+        ChargeType = "-1.0";
+      }
+      listlammps << i + 1 << "   " << AtomType << "   " << ChargeType << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+    }
+
+    for (unsigned int wj = 0; wj < leftplane.size(); wj++)
+    {
+        AtomType = "3";
+        ChargeType = "0.0";
+        listlammps << wj + 1 + ion.size() << "   " << AtomType << "   " << ChargeType << "   " << leftplane[wj].posvec.x << "   " <<  leftplane[wj].posvec.y << "   " <<  leftplane[wj].posvec.z - (0.5 * diameter)<< endl;
+    }
+    
+    for (unsigned int wh = 0; wh < rightplane.size(); wh++)
+    {
+      listlammps << wh + 1 + ion.size() + leftplane.size() << "   " << AtomType << "   " << ChargeType << "   " <<  rightplane[wh].posvec.x << "   " <<  rightplane[wh].posvec.y << "   " <<  rightplane[wh].posvec.z + (0.5 * diameter) << endl;
+    }
+
+  }
+
+  else if (pz == 0 && nz == 0) //The atom_style is atomic;
+  {
+    listlammps << "2 atom types" << endl; //Type 1 is particles inside the box, Type 2 is the walls;
+    listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
+    listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
+    listlammps << -(0.5 * lz) - diameter << " " << (0.5 * lz) + diameter  <<  " " << "zlo zhi" << endl;
+    listlammps << " " << endl;
+    listlammps << "Atoms" << endl;
+    listlammps << " " << endl;
+
+    for (unsigned int i = 0; i < ion.size(); i++)
+    {
+        AtomType = "1";
+        listlammps << i + 1 << "   " << AtomType << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+    }
+
+    for (unsigned int wj = 0; wj < leftplane.size(); wj++)
+    {
+        AtomType = "2";
+        listlammps << wj + 1 + ion.size() << "   " << AtomType << "   " << leftplane[wj].posvec.x << "   " << leftplane[wj].posvec.y << "   " << leftplane[wj].posvec.z - (0.5 * diameter)<< endl;
+    }
+
+    for (unsigned int wh = 0; wh < rightplane.size(); wh++)
+    {
+        AtomType = "2";
+        listlammps << wh + 1 + ion.size() + leftplane.size() << "   " << AtomType << "   " << rightplane[wh].posvec.x << "   " << rightplane[wh].posvec.y << "   " << rightplane[wh].posvec.z + (0.5 * diameter) << endl;
+    }
+  }
+
+  listlammps.close();
+
+  }
+  return;
+}
