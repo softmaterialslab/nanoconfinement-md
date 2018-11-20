@@ -116,40 +116,40 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     }
 
     // ion interacting with discretized left wall
-#pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy, r_vec)
-    {
-#pragma omp for schedule(dynamic) nowait
-        for (i = lowerBound; i <= upperBound; i++) {
-            ulj = 0.0;
-            if (ion[i].posvec.z < -0.5 * box.lz +
-                                  ion[i].diameter)   // avoiding calculating interactions between left wall and ions in bulk
-            {
-                for (k = 0; k < box.leftplane.size(); k++) {
-                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                          VECTOR3D(box.leftplane[k].posvec.x, box.leftplane[k].posvec.y,
-                                                   box.leftplane[k].posvec.z - 0.5 * ion[i].diameter), box.lx, box.ly,
-                                          box.lz);
-                    r_vec = ion[i].posvec - wall_dummy.posvec;
-
-                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
-                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
-                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
-                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
-
-                    r2 = r_vec.GetMagnitudeSquared();
-                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
-                    d2 = d * d;
-                    elj = 1.0;
-                    if (r2 < dcut2 * d2) {
-                        r6 = r2 * r2 * r2;
-                        d6 = d2 * d2 * d2;
-                        ulj += 4 * elj * (d6 / r6) * ((d6 / r6) - 1) + elj;
-                    }
-                }
-            }
-            lj_ion_leftwall[i-lowerBound] = ulj;
-        }
-    }
+//#pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy, r_vec)
+//    {
+//#pragma omp for schedule(dynamic) nowait
+//       for (i = lowerBound; i <= upperBound; i++) {
+//            ulj = 0.0;
+//            if (ion[i].posvec.z < -0.5 * box.lz +
+//                                  ion[i].diameter)   // avoiding calculating interactions between left wall and ions in bulk
+//            {
+//                for (k = 0; k < box.leftplane.size(); k++) {
+//                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
+//                                          VECTOR3D(box.leftplane[k].posvec.x, box.leftplane[k].posvec.y,
+//                                                   box.leftplane[k].posvec.z - 0.5 * ion[i].diameter), box.lx, box.ly,
+//                                          box.lz);
+//                    r_vec = ion[i].posvec - wall_dummy.posvec;
+//
+//                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
+//                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
+//                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
+//                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
+//
+//                   r2 = r_vec.GetMagnitudeSquared();
+//                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
+//                    d2 = d * d;
+//                    elj = 1.0;
+//                    if (r2 < dcut2 * d2) {
+//                        r6 = r2 * r2 * r2;
+//                        d6 = d2 * d2 * d2;
+//                        ulj += 4 * elj * (d6 / r6) * ((d6 / r6) - 1) + elj;
+//                    }
+//                }
+//            }
+//            lj_ion_leftwall[i-lowerBound] = ulj;
+//        }
+//    }
 
     // right wall
 
@@ -177,40 +177,40 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     }
 
     // ion interacting with discretized right wall
-#pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy, r_vec)
-    {
-#pragma omp for schedule(dynamic) nowait
-        for (i = lowerBound; i <= upperBound; i++) {
-            ulj = 0;
-            if (ion[i].posvec.z > 0.5 * box.lz -
-                                  ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk
-            {
-                for (k = 0; k < box.rightplane.size(); k++) {
-                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                          VECTOR3D(box.rightplane[k].posvec.x, box.rightplane[k].posvec.y,
-                                                   box.rightplane[k].posvec.z + 0.5 * ion[i].diameter), box.lx, box.ly,
-                                          box.lz);
-                    r_vec = ion[i].posvec - wall_dummy.posvec;
-
-                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
-                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
-                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
-                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
-
-                    r2 = r_vec.GetMagnitudeSquared();
-                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
-                    d2 = d * d;
-                    elj = 1.0;
-                    if (r2 < dcut2 * d2) {
-                        r6 = r2 * r2 * r2;
-                        d6 = d2 * d2 * d2;
-                        ulj += 4 * elj * (d6 / r6) * ((d6 / r6) - 1) + elj;
-                    }
-                }
-            }
-            lj_ion_rightwall[i-lowerBound] = ulj;
-        }
-    }
+//#pragma omp parallel default(shared) private(i, k, ulj, r2, r6, d, d2, d6, elj, wall_dummy, r_vec)
+//    {
+//#pragma omp for schedule(dynamic) nowait
+//        for (i = lowerBound; i <= upperBound; i++) {
+//            ulj = 0;
+//            if (ion[i].posvec.z > 0.5 * box.lz -
+//                                  ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk
+//            {
+//                for (k = 0; k < box.rightplane.size(); k++) {
+//                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
+//                                          VECTOR3D(box.rightplane[k].posvec.x, box.rightplane[k].posvec.y,
+//                                                   box.rightplane[k].posvec.z + 0.5 * ion[i].diameter), box.lx, box.ly,
+//                                          box.lz);
+//                    r_vec = ion[i].posvec - wall_dummy.posvec;
+//
+//                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
+//                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
+//                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
+//                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
+//
+//                    r2 = r_vec.GetMagnitudeSquared();
+//                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
+//                    d2 = d * d;
+//                    elj = 1.0;
+//                    if (r2 < dcut2 * d2) {
+//                        r6 = r2 * r2 * r2;
+//                        d6 = d2 * d2 * d2;
+//                        ulj += 4 * elj * (d6 / r6) * ((d6 / r6) - 1) + elj;
+//                    }
+//                }
+//            }
+//            lj_ion_rightwall[i-lowerBound] = ulj;
+//        }
+//    }
 
     double ion_ion = 0;
     double total_lj_ion_ion = 0;
@@ -222,9 +222,9 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
         ion_ion += ion_energy[i-lowerBound];
         total_lj_ion_ion += lj_ion_ion[i-lowerBound];
         total_lj_ion_leftdummy += lj_ion_leftdummy[i-lowerBound];
-        total_lj_ion_leftwall += lj_ion_leftwall[i-lowerBound];
+//        total_lj_ion_leftwall += lj_ion_leftwall[i-lowerBound];
         total_lj_ion_rightdummy += lj_ion_rightdummy[i-lowerBound];
-        total_lj_ion_rightwall += lj_ion_rightwall[i-lowerBound];
+//        total_lj_ion_rightwall += lj_ion_rightwall[i-lowerBound];
     }
     // electrostatic potential energy
     double coulomb = (ion_ion) * scalefactor;    // scalefactor is there to ensure proper units; defined in utility.h
