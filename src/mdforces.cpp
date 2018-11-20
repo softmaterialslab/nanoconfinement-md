@@ -123,40 +123,40 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
     }
 
     // ion interacting with discretized left wall
-    #pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
-    {
-#pragma omp for schedule(dynamic) nowait
-        for (i = lowerBound; i <= upperBound; i++) {
-            flj = VECTOR3D(0, 0, 0);
-            if (ion[i].posvec.z < -0.5 * box.lz +
-                                  ion[i].diameter)  // avoiding calculating interactions between left wall and ions in bulk. -Yufei - Vikram
-            {
-                for (j = 0; j < box.leftplane.size(); j++) {
-                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                          VECTOR3D(box.leftplane[j].posvec.x, box.leftplane[j].posvec.y,
-                                                   box.leftplane[j].posvec.z - 0.5 * ion[i].diameter), box.lx, box.ly,
-                                          box.lz);
-                    r_vec = ion[i].posvec - wall_dummy.posvec;
-                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
-                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
-                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
-                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
-                    r2 = r_vec.GetMagnitudeSquared();
-                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
-                    d2 = d * d;
-                    elj = 1.0;
-                    if (r2 < dcut2 * d2) {
-                        r6 = r2 * r2 * r2;
-                        r12 = r6 * r6;
-                        d6 = d2 * d2 * d2;
-                        d12 = d6 * d6;
-                        flj += r_vec ^ (48 * elj * ((d12 / r12) - 0.5 * (d6 / r6)) * (1 / r2));
-                    }
-                }
-            }
-            lj_ion_left_wall[i - lowerBound] = flj;
-        }
-    }
+//    #pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
+//    {
+//#pragma omp for schedule(dynamic) nowait
+//        for (i = lowerBound; i <= upperBound; i++) {
+//            flj = VECTOR3D(0, 0, 0);
+//            if (ion[i].posvec.z < -0.5 * box.lz +
+//                                  ion[i].diameter)  // avoiding calculating interactions between left wall and ions in bulk. -Yufei - Vikram
+//            {
+//                for (j = 0; j < box.leftplane.size(); j++) {
+//                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
+//                                          VECTOR3D(box.leftplane[j].posvec.x, box.leftplane[j].posvec.y,
+//                                                   box.leftplane[j].posvec.z - 0.5 * ion[i].diameter), box.lx, box.ly,
+//                                          box.lz);
+//                    r_vec = ion[i].posvec - wall_dummy.posvec;
+//                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
+//                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
+//                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
+//                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
+//                    r2 = r_vec.GetMagnitudeSquared();
+//                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
+//                    d2 = d * d;
+//                    elj = 1.0;
+//                    if (r2 < dcut2 * d2) {
+//                        r6 = r2 * r2 * r2;
+//                        r12 = r6 * r6;
+//                        d6 = d2 * d2 * d2;
+//                        d12 = d6 * d6;
+//                        flj += r_vec ^ (48 * elj * ((d12 / r12) - 0.5 * (d6 / r6)) * (1 / r2));
+//                    }
+//                }
+//            }
+//            lj_ion_left_wall[i - lowerBound] = flj;
+//        }
+//    }
     //interaction with the right plane hard wall
 
     //make a dummy particle with the same diameter as the ion and touching right of the right wall s. t. it is closest to the ion
@@ -188,48 +188,49 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 
     // ion interacting with discretized right wall
 
-#pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
-    {
-#pragma omp for schedule(dynamic) nowait
-        for (i = lowerBound; i <= upperBound; i++) {
-            flj = VECTOR3D(0, 0, 0);
-            if (ion[i].posvec.z > 0.5 * box.lz -
-                                  ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk. -Yufei -Vikram
-            {
-                for (j = 0; j < box.rightplane.size(); j++) {
-                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                          VECTOR3D(box.rightplane[j].posvec.x, box.rightplane[j].posvec.y,
-                                                   box.rightplane[j].posvec.z + 0.5 * ion[i].diameter),
-                                          box.lx, box.ly, box.lz);
-                    r_vec = ion[i].posvec - wall_dummy.posvec;
-                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
-                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
-                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
-                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
-                    r2 = r_vec.GetMagnitudeSquared();
-                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
-                    d2 = d * d;
-                    elj = 1.0;
-                    if (r2 < dcut2 * d2) {
-                        r6 = r2 * r2 * r2;
-                        r12 = r6 * r6;
-                        d6 = d2 * d2 * d2;
-                        d12 = d6 * d6;
-                        flj += r_vec ^ (48 * elj * ((d12 / r12) - 0.5 * (d6 / r6)) * (1 / r2));
-                    }
-                }
-            }
-            lj_ion_right_wall[i - lowerBound] = flj;
-        }
-    }
+//#pragma omp parallel default(shared) private(i, j, wall_dummy, r_vec, r2, d, d2, elj, r6, r12, d6, d12, flj)
+//   {
+//#pragma omp for schedule(dynamic) nowait
+//        for (i = lowerBound; i <= upperBound; i++) {
+//            flj = VECTOR3D(0, 0, 0);
+//            if (ion[i].posvec.z > 0.5 * box.lz -
+//                                  ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk. -Yufei -Vikram
+//            {
+//                for (j = 0; j < box.rightplane.size(); j++) {
+//                    wall_dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
+//                                          VECTOR3D(box.rightplane[j].posvec.x, box.rightplane[j].posvec.y,
+//                                                   box.rightplane[j].posvec.z + 0.5 * ion[i].diameter),
+//                                          box.lx, box.ly, box.lz);
+//                    r_vec = ion[i].posvec - wall_dummy.posvec;
+//                    if (r_vec.x > box.lx / 2) r_vec.x -= box.lx;
+//                    if (r_vec.x < -box.lx / 2) r_vec.x += box.lx;
+//                    if (r_vec.y > box.ly / 2) r_vec.y -= box.ly;
+//                    if (r_vec.y < -box.ly / 2) r_vec.y += box.ly;
+//                    r2 = r_vec.GetMagnitudeSquared();
+//                    d = 0.5 * (ion[i].diameter + wall_dummy.diameter);
+//                    d2 = d * d;
+//                    elj = 1.0;
+//                    if (r2 < dcut2 * d2) {
+//                        r6 = r2 * r2 * r2;
+//                        r12 = r6 * r6;
+//                        d6 = d2 * d2 * d2;
+//                        d12 = d6 * d6;
+//                        flj += r_vec ^ (48 * elj * ((d12 / r12) - 0.5 * (d6 / r6)) * (1 / r2));
+//                    }
+//                }
+//            }
+//            lj_ion_right_wall[i - lowerBound] = flj;
+//        }
+//    }
 
 
     if (world.size() > 1) {
 
         // total force on the particle = the electrostatic force + the Lennard-Jones force slave processes
         for (i = 0; i < sendForceVector.size(); i++) {
-            sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
-                                 lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
+            sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] + lj_ion_rightdummy[i];
+	//    sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_leftdummy[i] +
+        //                         lj_ion_left_wall[i] + lj_ion_rightdummy[i] + lj_ion_right_wall[i];
         //    sendForceVector[i] = sendForceVector[i] + lj_ion_ion[i] + lj_ion_left_wall[i]+ lj_ion_right_wall[i];
         }
 
@@ -247,9 +248,11 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
         // total force on the particle = the electrostatic force + the Lennard-Jones force in main processes
         for (i = lowerBound; i <= upperBound; i++)
             ion[i].forvec =
-                    sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_leftdummy[i - lowerBound] +
-                    lj_ion_left_wall[i - lowerBound] + lj_ion_rightdummy[i - lowerBound] +
-                    lj_ion_right_wall[i - lowerBound];
+                    sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_leftdummy[i - lowerBound] + lj_ion_rightdummy[i - lowerBound];
+	    //ion[i].forvec =
+            //        sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_leftdummy[i - lowerBound] +
+            //        lj_ion_left_wall[i - lowerBound] + lj_ion_rightdummy[i - lowerBound] +
+            //        lj_ion_right_wall[i - lowerBound];
         //    ion[i].forvec =
         //            sendForceVector[i - lowerBound] + lj_ion_ion[i - lowerBound] + lj_ion_left_wall[i - lowerBound] + lj_ion_right_wall[i - lowerBound];
 
