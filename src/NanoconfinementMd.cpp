@@ -62,7 +62,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
              "chain length for real system: enter L+1 if you want L thermostats")
-            ("bin_width,B", value<double>(&bin_width)->default_value(0.10), "bin width")
+            ("bin_width,B", value<double>(&bin_width)->default_value(0.05), "bin width")// in reduced units
             ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.0005), "time step used in md")
             ("md_eqm,P", value<int>(&mdremote.hiteqm)->default_value(100000), "production begin (md)")
             ("md_freq,F", value<int>(&mdremote.freq)->default_value(100), "sample frequency (md)")
