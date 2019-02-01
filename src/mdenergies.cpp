@@ -12,7 +12,7 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
 
 	mpi::environment env;
 	mpi::communicator world;
-    unsigned int i, j, k;
+    unsigned int i, j;
     double fqq, fqq_csh;
     double fcsh_z, r1, r2, dz, fcsh_inf;
     VECTOR3D temp_vec;
@@ -58,7 +58,7 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     // ion-ion
     VECTOR3D r_vec;
     PARTICLE wall_dummy;
-    double ulj, uljcc, elj, r, r6, d, d2, d6;
+    double uljcc, elj, r, r6, d, d2, d6;
 #pragma omp parallel default(shared) private(i, j, uljcc, r, r2, r6, d, d2, d6, elj, r_vec)
     {
 #pragma omp for schedule(dynamic) nowait
