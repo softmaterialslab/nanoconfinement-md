@@ -196,7 +196,7 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
   // In Lammps, unit of charge is in reduced LJ unit, where q* = q / (4 pi perm0 sigma epsilon)^1/2;
   string AtomType;
   double ChargeValue;
-  double Charge = (1.602176634 * pow(10,-19)) / (sqrt(pi * 4.0 * unitlength * pow(10, -9) * 8.854187 * pow (10, -12)* 1.38064852 * pow(10,-23)* room_temperature));
+  double Charge = (1.602176634 * pow(10,-19)) / (sqrt(pi * 4.0 * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature));
   diameter = diameter / unitlength;
   mpi::environment env;
   mpi::communicator world;

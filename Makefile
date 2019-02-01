@@ -19,8 +19,8 @@ endif
 	@echo "Ending the build of the $(BASE) directory";
 	@echo "installing the $(PROG) into $(BIN) directory"; cp -f $(BASE)/$(PROG) $(BIN)
 
-install: all
-	create-dirs
+install: create-dirs
+	make all	
 
 cluster-install: create-dirs
 	make CCF=BigRed2 all
