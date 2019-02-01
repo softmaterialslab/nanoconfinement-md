@@ -22,7 +22,7 @@ The nanoconfinement code is open source and can optionally be built from source 
 * Copy or git clone nanoconfinement-md project in to a directory. 
 * Go to nanoconfinement-md directory and (cd nanoconfinement-md)
 * You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
-    * make all
+    * make install
 * Next, go to the bin directory:
  ```cd bin```
 * Now you are ready to run the executable with aprun command using the following method:
