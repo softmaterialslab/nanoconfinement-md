@@ -207,7 +207,7 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
     ofstream listlammps(InputLammpsPath.c_str(), ios::out);
     listlammps << "LAMMPS data file" << endl;
     listlammps << ion.size() << " atoms" << endl;
-    listlammps << "2 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box, Type 3 is the walls;
+    listlammps << "2 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
     listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
     listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
     listlammps << -(0.5 * lz) - (diameter/2.0) << " " << (0.5 * lz) + (diameter/2.0)  <<  " " << "zlo zhi" << endl;
