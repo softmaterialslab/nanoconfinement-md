@@ -11,7 +11,7 @@
 
 void
 md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<DATABIN> &bin, CONTROL &mdremote,
-   string &simulationParams) {
+   string &simulationParams, double &density_profile_samples) {
 
     mpi::environment env;
     mpi::communicator world;
@@ -96,7 +96,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         mean_sq_positiveion_density.push_back(0.0);
         mean_sq_negativeion_density.push_back(0.0);
     }
-    double density_profile_samples = 0;            // number of samples used to estimate density profile
+    density_profile_samples = 0;            // number of samples used to estimate density profile
 
     long double expfac_real;                // exponential factors useful in velocity Verlet routine
 
@@ -179,78 +179,11 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
             }
         }
     }
-
-    // Part III : Analysis
-    // 1. density profile
-    vector<double> positiveion_density_profile;
-    vector<double> negativeion_density_profile;
-    for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
-        positiveion_density_profile.push_back(mean_positiveion_density.at(b) / density_profile_samples);
-    for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
-        negativeion_density_profile.push_back(mean_negativeion_density.at(b) / density_profile_samples);
-
-    // 2. error bars
-    vector<double> p_error_bar;
-    vector<double> n_error_bar;
-    for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)
-        p_error_bar.push_back(sqrt(1.0 / density_profile_samples) *
-                              sqrt(mean_sq_positiveion_density.at(b) / density_profile_samples -
-                                   positiveion_density_profile.at(b) * positiveion_density_profile.at(b)));
-    for (unsigned int b = 0; b < negativeion_density_profile.size(); b++)
-        n_error_bar.push_back(sqrt(1.0 / density_profile_samples) *
-                              sqrt(mean_sq_negativeion_density.at(b) / density_profile_samples -
-                                   negativeion_density_profile.at(b) * negativeion_density_profile.at(b)));
+    average_errorbars_density(density_profile_samples, mean_positiveion_density,mean_sq_positiveion_density,mean_negativeion_density,
+                                    mean_sq_negativeion_density, ion, box, bin, simulationParams);
 
 
-    if (world.rank() == 0) {
-        // 3. write results
-        string p_density_profile, n_density_profile;
-        p_density_profile = rootDirectory + "data/p_density_profile" + simulationParams + ".dat";
-        n_density_profile = rootDirectory + "data/n_density_profile" + simulationParams + ".dat";
-        ofstream list_p_profile(p_density_profile.c_str(), ios::out);
-        ofstream list_n_profile(n_density_profile.c_str(), ios::out);
-
-        std::map<double, std::string> positiveDenistyMap;
-        std::map<double, std::string> negativeDensityMap;
-
-
-        for (unsigned int b = 0; b < positiveion_density_profile.size(); b++) {
-            std::ostringstream stringRow;
-            stringRow << bin[b].midPoint * unitlength << setw(15)
-                      << positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b)
-                      << endl; // change in the z coordinate, counted from leftwall
-
-            positiveDenistyMap.insert(
-                    std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
-
-        }
-
-        for (unsigned int b = 0; b < negativeion_density_profile.size(); b++) {
-            std::ostringstream stringRow;
-            stringRow << bin[b].midPoint * unitlength << setw(15)
-                      << negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)
-                      << endl; // change in the z coordinate, counted from leftwall
-            negativeDensityMap.insert(
-                    std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
-        }
-
-        // Iterate through all elements in std::map to print final denisty plots
-        std::map<double, std::string>::iterator itp = positiveDenistyMap.begin();
-        while (itp != positiveDenistyMap.end()) {
-            list_p_profile << itp->second;
-            itp++;
-        }
-        std::map<double, std::string>::iterator itn = negativeDensityMap.begin();
-        while (itn != negativeDensityMap.end()) {
-            list_n_profile << itn->second;
-            itn++;
-        }
-        positiveDenistyMap.clear();
-        negativeDensityMap.clear();
-
-        list_p_profile.close();
-        list_n_profile.close();
-
+      if (world.rank() == 0) {
 
         string finalConFilePath = rootDirectory + "outfiles/final_configuration.dat";
         ofstream final_configuration(finalConFilePath.c_str());

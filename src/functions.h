@@ -50,6 +50,15 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
                              vector<PARTICLE> &ion, INTERFACE &box,
                              vector<DATABIN> &bin, CONTROL &cpmdremote);
 
+void average_errorbars_density(double density_profile_samples, vector<double>& mean_positiveion_density,
+                                   vector<double>& mean_sq_positiveion_density,
+                                   vector<double>& mean_negativeion_density,
+                                   vector<double>& mean_sq_negativeion_density,
+                                   vector<PARTICLE>& ion, INTERFACE &box,
+                                   vector<DATABIN>& bin,  string simulationParams);
+
+void ReadParticlePositions(vector<PARTICLE>&, int, int, double, INTERFACE &);
+void output_lammps(vector<PARTICLE>&, int&);
 // post analysis : compute R
 double compute_MD_trust_factor_R(int);
 

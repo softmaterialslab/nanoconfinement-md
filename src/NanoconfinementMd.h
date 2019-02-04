@@ -1,4 +1,4 @@
-// This is a header file for the INTERFACE class.  
+// This is a header file for the INTERFACE class.
 
 #ifndef _NanoconfinementMd_H
 #define _NanoconfinementMd_H
@@ -13,7 +13,7 @@
 #include "functions.h"
 #include "thermostat.h"
 
-void md(vector<PARTICLE>&, INTERFACE&, vector<THERMOSTAT>&, vector<DATABIN>&, CONTROL&, string&);
+void md(vector<PARTICLE>&, INTERFACE&, vector<THERMOSTAT>&, vector<DATABIN>&, CONTROL&, string&, double&);
 
 using namespace boost::program_options;
 
@@ -24,4 +24,3 @@ class NanoconfinementMd
 };
 
 #endif
-
