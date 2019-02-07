@@ -334,7 +334,7 @@ void output_lammps(vector<PARTICLE>& ion, int &cnt_filename) //cnt_filename show
       lines.clear();
     }
   }
-  //cout << "number of cnt_filename is:" << cnt_filename <<endl;
+  
   return;
 }
 

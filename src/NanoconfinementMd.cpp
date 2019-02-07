@@ -219,7 +219,11 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		// check point
 		double totalions = 0;
 		for (unsigned int b = 0; b < initial_density.size(); b++)
-			totalions += initial_density.at(b) * bin[b].volume;
+		{	
+		  if (bin[b].lower == leftContact || bin[b].higher == rightContact)
+		      continue;
+		  totalions += initial_density.at(b) * bin[b].volume;
+		}
 		int totalpions = 0, totalnions = 0;
 		for (unsigned int i = 0; i < ion.size(); i++)
 		{
@@ -283,32 +287,34 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
       mean_sq_positiveion_density.push_back(0.0);
       mean_sq_negativeion_density.push_back(0.0);
     }
-    double density_profile_samples = 0.0;
+    
     // Simulation using Molecular Dynamics
     if (!lammps)
     {
-      md(ion, box, real_bath, bin, mdremote, simulationParams, density_profile_samples);
+      md(ion, box, real_bath, bin, mdremote, simulationParams);
     }
     else
     {
       int cnt_filename = 0;
       output_lammps(ion, cnt_filename);
+      if (world.rank() == 0)
+	cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename <<endl;
       int lammps_samples = cnt_filename - 1;
       make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
       int cpmdstep=0;
-      int lammps_density_profile_samples=0;
+      double lammps_density_profile_samples=0;
       for (int cpmdstep = 0; cpmdstep < lammps_samples; cpmdstep++)
       {
         vector<PARTICLE> ion;
         vector<double> initial_density;
-        density_profile_samples++;
+        lammps_density_profile_samples++;
         ReadParticlePositions(ion, cpmdstep, lammps_samples, saltion_diameter_in, box);
         bin_ions(ion, box, initial_density, bin);
-        compute_density_profile(cpmdstep, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
+        compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
                                 mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
 
       }
-      average_errorbars_density(density_profile_samples, mean_positiveion_density,mean_sq_positiveion_density,mean_negativeion_density,
+      average_errorbars_density(lammps_density_profile_samples, mean_positiveion_density,mean_sq_positiveion_density,mean_negativeion_density,
                                       mean_sq_negativeion_density, ion, box, bin, simulationParams);
     }
 

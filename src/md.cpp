@@ -11,7 +11,7 @@
 
 void
 md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<DATABIN> &bin, CONTROL &mdremote,
-   string &simulationParams, double &density_profile_samples) {
+   string &simulationParams) {
 
     mpi::environment env;
     mpi::communicator world;
@@ -96,7 +96,8 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         mean_sq_positiveion_density.push_back(0.0);
         mean_sq_negativeion_density.push_back(0.0);
     }
-    density_profile_samples = 0;            // number of samples used to estimate density profile
+    
+    double density_profile_samples = 0;            // number of samples used to estimate density profile
 
     long double expfac_real;                // exponential factors useful in velocity Verlet routine
 
