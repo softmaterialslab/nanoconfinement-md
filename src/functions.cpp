@@ -1,4 +1,4 @@
-// This file contains the routines 
+// This file contains the routines
 
 #include "functions.h"
 
@@ -139,6 +139,8 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
         else if (ion[i].valency < 0)
             negativeion.push_back(ion.at(i));
     }
+    mpi::environment env;
+    mpi::communicator world;
 
     bin_ions(positiveion, box, sample_positiveion_density, bin);
     bin_ions(negativeion, box, sample_negativeion_density, bin);
@@ -156,8 +158,7 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
 
     // write files
     if ((cpmdstep % cpmdremote.writedensity == 0) && cpmdremote.verbose) {
-        mpi::environment env;
-        mpi::communicator world;
+
         std::map<double, std::string> positiveDenistyMap;
         std::map<double, std::string> negativeDensityMap;
 
@@ -216,6 +217,150 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
         }
     }
     return;
+}
+
+void average_errorbars_density(double density_profile_samples, vector<double>& mean_positiveion_density,
+                                    vector<double>& mean_sq_positiveion_density,
+                                    vector<double>& mean_negativeion_density,
+                                    vector<double>& mean_sq_negativeion_density,
+                                    vector<PARTICLE>& ion, INTERFACE &box,
+                                    vector<DATABIN>& bin, string simulationParams)
+
+{
+  // 1. density profile
+  vector<double> positiveion_density_profile;
+  vector<double> negativeion_density_profile;
+  for (unsigned int b = 0; b < mean_positiveion_density.size(); b++)
+      positiveion_density_profile.push_back(mean_positiveion_density.at(b) / density_profile_samples);
+  for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
+      negativeion_density_profile.push_back(mean_negativeion_density.at(b) / density_profile_samples);
+
+  // 2. error bars
+  vector<double> p_error_bar;
+  vector<double> n_error_bar;
+  for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)
+      p_error_bar.push_back(sqrt(1.0 / density_profile_samples) *
+                            sqrt(mean_sq_positiveion_density.at(b) / density_profile_samples -
+                                 positiveion_density_profile.at(b) * positiveion_density_profile.at(b)));
+  for (unsigned int b = 0; b < negativeion_density_profile.size(); b++)
+      n_error_bar.push_back(sqrt(1.0 / density_profile_samples) *
+                            sqrt(mean_sq_negativeion_density.at(b) / density_profile_samples -
+                                 negativeion_density_profile.at(b) * negativeion_density_profile.at(b)));
+      // 3. write results
+  string p_density_profile, n_density_profile;
+  p_density_profile="data/p_density_profile"+simulationParams+".dat";
+  n_density_profile="data/n_density_profile"+simulationParams+".dat";
+  ofstream list_p_profile(p_density_profile.c_str(), ios::out);
+  ofstream list_n_profile(n_density_profile.c_str(), ios::out);
+  std::map<double, std::string> positiveDenistyMap;
+  std::map<double, std::string> negativeDensityMap;
+
+
+  for (unsigned int b = 0; b < positiveion_density_profile.size(); b++) {
+      std::ostringstream stringRow;
+      stringRow << bin[b].midPoint * unitlength << setw(15)<< positiveion_density_profile.at(b) << setw(15) << p_error_bar.at(b) << endl; // change in the z coordinate, counted from leftwall
+      positiveDenistyMap.insert(std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
+
+  }
+
+  for (unsigned int b = 0; b < negativeion_density_profile.size(); b++) {
+      std::ostringstream stringRow;
+      stringRow << bin[b].midPoint * unitlength << setw(15)<< negativeion_density_profile.at(b) << setw(15) << n_error_bar.at(b)<< endl; // change in the z coordinate, counted from leftwall
+      negativeDensityMap.insert(std::make_pair(bin[b].midPoint * unitlength, stringRow.str()));
+  }
+  // Iterate through all elements in std::map to print final denisty plots
+  std::map<double, std::string>::iterator itp = positiveDenistyMap.begin();
+  while (itp != positiveDenistyMap.end())
+  {
+      list_p_profile << itp->second;
+      itp++;
+  }
+  std::map<double, std::string>::iterator itn = negativeDensityMap.begin();
+  while (itn != negativeDensityMap.end())
+  {
+      list_n_profile << itn->second;
+      itn++;
+  }
+  positiveDenistyMap.clear();
+  negativeDensityMap.clear();
+
+  list_p_profile.close();
+  list_n_profile.close();
+return;
+}
+
+//Seperate the ljmovie to many data.coords.all.101* files.
+//We can skip this function, if in Lammps we write " dump mymovie posneg custom 1000 data.coords.all.101* id  type q  x    y    z"
+void output_lammps(vector<PARTICLE>& ion, int &cnt_filename) //cnt_filename shows how many samples are created.
+{
+  vector<string>lines;
+  VECTOR3D posvec;
+  string AtomType,ChargeType, Num, line;
+  cnt_filename = 0;
+  int j = 0;
+  int filenumber = 0;
+  int header = 9; // There are 9 lines before the atom coordinates start.
+  char filename[100];
+  ifstream file;
+  ofstream outputfile(filename, ios::in);
+  file.open("movie_snapshots/ljmovie.xyz");
+  while (!file.eof())
+  {
+    if (j>= 0 && j< header)
+    {
+      getline(file, line);
+      j++;
+    }
+    if (j >= header && j < (header + ion.size()))
+    {
+      getline(file,line);
+      j++;
+      istringstream list(line);
+      list >> Num >> AtomType >> ChargeType >> posvec.x >> posvec.y >> posvec.z;
+      lines.push_back(line);
+    }
+    if (j == header + ion.size())
+    {
+      j=0;
+      filenumber = (cnt_filename * 1000);
+      sprintf(filename, "movie_snapshots/data.coords.all.%d", filenumber);
+      outputfile.open(filename);
+      for (vector<string>::iterator it = lines.begin() ; it != lines.end(); ++it)
+      {
+        outputfile << *it << endl;
+      }
+      outputfile.close();
+      cnt_filename++;
+      lines.clear();
+    }
+  }
+  
+  return;
+}
+
+// Read all data.coords.all.101* files and store them;
+//void ReadParticlePositions(vector<PARTICLE>& ion, int i, int data_frequency, int samples, double ion_diameter, double ion_mass, double lx, double ly, double lz, double Charge)
+void ReadParticlePositions(vector<PARTICLE>& ion, int cpmdstep, int samples, double diameter, INTERFACE &box)
+{
+  VECTOR3D posvec;
+  string AtomType;
+  double Charge;
+  int data_frequency = 1000;
+  int Num;
+  char filename[100];
+  int filenumber = cpmdstep * data_frequency;
+  sprintf(filename, "movie_snapshots/data.coords.all.%d", filenumber);
+  ifstream datafile(filename, ios::in);
+  if (!datafile)
+  {
+    cout << "Position data file " << filenumber << " could not be opened" << endl;
+  }
+  while (datafile >> Num >> AtomType >> Charge >> posvec.x >> posvec.y >> posvec.z)
+  {
+    PARTICLE singleljparticle = PARTICLE(int(ion.size())+1,diameter,Charge,0,1.0,box.eout,posvec,box.lx,box.ly,box.lz);
+    ion.push_back(singleljparticle);
+  }
+  return;
 }
 
 // compute MD trust factor R
@@ -316,6 +461,7 @@ void auto_correlation_function() {
     }
     return;
 }
+
 
 // display progress
 void ProgressBar(double fraction_completed) {

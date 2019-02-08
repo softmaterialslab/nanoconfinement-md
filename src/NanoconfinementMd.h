@@ -1,4 +1,4 @@
-// This is a header file for the INTERFACE class.  
+// This is a header file for the INTERFACE class.
 
 #ifndef _NanoconfinementMd_H
 #define _NanoconfinementMd_H
@@ -24,4 +24,3 @@ class NanoconfinementMd
 };
 
 #endif
-

@@ -27,6 +27,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double Q;                // thermostat mass required to generate canonical ensemble
     unsigned int chain_length_real;    // Nose Hoover thermostat chain length for particles
     double bin_width;            // width of the bins used to compute density profiles
+    bool lammps = true; //if it is false, do the simulation with c++ code, if it is true do it with lammps;
     CONTROL mdremote;            // remote control for md
     string config_file ="input_config.cfg";         //Configuration file path holder
     string simulationParams;
@@ -90,6 +91,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("ion_diameter,d", value<double>(&saltion_diameter_in)->default_value(0.714),
              "salt ion diameter inside")        // enter in nanometers
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(1000000), "steps used in md")
+            ("lammps,J", value<bool>(&lammps)->default_value(true),"LAMMPS (true LAMMPS; false MD)")
             ;
 
     options_description cmdline_options;
@@ -217,7 +219,11 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 		// check point
 		double totalions = 0;
 		for (unsigned int b = 0; b < initial_density.size(); b++)
-			totalions += initial_density.at(b) * bin[b].volume;
+		{	
+		  if (bin[b].lower == leftContact || bin[b].higher == rightContact)
+		      continue;
+		  totalions += initial_density.at(b) * bin[b].volume;
+		}
 		int totalpions = 0, totalnions = 0;
 		for (unsigned int i = 0; i < ion.size(); i++)
 		{
@@ -270,9 +276,48 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         real_bath.push_back((THERMOSTAT(0, T, 3 * ion.size(), 0.0, 0, 0)));
         // final bath is dummy bath (dummy bath always has zero mass)
     }
-
+    vector<double> mean_positiveion_density;            // average density profile
+    vector<double> mean_negativeion_density;            // average density profile
+    vector<double> mean_sq_positiveion_density;            // average of square of density
+    vector<double> mean_sq_negativeion_density;            // average of square of density
+    for (unsigned int b = 0; b < bin.size(); b++)
+    {
+      mean_positiveion_density.push_back(0.0);
+      mean_negativeion_density.push_back(0.0);
+      mean_sq_positiveion_density.push_back(0.0);
+      mean_sq_negativeion_density.push_back(0.0);
+    }
+    
     // Simulation using Molecular Dynamics
-    md(ion, box, real_bath, bin, mdremote, simulationParams);
+    if (!lammps)
+    {
+      md(ion, box, real_bath, bin, mdremote, simulationParams);
+    }
+    else
+    {
+      int cnt_filename = 0;
+      output_lammps(ion, cnt_filename);
+      if (world.rank() == 0)
+	cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename <<endl;
+      int lammps_samples = cnt_filename - 1;
+      make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
+      int cpmdstep=0;
+      double lammps_density_profile_samples=0;
+      for (int cpmdstep = 0; cpmdstep < lammps_samples; cpmdstep++)
+      {
+        vector<PARTICLE> ion;
+        vector<double> initial_density;
+        lammps_density_profile_samples++;
+        ReadParticlePositions(ion, cpmdstep, lammps_samples, saltion_diameter_in, box);
+        bin_ions(ion, box, initial_density, bin);
+        compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
+                                mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
+
+      }
+      average_errorbars_density(lammps_density_profile_samples, mean_positiveion_density,mean_sq_positiveion_density,mean_negativeion_density,
+                                      mean_sq_negativeion_density, ion, box, bin, simulationParams);
+    }
+
 
     // Post simulation analysis (useful for short runs, but performed otherwise too)
 	if (world.rank() == 0)
