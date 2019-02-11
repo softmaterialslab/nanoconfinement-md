@@ -43,8 +43,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     vector<DATABIN> bin;            // bins
     mpi::environment env;
     mpi::communicator world;
-    if (world.rank() == 0)
-        cout << "\nSimulation begins\n";
 
     // Get input values from the user
     //options_description desc("Usage:\nrandom_mesh <options>");
@@ -102,6 +100,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     variables_map vm;
     store(parse_command_line(argc, argv, cmdline_options), vm);
     notify(vm);
+
+    if (world.rank() == 0 && (!lammps))
+        cout << "\nSimulation begins\n";
 
     if (world.rank() == 0) {
         if (mdremote.verbose) {
@@ -305,12 +306,16 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
             if (lammpsPreprocessing) {
 
+                cout << "Lammps Preprocessing started." << endl;
+
                 box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, saltion_diameter_in);
                 generateLammpsInputfile(ein, mdremote.moviefreq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm));
 
                 cout << "Lammps Preprocessing ended." << endl;
 
             } else {
+
+                cout << "Lammps Postprocessing started." << endl;
 
                 int cnt_filename = 0;
                 output_lammps(ion, cnt_filename);
