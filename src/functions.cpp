@@ -304,11 +304,9 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
         ofstream outputfile(filename, ios::in);
         file.open("outfiles/ljmovie.xyz");
 
-        if (boost::filesystem::remove_all("temp") == 0)
-            cout << "\nError deleting instantaneous temp files directory " << endl;
+        if (boost::filesystem::remove_all("temp") != 0)
+            cout << "Pre-existing temp files folder deleted successfully." << endl;
 
-        else cout << "Pre-existing instantaneous temp files folder deleted successfully." << endl;
-        //  Create the directory that will store instantaneous dump files & populate it:
         boost::filesystem::create_directory("temp");
 
         while (!file.eof()) {
