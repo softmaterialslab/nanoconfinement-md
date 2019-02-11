@@ -8,18 +8,18 @@ OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenerg
 CCF = CC
 
 # nanoHUB flags. 
-nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp
-nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
+nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
+nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 nanoHUBCFLAG = -I${BOOST_INCDIR}
 nanoHUBOFLAG = -o
 # BigRed2 flags. 
-BigRed2CC = CC -O3 -g -Wall -fopenmp
-BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
+BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
+BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 BigRed2CFLAG = -c
 BigRed2OFLAG = -o
 # General purpose flags.
-CC = mpicxx -O3 -g -Wall -fopenmp
-LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
+CC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
+LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 CFLAG = -c
 OFLAG = -o
 
