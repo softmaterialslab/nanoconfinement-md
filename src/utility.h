@@ -24,6 +24,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace mpi = boost::mpi;
 

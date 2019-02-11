@@ -8,18 +8,18 @@ OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenerg
 CCF = CC
 
 # nanoHUB flags. 
-nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp
-nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
+nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
+nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 nanoHUBCFLAG = -I${BOOST_INCDIR}
 nanoHUBOFLAG = -o
 # BigRed2 flags. 
-BigRed2CC = CC -O3 -g -Wall -fopenmp
-BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization
+BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
+BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 BigRed2CFLAG = -c
 BigRed2OFLAG = -o
 # General purpose flags.
-CC = mpicxx -O3 -g -Wall -fopenmp
-LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization
+CC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
+LFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 CFLAG = -c
 OFLAG = -o
 
@@ -30,7 +30,7 @@ install: all
 
 nanoHUB-install:
 	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make CCF=nanoHUB all
-	@echo "Installing $(PROG) into $(bindir) directory on Rappture/nanohub"; cp -f $(PROG) $(BIN)
+	@echo "Installing $(PROG) into $(bindir) directory on nanohub"; cp -f $(PROG) $(BIN)
 
 cluster-install:
 	module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
