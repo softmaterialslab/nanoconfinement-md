@@ -30,7 +30,7 @@ install: all
 
 nanoHUB-install:
 	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make CCF=nanoHUB all
-	@echo "Installing $(PROG) into $(bindir) directory on Rappture/nanohub"; cp -f $(PROG) $(BIN)
+	@echo "Installing $(PROG) into $(bindir) directory on nanohub"; cp -f $(PROG) $(BIN)
 
 cluster-install:
 	module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
