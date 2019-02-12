@@ -313,6 +313,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
             if (j >= 0 && j < header) {
                 getline(file, line);
                 j++;
+                continue;
             }
             if (j >= header && j < (header + ion.size())) {
                 getline(file, line);
@@ -320,6 +321,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
                 istringstream list(line);
                 list >> Num >> AtomType >> ChargeType >> posvec.x >> posvec.y >> posvec.z;
                 lines.push_back(line);
+                continue;
             }
             if (j == header + ion.size()) {
                 j = 0;
