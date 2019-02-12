@@ -299,10 +299,10 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
     char filename[100];
     ifstream file;
 
-    if (boost::filesystem::exists( "outfiles/ljmovie.xyz" )) {
+    if (boost::filesystem::exists( "outfiles/electrolyte_movie.xyz" )) {
 
         ofstream outputfile(filename, ios::in);
-        file.open("outfiles/ljmovie.xyz");
+        file.open("outfiles/electrolyte_movie.xyz");
 
         if (boost::filesystem::remove_all("temp") != 0)
             cout << "Pre-existing temp files folder deleted successfully." << endl;
@@ -338,7 +338,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
         }
 
     } else
-        cout << "\noutfiles/ljmovie.xyz not found" << endl;
+        cout << "\noutfiles/electrolyte_movie.xyz not found" << endl;
 
     return;
 }

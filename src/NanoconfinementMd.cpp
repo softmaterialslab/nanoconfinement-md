@@ -145,7 +145,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             mdremote.hiteqm = (int) (mdremote.steps * 0.2);
             mdremote.writedensity = (int) (mdremote.steps * 0.1);
             mdremote.extra_compute = (int) (mdremote.steps * 0.01);
-            mdremote.moviefreq = (int) (mdremote.steps * 0.0002);
+            mdremote.moviefreq = (int) (mdremote.steps * 0.01);
         }
     }
 
