@@ -145,7 +145,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             mdremote.hiteqm = (int) (mdremote.steps * 0.2);
             mdremote.writedensity = (int) (mdremote.steps * 0.1);
             mdremote.extra_compute = (int) (mdremote.steps * 0.01);
-            mdremote.moviefreq = (int) (mdremote.steps * 0.0002);
+            mdremote.moviefreq = (int) (mdremote.steps * 0.01);
         }
     }
 
@@ -321,7 +321,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 output_lammps(ion, cnt_filename);
                 if (world.rank() == 0)
                     cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename << endl;
-                int lammps_samples = cnt_filename - 1;
+                int lammps_samples = cnt_filename;
                 make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
                 int cpmdstep = 0;
                 double lammps_density_profile_samples = 0;

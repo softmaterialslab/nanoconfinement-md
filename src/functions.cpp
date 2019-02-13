@@ -299,10 +299,10 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
     char filename[100];
     ifstream file;
 
-    if (boost::filesystem::exists( "outfiles/ljmovie.xyz" )) {
+    if (boost::filesystem::exists( "outfiles/electrolyte_movie.xyz" )) {
 
         ofstream outputfile(filename, ios::in);
-        file.open("outfiles/ljmovie.xyz");
+        file.open("outfiles/electrolyte_movie.xyz");
 
         if (boost::filesystem::remove_all("temp") != 0)
             cout << "Pre-existing temp files folder deleted successfully." << endl;
@@ -313,6 +313,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
             if (j >= 0 && j < header) {
                 getline(file, line);
                 j++;
+                continue;
             }
             if (j >= header && j < (header + ion.size())) {
                 getline(file, line);
@@ -320,6 +321,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
                 istringstream list(line);
                 list >> Num >> AtomType >> ChargeType >> posvec.x >> posvec.y >> posvec.z;
                 lines.push_back(line);
+                continue;
             }
             if (j == header + ion.size()) {
                 j = 0;
@@ -336,7 +338,7 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename) //cnt_filename show
         }
 
     } else
-        cout << "\noutfiles/ljmovie.xyz not found" << endl;
+        cout << "\noutfiles/electrolyte_movie.xyz not found" << endl;
 
     return;
 }
