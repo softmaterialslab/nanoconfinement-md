@@ -6,17 +6,15 @@
 # Coulombic interactions are calculated by 3D Ewald method; (charged sheets method is applied in nanoconfinement-md code);
 # Users can extract the ionic structure (density profile) for a wide variety of ionic and environmental parameters;
 # Input Pararmeters in Simulation #
-# Note that for style lj, all quantities are unitless;
-# All ions have identical sizes;LAMMPS sets the fundamental quantities mass, sigma, epsilon, and the Boltzmann constant = 1;
-# Mass_sodium = Mass_chlorine; mass of sodium ion in CGS is: 23*1.67*(10.0^-24);
-# Unit_length = Diameter_sodium =  Diameter_chlorine = 0.714 in nm);
+# Note that for style lj, all quantities are in reduced LJ units;
+# All ions have identical sizes; 
+# Mass of positive ion = Mass of chlorine ion; 
+# Unit of length = Diameter of positive ion =  Diameter of negative ion;
 # Positive charge = 1 e; Negative charge = -1 e;
 # lx = ly and periodic boundary; lz is nonperiodic boundary;
 # epsilon_water = 80;
 # room_temperature = 298 in Kelvin;
-# dcut = 2 ^ (1/6) = 1.122462048 (in reduced lj unit);
-# Unit_energy = epsilon, where E* = E / epsilon;//potential energy is summed over atoms, so it is output as energy/atom;
-# Unit_time = sqrt( Unit_mass * Unit_length * (10.0 ^ -7) * Unit_length / Unit_energy);
+# cutoff for LJ interactions = 2 ^ (1/6) = 1.122462048 (in reduced lj unit);
 # ------------------------------ INITIALIZATION-----------------------------------
 units           lj                                      # The units of all quantities specified in simulation are in lj;
 dimension       3                                       # It runs 3d simulations;
@@ -47,7 +45,7 @@ pair_coeff      1       2       1.0    1.0        1.122462048
 pair_coeff      2       2       1.0    1.0        1.122462048
 fix wallhi      all wall/lj126 zhi EDGE 1.0 1.0   1.122462048        # Non-electrostatic interaction between ions and wall at -lz/2;
 fix walllo      all wall/lj126 zlo EDGE 1.0 1.0   1.122462048        # Non-electrostatic interaction between ions and wall at  lz/2;
-pair_modify     shift	yes	                                           # the additive e_LJ for repulsion-only
+pair_modify     shift	yes	                                         # The additive e_LJ for repulsion-only
 kspace_style    pppm/disp 0.0001                                     # To use each timestep to compute Coulombic interactions; accuracy value is desired relative error in forces;
 kspace_modify   slab      3.0                                        # The slab allows an Ewald to be used for a systems that are periodic in x,y but non-periodic in z;
 # --------------------------------- SETTINGS --------------------------------------
@@ -67,8 +65,7 @@ thermo          1000                                                            
 run             USERINPUT_STEPS_AFTER_EQ                                          # Run time after equilibration;
 write_restart   outfiles/large.sample.electrolyte.*                               # Restart command to create a sample of fluid with which you can write a fix
 unfix           heat                                                              # Similar to a bracket close
-#shell          sh cleanlog.sh                                                    # to run automatically the .dat cleansing for all the different steps
 
 ##################################################################################
 # SIMULATION DONE
-print "Lammps Simulation Ended"
+print "LAMMPS Simulation Ended"
