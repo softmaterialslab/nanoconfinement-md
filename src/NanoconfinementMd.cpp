@@ -91,7 +91,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("ion_diameter,d", value<double>(&saltion_diameter_in)->default_value(0.714),
              "salt ion diameter inside")        // enter in nanometers
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(5000000), "steps used in md")
-            ("lammps,J", value<bool>(&lammps)->default_value(true), "LAMMPS (true LAMMPS; false MD)")
+            ("lammps,J", value<bool>(&lammps)->default_value(false), "LAMMPS (true LAMMPS; false MD)")
             ("lammpsPreprocessing,j", value<bool>(&lammpsPreprocessing)->default_value(true), "LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)");
 
     options_description cmdline_options;
