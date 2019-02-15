@@ -139,13 +139,13 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             mdremote.hiteqm = 10000;
             mdremote.writedensity =(int)(mdremote.steps*0.1);
             mdremote.extra_compute = (int)(mdremote.steps*0.01);
-            mdremote.moviefreq = (int)(mdremote.steps*0.01);
+            mdremote.moviefreq = (int)(mdremote.steps*0.001);
         }
         else {
             mdremote.hiteqm = (int) (mdremote.steps * 0.2);
             mdremote.writedensity = (int) (mdremote.steps * 0.1);
             mdremote.extra_compute = (int) (mdremote.steps * 0.01);
-            mdremote.moviefreq = (int) (mdremote.steps * 0.01);
+            mdremote.moviefreq = (int) (mdremote.steps * 0.001);
         }
     }
 
@@ -322,7 +322,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 if (world.rank() == 0)
                     cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename << endl;
                 int lammps_samples = cnt_filename;
-                make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
+              //  make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
                 int cpmdstep = 0;
                 double lammps_density_profile_samples = 0;
                 for (int cpmdstep = 0; cpmdstep < lammps_samples; cpmdstep++) {
@@ -330,7 +330,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     vector<double> initial_density;
                     lammps_density_profile_samples++;
                     ReadParticlePositions(ion, cpmdstep, lammps_samples, saltion_diameter_in, box);
-                    bin_ions(ion, box, initial_density, bin);
+                //    bin_ions(ion, box, initial_density, bin);
                     compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density,
                                             mean_sq_positiveion_density,
                                             mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin,
