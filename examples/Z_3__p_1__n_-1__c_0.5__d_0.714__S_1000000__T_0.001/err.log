@@ -1,0 +1,7 @@
+ModuleCmd_Switch.c(172):ERROR:152: Module 'PrgEnv-cray' is currently not loaded
+Boost version 1.65.0 (with gnu gcc compiled libraries) loaded.
+GSL version 2.3 loaded.
+
+real	24m22.717s
+user	0m0.832s
+sys	0m0.184s
