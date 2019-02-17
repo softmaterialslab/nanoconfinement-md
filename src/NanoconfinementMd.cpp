@@ -309,7 +309,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 cout << "Lammps Preprocessing started." << endl;
 
                 box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, saltion_diameter_in);
-                generateLammpsInputfile(ein, mdremote.moviefreq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm));
+                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm));
 
                 cout << "Lammps Preprocessing ended." << endl;
 
