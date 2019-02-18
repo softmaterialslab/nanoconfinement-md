@@ -421,7 +421,7 @@ double compute_MD_trust_factor_R(int hiteqm) {
     return R;
 }
 
-void generateLammpsInputfile(double ein, int movieFrequency, int stepsToEqb, int stepsAfterEqb) {
+void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb) {
 
     /*Replacable variables*/
     string dielectricText = "USERINPUT_DIELECTRIC_CONST";
@@ -443,7 +443,7 @@ void generateLammpsInputfile(double ein, int movieFrequency, int stepsToEqb, int
 
                 found = line.find(movieFrq);
                 if (found != std::string::npos)
-                    line.replace(found, movieFrq.length(), std::to_string(movieFrequency));
+                    line.replace(found, movieFrq.length(), std::to_string(Frequency));
 
                 found = line.find(stepsUpToEQ);
                 if (found != std::string::npos)
