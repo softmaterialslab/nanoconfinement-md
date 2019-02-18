@@ -55,14 +55,14 @@ kspace_modify   slab      3.0                                        # The slab 
 dump	          mymovie  salt_ions    custom	USERINPUT_MOVIE_FRQ outfiles/electrolyte_movie.xyz id  type  q  x   y   z
 thermo_style	  custom    step   temp    vol    density   ke    pe    etotal    # Set the style and content for printing thermodynamic data to the screen and log file;
 fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
-timestep        0.001                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
+timestep        0.0005                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
 thermo	        1000                                                              # How often does the data get dumped
 run             USERINPUT_STEPS_BEFORE_EQ                                         # Run time for equilibration;
 write_restart   outfiles/equilibrated.electrolyte.system.*                        # Restart command to create a sample of fluid with which you can write a fix
 unfix           equilibrate                                                       # Similar to a bracket close
 # GET DATA
 fix             heat salt_ions nvt temp 1.0 1.0 0.1
-timestep        0.001                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
+timestep        0.0005                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
 thermo          1000                                                              # How often does the data get dumped
 run             USERINPUT_STEPS_AFTER_EQ                                          # Run time after equilibration;
 write_restart   outfiles/large.sample.electrolyte.*                               # Restart command to create a sample of fluid with which you can write a fix
