@@ -66,7 +66,7 @@ double compute_MD_trust_factor_R(int);
 void auto_correlation_function();
 
 // generate LAMMPS input script
-void generateLammpsInputfile(double , int , int , int );
+void generateLammpsInputfile(double , int , int , int , double, double);
 
 
 // functions useful in computing forces and energies

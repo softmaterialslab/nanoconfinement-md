@@ -421,14 +421,27 @@ double compute_MD_trust_factor_R(int hiteqm) {
     return R;
 }
 
-void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb) {
-
+void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, double Positive_diameter_in, double Negative_diameter_in) {
+   
+    Positive_diameter_in = Positive_diameter_in / unitlength;
+    Negative_diameter_in = Negative_diameter_in / unitlength;
+    double average_positive_negative_diameter =  0.5 * (Positive_diameter_in + Negative_diameter_in);
+    double positive_ion_cutoff = Positive_diameter_in * dcut;
+    double negative_ion_cutoff = Negative_diameter_in * dcut;
+    double average_negative_positive_cutoff = 0.5 * (negative_ion_cutoff + positive_ion_cutoff);
+   
     /*Replacable variables*/
     string dielectricText = "USERINPUT_DIELECTRIC_CONST";
     string movieFrq = "USERINPUT_MOVIE_FRQ";
     string stepsUpToEQ = "USERINPUT_STEPS_BEFORE_EQ";
     string stepsAfterEQ = "USERINPUT_STEPS_AFTER_EQ";
 
+    string positiveIonsDiameter = "USERINPUT_POSITIVE_DIAMETER";
+    string negativeIonsDiameter = "USERINPUT_NEGATIVE_DIAMETER";
+    string averagePositiveNegativeIonsDiameter = "AVERAGE_DIAMETER";
+    string positiveIonCutoff = "POSITIVE_CUTOFF";
+    string negativeIonCutoff = "NEGATIVE_CUTOFF";
+    string averageIonCutoff = "CUTOFF_AVERAGE";
     ofstream inputScript("in.lammps", ios::trunc);
     if (inputScript.is_open()) {
 
@@ -452,6 +465,30 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
                 found = line.find(stepsAfterEQ);
                 if (found != std::string::npos)
                     line.replace(found, stepsAfterEQ.length(), std::to_string(stepsAfterEqb));
+                
+                found = line.find(positiveIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, positiveIonsDiameter.length(), std::to_string(Positive_diameter_in));
+
+                found = line.find(negativeIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, negativeIonsDiameter.length(), std::to_string(Negative_diameter_in));
+
+                found = line.find(averagePositiveNegativeIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, averagePositiveNegativeIonsDiameter.length(), std::to_string(average_positive_negative_diameter));
+
+               found = line.find(positiveIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, positiveIonCutoff.length(), std::to_string(positive_ion_cutoff));
+
+               found = line.find(negativeIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, negativeIonCutoff.length(), std::to_string(negative_ion_cutoff));
+
+               found = line.find(averageIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, averageIonCutoff.length(), std::to_string(average_negative_positive_cutoff));
 
                 inputScript << line << endl;
             }

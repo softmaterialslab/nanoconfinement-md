@@ -41,7 +41,7 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
   return;
 }
 
-void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double diameter, vector<PARTICLE>& ion)
+void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion)
 {
   // establish the number of inside salt ions first
   // Note: salt concentration is the concentration of one kind of ions, so for total ions a factor of 2 needs to be multiplied.
@@ -56,12 +56,13 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   unsigned int total_saltions_inside = total_nions_inside + total_pions_inside;
 
   // express diameter in consistent units
-  diameter = diameter / unitlength;
+  positive_diameter_in = positive_diameter_in / unitlength;
+  negative_diameter_in = negative_diameter_in / unitlength;
 
   // distance of closest approach between the ion and the interface
-  double r0_x = 0.5 * lx - 0.5 * diameter;
-  double r0_y = 0.5 * ly - 0.5 * diameter;
-  double r0_z = 0.5 * lz - 0.5 * diameter;
+  double r0_x = 0.5 * lx - 0.5 * negative_diameter_in;
+  double r0_y = 0.5 * ly - 0.5 * negative_diameter_in;
+  double r0_z = 0.5 * lz - 0.5 * negative_diameter_in;
 
   // UTILITY ugsl;			// utility used for making initial configuration
 
@@ -90,18 +91,18 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     double z = gsl_rng_uniform(rnr);
     z = (1 - z) * (-r0_z) + z * (r0_z);
     VECTOR3D posvec = VECTOR3D(x,y,z);
-    if (x > r0_x - diameter || y > r0_y-diameter || z > r0_z-diameter)		// putting an extra ion diameter length away from interface
+    if (x > r0_x - negative_diameter_in || y > r0_y-negative_diameter_in || z > r0_z-negative_diameter_in)		// putting an extra ion diameter length away from interface
       continue;
     bool continuewhile = false;
     for (unsigned int i = 0; i < ion.size() && continuewhile == false; i++)
-      if ((posvec - ion[i].posvec).GetMagnitude() <= (0.5*diameter+0.5*ion[i].diameter)) continuewhile = true;
+      if ((posvec - ion[i].posvec).GetMagnitude() <= (0.5*negative_diameter_in+0.5*ion[i].diameter)) continuewhile = true;
     if (continuewhile == true)
       continue;
     PARTICLE freshion;
     if (saltion_in.size() < total_pions_inside)
-      freshion = PARTICLE(int(ion.size())+1,diameter,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
+      freshion = PARTICLE(int(ion.size())+1,positive_diameter_in,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
     else
-      freshion = PARTICLE(int(ion.size())+1,diameter,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
+      freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
@@ -122,7 +123,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 }
 
 // discretize interface
-void INTERFACE::discretize(double ion_diameter, double f)
+void INTERFACE::discretize(double positive_diameter_in, double f)
 {
   // width of the discretization (f is typically 1 or 1/2 or 1/4 or 1/8 ...)
   width = f * lx;	// in reduced units
@@ -170,7 +171,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
 	  listleftplane << -0.5*lz << "\t" << 0.5*lz << endl;
 	  listleftplane << "ITEM: ATOMS index type x y z" << endl;
 	  for (unsigned int k = 0; k < leftplane.size(); k++)
-		listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec.x <<  "  " <<  leftplane[k].posvec.y <<  "  " << (leftplane[k].posvec.z- 0.5 * ion_diameter) << endl;
+		listleftplane << k+1 << "  " << "1" << "  " << leftplane[k].posvec.x <<  "  " <<  leftplane[k].posvec.y <<  "  " << (leftplane[k].posvec.z- 0.5 * positive_diameter_in) << endl;
 	  listleftplane.close();
 
 	  string listrightplanePath= rootDirectory+"outfiles/rightplane.xyz";
@@ -185,7 +186,7 @@ void INTERFACE::discretize(double ion_diameter, double f)
 	  listrightplane << -0.5*lz << "\t" << 0.5*lz << endl;
 	  listrightplane << "ITEM: ATOMS index type x y z" << endl;
 	  for (unsigned int k = 0; k < rightplane.size(); k++)
-		listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << (rightplane[k].posvec.z + 0.5 * ion_diameter) << endl;
+		listrightplane << k+1 << "  " << "1" << "  " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << (rightplane[k].posvec.z + 0.5 * positive_diameter_in) << endl;
 	  listrightplane.close();
   }
   return;

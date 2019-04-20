@@ -39,15 +39,21 @@ dielectric	USERINPUT_DIELECTRIC_CONST                  # Dielectric constant of 
 velocity	positive_ions	create	1.0	87238748            # Generates an ensemble of velocities using a random number generator with the specified seed at the specified temperature. 1-kB*T,random seed;
 velocity        negative_ions   create  1.0     87238748
 # ------------------------------- FORCE FIELDS ------------------------------------
-pair_style      lj/long/coul/long   cut  long     1.122462048  8.0  # Standard 12/6 Lennard-Jones and Coulombic potentials.Cutoff for L-J = 2^(1/6),for Coul = 8.0 (reduced lj units);
-pair_coeff      1       1       1.0    1.0        1.122462048       # Epsilon, sigma, Cutoff distance (in reduced lj units);
-pair_coeff      1       2       1.0    1.0        1.122462048
-pair_coeff      2       2       1.0    1.0        1.122462048
-fix wallhi      all wall/lj126 zhi EDGE 1.0 1.0   1.122462048        # Non-electrostatic interaction between ions and wall at -lz/2;
+pair_style      lj/long/coul/long   cut  long     1.122462048  8.0  # Standard 12/6 Lennard-Jones and Coulombic potentials.Cutoff for L-J = sigma * 2^(1/6),for Coul = 8.0 (reduced lj units);
+pair_coeff      1       1       1.0    USERINPUT_POSITIVE_DIAMETER   POSITIVE_CUTOFF # 1.0        1.122462048       # Epsilon, sigma, Cutoff distance (in reduced lj units);
+pair_coeff      2       2       1.0    USERINPUT_NEGATIVE_DIAMETER   NEGATIVE_CUTOFF # 2.0        2.122462048
+pair_coeff      1       2       1.0    AVERAGE_DIAMETER  CUTOFF_AVERAGE # 1.5        1.683693072
+
+fix wallhi      positive_ions  wall/lj126 zhi EDGE 1.0  USERINPUT_POSITIVE_DIAMETER POSITIVE_CUTOFF # 1.0 1.122462048    # Non-electrostatic interaction between ions and wall at -lz/2;
 fix_modify      wallhi energy yes
-fix walllo      all wall/lj126 zlo EDGE 1.0 1.0   1.122462048        # Non-electrostatic interaction between ions and wall at  lz/2;
+fix walllo      positive_ions  wall/lj126 zlo EDGE 1.0 USERINPUT_POSITIVE_DIAMETER POSITIVE_CUTOFF # 1.0  1.122462048        # Non-electrostatic interaction between ions and wall at  lz/2;
 fix_modify      walllo energy yes
-pair_modify     shift	yes	                                         # The additive e_LJ for repulsion-only
+fix wallhii     negative_ions wall/lj126 zhi EDGE 1.0 AVERAGE_DIAMETER  CUTOFF_AVERAGE # 1.5  1.683693072  #  1.122462048        # Non-electrostatic interaction between ions and wall at -lz/2;
+fix_modify      wallhii energy yes
+fix wallloo     negative_ions wall/lj126 zlo EDGE 1.0 AVERAGE_DIAMETER  CUTOFF_AVERAGE # 1.5  1.683693072  #  1.122462048        # Non-electrostatic interaction between ions and wall at  lz/2;
+fix_modify      wallloo energy yes
+
+pair_modify     shift   yes                                              # The additive e_LJ for repulsion-only
 kspace_style    pppm/disp 0.0001                                     # To use each timestep to compute Coulombic interactions; accuracy value is desired relative error in forces;
 kspace_modify   slab      3.0                                        # The slab allows an Ewald to be used for a systems that are periodic in x,y but non-periodic in z;
 # --------------------------------- SETTINGS --------------------------------------
