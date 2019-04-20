@@ -21,7 +21,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     int pz_in;            // positive valency of ions inside
     int nz_in;            // negative valency of ions inside
     double salt_conc_in;        // salt concentration outside	(enter in M)
-    double saltion_diameter_in;    // inside salt ion diameter	(positive and negative ions assumed to have same diameter)
+    double positive_diameter_in;    // inside salt ion diameter	(positive and negative ions assumed to have same diameter)
+    double negative_diameter_in;
     double T;            // temperature at which the system of ions is
 
     // Simulation related variables
@@ -88,7 +89,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("positive_valency,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
             ("negative_valency,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
             ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
-            ("ion_diameter,d", value<double>(&saltion_diameter_in)->default_value(0.714),
+            ("ion_diameter,d", value<double>(&positive_diameter_in)->default_value(0.714),
              "salt ion diameter inside")        // enter in nanometers
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(5000000), "steps used in md")
             ("lammps,J", value<bool>(&lammps)->default_value(false), "LAMMPS (true LAMMPS; false MD)")
@@ -130,7 +131,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     }
     //X and Y mapping
     if (paraMap) {
-        unitlength = saltion_diameter_in;
+        negative_diameter_in = 0.714;
+        unitlength = positive_diameter_in;
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
@@ -153,7 +155,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     T = 1;        // set temperature (in reduced units; see utility.h)
     INTERFACE box = INTERFACE(VECTOR3D(0, 0, 0), ein, eout); // interface, z planes hard walls; rest periodic boundaries
     box.set_up(salt_conc_in, 0, pz_in, 0, bx / unitlength, by / unitlength, bz / unitlength);
-    box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, saltion_diameter_in, ion);
+    box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, positive_diameter_in, negative_diameter_in, ion);
     make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
     /*This is to get contact point densities*/
     double leftContact = -0.5 * box.lz + 0.5 * ion[0].diameter - 0.5 * bin[0].width;
@@ -168,7 +170,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     vector<double> initial_density;
     bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
 
-    box.discretize(saltion_diameter_in / unitlength, fraction_diameter);
+    box.discretize(positive_diameter_in / unitlength, fraction_diameter);
 
     if (world.rank() == 0) {
         // output to screen the parameters of the problem
@@ -193,7 +195,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         cout << "Dielectric contrast across interfaces " << 2 * (box.eout - box.ein) / (box.eout + box.ein) << endl;
         cout << "Positive (+) ion valency " << pz_in << endl;
         cout << "Negative (-) ion valency " << nz_in << endl;
-        cout << "Ion diameter (both + and - ions have the same diameter) " << saltion_diameter_in / unitlength << endl;
+        cout << "positive ion diameter " << positive_diameter_in / unitlength << endl;
+        cout << "negative ion diameter " << negative_diameter_in / unitlength << endl;
         cout << "Ion (salt) concentration (c) inside " << salt_conc_in << " M" << endl;
         cout << "Note: we define c = total number of negative ions / volume" << endl;
         cout << "Debye length " << box.inv_kappa_in << endl;
@@ -308,8 +311,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
                 cout << "Lammps Preprocessing started." << endl;
 
-                box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, saltion_diameter_in);
-                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm));
+                box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, positive_diameter_in);
+                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), positive_diameter_in, negative_diameter_in);
 
                 cout << "Lammps Preprocessing ended." << endl;
 
@@ -329,7 +332,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     vector <PARTICLE> ion;
                     vector<double> initial_density;
                     lammps_density_profile_samples++;
-                    ReadParticlePositions(ion, cpmdstep, lammps_samples, saltion_diameter_in, box);
+                    ReadParticlePositions(ion, cpmdstep, lammps_samples, positive_diameter_in, box);
                 //    bin_ions(ion, box, initial_density, bin);
                     compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density,
                                             mean_sq_positiveion_density,

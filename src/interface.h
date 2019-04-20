@@ -58,7 +58,7 @@ class INTERFACE
   vector<VERTEX> rightplane;
 
   void set_up(double, double, int, int, double, double, double);
-  void put_saltions_inside(vector<PARTICLE>&, int, int, double, double, vector<PARTICLE>&);
+  void put_saltions_inside(vector<PARTICLE>&, int, int, double, double, double, vector<PARTICLE>&);
   void discretize(double, double);
   void generate_lammps_datafile(vector<PARTICLE>&, int, int, vector<PARTICLE>&, double);
 
