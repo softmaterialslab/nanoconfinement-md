@@ -8,10 +8,10 @@ summary: This page has instructions to install the source code for simulating io
 
 ## Installing from Source and Building on IU BigRed2
 
-The nanoconfinement code is open source and can optionally be built from source and used locally or on computer clusters. The following cluster build instructions should serve as a reference. 
+The nanoconfinement code is open source and can optionally be built from source and used locally or on computer clusters. The following cluster build instructions should serve as a reference.
 
 ### Necessary Modules
-* By default BR2 cluster environment has Cray programming environment module (PrgEnv-cray) loaded 
+* By default BR2 cluster environment has Cray programming environment module (PrgEnv-cray) loaded
 * Nanoconfinement code has dependency to Boost libraries which requires GNU programming environment
     * Switch modules to GNU - ```module swap PrgEnv-cray PrgEnv-gnu```
 * Load latest boost libraries
@@ -20,7 +20,7 @@ The nanoconfinement code is open source and can optionally be built from source 
     * ```module load gsl```
 
 ### Install instructions
-* Copy or git clone nanoconfinement-md project in to a directory. 
+* Copy or git clone nanoconfinement-md project in to a directory.
 * Go to nanoconfinement-md directory and (cd nanoconfinement-md)
 * You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
     * make cluster-install
@@ -33,8 +33,8 @@ The nanoconfinement code is open source and can optionally be built from source 
     * cd nanoconfinement-md/bin
 * Load the modules using following command :
     * module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl
-* execute the program using following command : 
-    * time aprun -n 4 -d 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000
+* execute the program using following command :
+    * time aprun -n 4 -d 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -S 1000000
 
 #### Using a jobscript
 * If you need to change the computational parameter or the physical parameters, you may edit the jobscript file.
