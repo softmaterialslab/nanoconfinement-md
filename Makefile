@@ -25,9 +25,9 @@ all:
 ifeq ($(CCF),BigRed2)	
 	+$(MAKE) -C $(BASE) cluster-install
 else ifeq ($(CCF),nanoHUB)
-	+$(MAKE) -C $(BASE)
+	+$(MAKE) -C $(BASE) nanoHUB-install
 else
-	+$(MAKE) -C $(BASE)
+	+$(MAKE) -C $(BASE) local-install
 endif
 	@echo "Ending the build of the $(BASE) directory";
 	@echo "installing the $(PROG) into $(BIN) directory"; cp -f $(BASE)/$(PROG) $(BIN)
