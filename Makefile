@@ -62,19 +62,19 @@ cluster-test-submit:
 	
 cluster-submit-lammps:
 	@echo "Running the preprocessor to create lammps script and input script."
-	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) S=$(S)
+	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S)
 	@echo "Running the preprocessor is over."
 	@echo "Installing jobscript into $(BIN) directory"
 	cp -f $(SCRIPT)/$(JOBSCRLMP) $(BIN)
 	+$(MAKE) -C $(BIN) submit-lammps
 	
 run-postprocessor:
-	+$(MAKE) -C $(BIN) run-postprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
+	+$(MAKE) -C $(BIN) run-postprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
 	@echo "Postprocessing is over."
 
 local-run-parallel-lammps:
 	@echo "Running the preprocessor to create lammps script and input script."
-	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
+	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
 	@echo "Running the preprocessor is over."
 	+$(MAKE) -C $(BIN) run-local-parallel NODESIZE=$(NODESIZE) MPIRUNCMD=mpirun
 	@echo "Lammps simulation is over."
@@ -83,7 +83,7 @@ local-run-parallel-lammps:
 
 local-run-lammps:
 	@echo "Running the preprocessor to create lammps script and input script."
-	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
+	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a)  S=$(S) MPIRUNCMD=$(MPIRUNCMD)
 	@echo "Running the preprocessor is over."
 	+$(MAKE) -C $(BIN) run-local-serial
 	@echo "Lammps simulation is over."
