@@ -59,6 +59,12 @@ kspace_modify   slab      3.0                                        # The slab 
 # --------------------------------- SETTINGS --------------------------------------
 # EQUILIBRATION
 dump	          mymovie  salt_ions    custom	USERINPUT_MOVIE_FRQ outfiles/electrolyte_movie.xyz id  type  q  x   y   z
+## Image Dump ##
+dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 &
+               	axes no 0.8 0.02 view 60 -30         
+dump_modify myimages pad 3
+dump_modify myimages boxcolor black backcolor white
+
 thermo_style	  custom    step   temp    vol    density   ke    pe    etotal    # Set the style and content for printing thermodynamic data to the screen and log file;
 fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
 timestep        0.0005                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
@@ -76,4 +82,6 @@ unfix           heat                                                            
 
 ##################################################################################
 # SIMULATION DONE
+undump mymovie
+undump myimages
 print "LAMMPS Simulation Ended"
