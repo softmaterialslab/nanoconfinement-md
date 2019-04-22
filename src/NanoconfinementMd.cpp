@@ -89,8 +89,10 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("positive_valency,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
             ("negative_valency,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
             ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
-            ("ion_diameter,d", value<double>(&positive_diameter_in)->default_value(0.714),
-             "salt ion diameter inside")        // enter in nanometers
+            ("positive_diameter,d", value<double>(&positive_diameter_in)->default_value(0.714),
+             "positive ion diameter inside")        // enter in nanometers
+             ("negative_diameter,a", value<double>(&negative_diameter_in)->default_value(0.714),
+              "negative ion diameter inside")        // enter in nanometers
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(5000000), "steps used in md")
             ("lammps,J", value<bool>(&lammps)->default_value(false), "LAMMPS (true LAMMPS; false MD)")
             ("lammpsPreprocessing,j", value<bool>(&lammpsPreprocessing)->default_value(true), "LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)");
@@ -131,7 +133,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     }
     //X and Y mapping
     if (paraMap) {
-        negative_diameter_in = 0.714;
+      //  negative_diameter_in = 0.714;
         unitlength = positive_diameter_in;
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
