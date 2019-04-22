@@ -25,12 +25,12 @@ OFLAG = -o
 
 all: $(PROG)
 
-install: all
-	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
-
-nanoHUB-install:
+install:
 	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make CCF=nanoHUB all
 	@echo "Installing $(PROG) into $(bindir) directory on nanohub"; cp -f $(PROG) $(BIN)
+
+local-install: all
+	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
 cluster-install:
 	module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
@@ -51,4 +51,20 @@ else
 	$(CC) -c $(CFLAG) $< -o $@	
 endif
 
-.PHONY: all install nanoHUB-install cluster-install
+clean: dataclean
+	rm -f *.o
+	rm -f $(PROG)
+	rm -f $(BIN)/$(PROG)
+	rm -rf $(BIN)/outfiles/*
+	rm -rf $(BIN)/data/*
+
+dataclean:
+	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/*
+	rm -f $(BIN)/data/*.dat $(BIN)/data/*.xyz  $(BIN)/data/*.lammpstrj
+	rm -f $(BIN)/*.log
+	rm -f $(BIN)/*.pbs	
+
+distclean: clean
+	rm -f $(BIN)/$(PROG)
+
+.PHONY: all install nanoHUB-install cluster-install distclean dataclean clean
