@@ -25,16 +25,25 @@ OFLAG = -o
 
 all: $(PROG)
 
-install:
+install: create-dirs
 	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make CCF=nanoHUB all
 	@echo "Installing $(PROG) into $(bindir) directory on nanohub"; cp -f $(PROG) $(BIN)
 
-local-install: all
+local-install: create-dirs
+	make CCF=LOCAL all
 	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
-cluster-install:
+cluster-install: create-dirs
 	module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
 	@echo "Installing $(PROG) into $(bindir) directory on the computing cluster"; cp -f $(PROG) $(BIN)
+
+create-dirs:
+	@echo "Checking and creating needed sub-directories in the $(BIN) directory"
+	if ! [ -d $(BIN) ]; then mkdir $(BIN); fi
+	if ! [ -d $(BIN)/outfiles ]; then mkdir $(BIN)/outfiles; fi
+	if ! [ -d $(BIN)/infiles ]; then mkdir $(BIN)/infiles; fi
+	if ! [ -d $(BIN)/data ]; then mkdir $(BIN)/data; fi
+	@echo "Directory creation is over."
 
 $(PROG) : $(OBJ)
 ifeq ($(CCF),BigRed2)	
