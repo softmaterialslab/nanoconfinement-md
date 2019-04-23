@@ -20,6 +20,7 @@ S=5000000
 NODESIZE=4
 
 MPIRUNCMD = aprun
+LAMMPSEXE = lmp_mpi
 
 all:
 	@echo "Starting build of the $(BASE) directory";
@@ -74,18 +75,18 @@ run-postprocessor:
 
 local-run-parallel-lammps:
 	@echo "Running the preprocessor to create lammps script and input script."
-	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
+	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD) 
 	@echo "Running the preprocessor is over."
-	+$(MAKE) -C $(BIN) run-local-parallel NODESIZE=$(NODESIZE) MPIRUNCMD=mpirun
+	+$(MAKE) -C $(BIN) run-local-parallel NODESIZE=$(NODESIZE) MPIRUNCMD=$(MPIRUNCMD) LAMMPSEXE=$(LAMMPSEXE)
 	@echo "Lammps simulation is over."
-	+$(MAKE) -C $(BIN) run-postprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
+	+$(MAKE) -C $(BIN) run-postprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD) 
 	@echo "Postprocessing is over."
 
 local-run-lammps:
 	@echo "Running the preprocessor to create lammps script and input script."
 	+$(MAKE) -C $(BIN) run-preprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
 	@echo "Running the preprocessor is over."
-	+$(MAKE) -C $(BIN) run-local-serial
+	+$(MAKE) -C $(BIN) run-local-serial LAMMPSEXE=$(LAMMPSEXE)
 	@echo "Lammps simulation is over."
 	+$(MAKE) -C $(BIN) run-postprocessor Z=$(Z) p=$(p) n=$(n) c=$(c) d=$(d) a=$(a) S=$(S) MPIRUNCMD=$(MPIRUNCMD)
 	@echo "Postprocessing is over."
