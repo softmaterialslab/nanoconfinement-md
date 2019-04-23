@@ -1,5 +1,6 @@
 # This submit a job in bigred2
 MPIRUNCMD = aprun
+LAMMPSEXE = lmp_mpi
 JOBSCR = nanoconfinement.pbs
 TEST = test.pbs
 JOBSCRLMP = nanoconfinement-lammps.pbs
@@ -32,7 +33,7 @@ submit-lammps:
 	qsub $(JOBSCRLMP)
 
 run-local-parallel:
-	time $(MPIRUNCMD) -n $(NODESIZE) lmp_mpi < in.lammps
+	time $(MPIRUNCMD) -n $(NODESIZE) $(LAMMPSEXE) < in.lammps
 
 run-local-serial:
-	time lmp_g++ < in.lammps
+	time $(LAMMPSEXE) < in.lammps
