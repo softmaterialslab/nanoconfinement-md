@@ -9,3 +9,6 @@ What does this code do
 * Unpolarized surfaces are assumed and standard molecular dynamics is used to propagrate the dynamics of ions
 
 For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/) 
+
+## NanoHUB app page:
+* https://nanohub.org/tools/nanoconfinement
