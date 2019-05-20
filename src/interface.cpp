@@ -56,7 +56,9 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 //  unsigned int total_saltions_inside = total_nions_inside + total_pions_inside;
 
   unsigned int total_pions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
-    unsigned int total_nions_inside = total_pions_inside * pz;
+  if (total_pions_inside % nz !=0)
+    total_pions_inside = total_pions_inside - (total_pions_inside % abs (nz));
+  unsigned int total_nions_inside = total_pions_inside * pz / abs (nz);
   unsigned int total_saltions_inside = total_nions_inside + total_pions_inside;
 
   // express diameter in consistent units
