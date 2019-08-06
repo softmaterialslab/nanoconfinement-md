@@ -157,7 +157,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
           charge_density = -0.01; // in unit of Coulomb per square meter
         }
 
-        valency_counterion = pz_in;
+        valency_counterion = 1; //pz_in;
         counterion_diameter_in = positive_diameter_in;
         surface_area = bx * by * pow(10.0,-18);// in unit of square meter;
         number_meshpoints = pow ((1.0/fraction_diameter), 2.0);
