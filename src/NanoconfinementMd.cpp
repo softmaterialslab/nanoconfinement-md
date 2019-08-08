@@ -74,8 +74,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
              "chain length for real system: enter L+1 if you want L thermostats")
-            ("bin_width,B", value<double>(&bin_width)->default_value(0.05), "bin width")// in reduced units
-            ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.0005), "time step used in md")
+            ("bin_width,B", value<double>(&bin_width)->default_value(0.05), "bin width (reduced units)")// in reduced units
+            ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.0005), "time step used in md (reduced units)")
             ("md_eqm,P", value<int>(&mdremote.hiteqm)->default_value(100000), "production begin (md)")
             ("md_freq,F", value<int>(&mdremote.freq)->default_value(100), "sample frequency (md)")
             ("md_extra_compute,x", value<int>(&mdremote.extra_compute)->default_value(10000),
@@ -93,15 +93,15 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     //-Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 5000000
     options_description config("Configuration");
     config.add_options()
-            ("confinement_length,Z", value<double>(&bz)->default_value(3),
+            ("confinement_length,Z", value<double>(&bz)->default_value(3.0),
              "box length in z direction in nanometers")        // enter in nanometers
             ("positive_valency,p", value<int>(&pz_in)->default_value(1), "positive valency inside")
             ("negative_valency,n", value<int>(&nz_in)->default_value(-1), "negative valency inside")
-            ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside")
+            ("salt_concentration,c", value<double>(&salt_conc_in)->default_value(0.50), "salt concentration inside (M)")
             ("positive_diameter,d", value<double>(&positive_diameter_in)->default_value(0.474),
-             "positive ion diameter inside")        // enter in nanometers
+             "positive ion diameter inside (nm)")        // enter in nanometers
              ("negative_diameter,a", value<double>(&negative_diameter_in)->default_value(0.627),
-              "negative ion diameter inside")        // enter in nanometers
+              "negative ion diameter inside (nm)")        // enter in nanometers
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(5000000), "steps used in md")
             ("lammps,J", value<bool>(&lammps)->default_value(false), "LAMMPS (true LAMMPS; false MD)")
             ("lammpsPreprocessing,j", value<bool>(&lammpsPreprocessing)->default_value(true), "LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)");
