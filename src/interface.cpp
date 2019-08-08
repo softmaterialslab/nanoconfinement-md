@@ -64,6 +64,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   // express diameter in consistent units
   positive_diameter_in = positive_diameter_in / unitlength;
   negative_diameter_in = negative_diameter_in / unitlength;
+  counterion_diameter_in = counterion_diameter_in / unitlength;
 
   // distance of closest approach between the ion and the interface
   double r0_x = 0.5 * lx - 0.5 * negative_diameter_in;
