@@ -143,7 +143,10 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     //X and Y mapping
     if (paraMap) {
       //  negative_diameter_in = 0.714;
-        unitlength = positive_diameter_in;
+	if (positive_diameter_in <= negative_diameter_in)
+	  unitlength = positive_diameter_in;
+	else
+	  unitlength = negative_diameter_in;
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
@@ -159,9 +162,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
         valency_counterion = 1; //pz_in;
         counterion_diameter_in = positive_diameter_in;
-        surface_area = bx * by * pow(10.0,-18);// in unit of square meter;
+        surface_area = bx * by * pow(10.0,-18);// in unit of squared meter;
         number_meshpoints = pow ((1.0/fraction_diameter), 2.0);
-        charge_meshpoint = (charge_density * surface_area) / (1.60217646 * pow(10.0,-19) * number_meshpoints); //in unit of electron charge;
+        charge_meshpoint = (charge_density * surface_area) / (unitcharge * number_meshpoints); //in unit of electron charge;
         total_surface_charge = charge_meshpoint * number_meshpoints; //in unit of electron charge;
         counterions =  2.0 * (int( abs (total_surface_charge)/valency_counterion)); // there are two charged surfaces, we multiply the counter ions by two;
 
@@ -170,7 +173,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         { //we distribute the extra charge to the mesh points to make the system electroneutral; then we recalculate the charge density on surface;
           charge_meshpoint = -1.0 * (valency_counterion * counterions) / (number_meshpoints * 2.0);
           total_surface_charge = charge_meshpoint * number_meshpoints; // we recalculate the total charge on teh surface;
-          charge_density = (total_surface_charge * 1.60217646 * pow(10.0,-19)) / surface_area; //in unit of Coulomb per square meter;
+          charge_density = (total_surface_charge * unitcharge) / surface_area; //in unit of Coulomb per square meter;
         }
 
         if (mdremote.steps < 100000) {      // minimum mdremote.steps is 20000
