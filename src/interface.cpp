@@ -208,19 +208,19 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
   string AtomType;
   double ChargeValue;
   double charge_density;
-  double Charge = (1.602176634 * pow(10,-19)) / (sqrt(pi * 4.0 * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature)); //in reduced unit
-  charge_meshpoint = charge_meshpoint * Charge;
-  positive_diameter_in = positive_diameter_in / unitlength;
+  double unitcharge_lammps = unitcharge / (sqrt(4 * pi * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature)); //in reduced unit
+  charge_meshpoint = charge_meshpoint * unitcharge_lammps;
+  positive_diameter_in = positive_diameter_in / unitlength;	// should be generalized
   mpi::environment env;
   mpi::communicator world;
 
   if (world.rank() == 0)
   {
     //we should make sure the total charge of both surfaces and the counter ions are zero;
-    if ((Charge * valency_counterion * counterions) + (charge_meshpoint * (leftplane.size() + rightplane.size())) != 0.0)
+    if ((unitcharge_lammps * valency_counterion * counterions) + (charge_meshpoint * (leftplane.size() + rightplane.size())) != 0.0)
     {
-      charge_meshpoint = -1.0 * (Charge * valency_counterion * counterions) / ((leftplane.size() + rightplane.size()));
-      charge_density = ((charge_meshpoint/Charge) * ((1.60217646 * pow(10.0,-19) * pow ((1.0/fraction_diameter), 2.0)))) / surface_area;
+      charge_meshpoint = -1.0 * (unitcharge_lammps * valency_counterion * counterions) / ((leftplane.size() + rightplane.size()));
+      charge_density = ((charge_meshpoint/unitcharge_lammps) * ((unitcharge * pow ((1.0/fraction_diameter), 2.0)))) / surface_area;
       cout  << " In Lammps: charge density of surface is " << charge_density << "Coulomb per square meter " << endl;
     }
 
@@ -231,7 +231,7 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
     listlammps << "3 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
     listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
     listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
-    listlammps << -(0.5 * lz) - (positive_diameter_in/2.0) << " " << (0.5 * lz) + (positive_diameter_in/2.0)  <<  " " << "zlo zhi" << endl;
+    listlammps << -(0.5 * lz) - (positive_diameter_in/2.0) << " " << (0.5 * lz) + (positive_diameter_in/2.0)  <<  " " << "zlo zhi" << endl;	// should be generalized
     listlammps << " " << endl;
     listlammps << "Atoms" << endl;
     listlammps << " " << endl;
@@ -240,12 +240,12 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
     if (ion[i].valency > 0)
     {
       AtomType = "1";
-      ChargeValue = pz * Charge;
+      ChargeValue = pz * unitcharge_lammps;
     }
     else if (ion[i].valency < 0)
     {
       AtomType = "2";
-      ChargeValue = nz * Charge;
+      ChargeValue = nz * unitcharge_lammps;
     }
     listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
   }
