@@ -41,7 +41,7 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
   return;
 }
 
-void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion)
+void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion, int counterions, int valency_counterion, double counterion_diameter_in)
 {
   // establish the number of inside salt ions first
   // Note: salt concentration is the concentration of one kind of ions, so for total ions a factor of 2 needs to be multiplied.
@@ -59,11 +59,12 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   if (total_pions_inside % nz !=0)
     total_pions_inside = total_pions_inside - (total_pions_inside % abs (nz));
   unsigned int total_nions_inside = total_pions_inside * pz / abs (nz);
-  unsigned int total_saltions_inside = total_nions_inside + total_pions_inside;
+  unsigned int total_saltions_inside = total_nions_inside + total_pions_inside + counterions;
 
   // express diameter in consistent units
   positive_diameter_in = positive_diameter_in / unitlength;
   negative_diameter_in = negative_diameter_in / unitlength;
+  counterion_diameter_in = counterion_diameter_in / unitlength;
 
   // distance of closest approach between the ion and the interface
   double r0_x = 0.5 * lx - 0.5 * negative_diameter_in;
@@ -105,7 +106,9 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     if (continuewhile == true)
       continue;
     PARTICLE freshion;
-    if (saltion_in.size() < total_pions_inside)
+    if (saltion_in.size() < counterions)
+      freshion = PARTICLE(int(ion.size())+1,counterion_diameter_in,valency_counterion,valency_counterion*1.0,1.0,ein,posvec,lx,ly,lz);
+    else if (saltion_in.size() >= counterions && saltion_in.size() < (total_pions_inside + counterions))
       freshion = PARTICLE(int(ion.size())+1,positive_diameter_in,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
     else
       freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
@@ -135,15 +138,15 @@ void INTERFACE::discretize(double positive_diameter_in, double f)
   width = f * lx;	// in reduced units
 
   // note lx and ly are in units of unitlength; that is they are reduced
-  unsigned int nx = int(lx / width) + 1;
-  unsigned int ny = int(ly / width) + 1;
+  unsigned int nx = int(lx / width);// + 1;
+  unsigned int ny = int(ly / width);// + 1;
 
   // creating a discretized hard wall interface at z = - l/2
   for (unsigned int j = 0; j < ny; j++)
   {
     for (unsigned int i = 0; i < nx; i++)
     {
-      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,-0.5*lz);
+      VECTOR3D position = VECTOR3D(-0.5*lx+0.5*positive_diameter_in+i*width,-0.5*ly+0.5*positive_diameter_in+j*width,-0.5*lz);
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,-1);
       leftplane.push_back(VERTEX(position,area,normal));
@@ -155,7 +158,7 @@ void INTERFACE::discretize(double positive_diameter_in, double f)
   {
     for (unsigned int i = 0; i < nx; i++)
     {
-      VECTOR3D position = VECTOR3D(-0.5*lx+i*width,-0.5*ly+j*width,0.5*lz);
+      VECTOR3D position = VECTOR3D(-0.5*lx+0.5*positive_diameter_in+i*width,-0.5*ly+0.5*positive_diameter_in+j*width,0.5*lz);
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,1);
       rightplane.push_back(VERTEX(position,area,normal));
@@ -198,45 +201,63 @@ void INTERFACE::discretize(double positive_diameter_in, double f)
   return;
 }
 // creating data file for LAMMPS;
-void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double diameter)
+void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double positive_diameter_in,
+  double charge_meshpoint, int counterions, int valency_counterion, double fraction_diameter, double surface_area)
 {
-  // In Lammps, unit of charge is in reduced LJ unit, where q* = q / (4 pi perm0 sigma epsilon)^1/2;
+  // In Lammps, unit of charge is in reduced unit, where q* = q / (4 pi perm0 sigma epsilon)^1/2;
   string AtomType;
   double ChargeValue;
-  double Charge = (1.602176634 * pow(10,-19)) / (sqrt(pi * 4.0 * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature));
-  Charge = (int)(Charge * 1000.0)/1000.0;
-  diameter = diameter / unitlength;
+  double charge_density;
+  double unitcharge_lammps = unitcharge / (sqrt(4 * pi * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature)); //in reduced unit
+  charge_meshpoint = charge_meshpoint * unitcharge_lammps;
+  positive_diameter_in = positive_diameter_in / unitlength;	// should be generalized
   mpi::environment env;
   mpi::communicator world;
 
   if (world.rank() == 0)
   {
+    //we should make sure the total charge of both surfaces and the counter ions are zero;
+    if ((unitcharge_lammps * valency_counterion * counterions) + (charge_meshpoint * (leftplane.size() + rightplane.size())) != 0.0)
+    {
+      charge_meshpoint = -1.0 * (unitcharge_lammps * valency_counterion * counterions) / ((leftplane.size() + rightplane.size()));
+      charge_density = ((charge_meshpoint/unitcharge_lammps) * ((unitcharge * pow ((1.0/fraction_diameter), 2.0)))) / surface_area;
+      cout  << " In Lammps: charge density of surface is " << charge_density << "Coulomb per square meter " << endl;
+    }
+
     string InputLammpsPath= rootDirectory+"outfiles/ip.lammps.xyz";
     ofstream listlammps(InputLammpsPath.c_str(), ios::out);
     listlammps << "LAMMPS data file" << endl;
-    listlammps << ion.size() << " atoms" << endl;
-    listlammps << "2 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
+    listlammps << (ion.size() + leftplane.size() + rightplane.size()) << " atoms" << endl;
+    listlammps << "3 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
     listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
     listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
-    listlammps << -(0.5 * lz) - (diameter/2.0) << " " << (0.5 * lz) + (diameter/2.0)  <<  " " << "zlo zhi" << endl;
+    listlammps << -(0.5 * lz) - (positive_diameter_in/2.0) << " " << (0.5 * lz) + (positive_diameter_in/2.0)  <<  " " << "zlo zhi" << endl;	// should be generalized
     listlammps << " " << endl;
     listlammps << "Atoms" << endl;
     listlammps << " " << endl;
     for (unsigned int i = 0; i < ion.size(); i++)
+  {
+    if (ion[i].valency > 0)
     {
-      if (ion[i].valency > 0)
-      {
-        AtomType = "1";
-        ChargeValue = pz * Charge;
-      }
-      else if (ion[i].valency < 0)
-      {
-        AtomType = "2";
-        ChargeValue = nz * Charge;
-      }
-      listlammps << i + 1 << "   " << AtomType << "   " << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+      AtomType = "1";
+      ChargeValue = pz * unitcharge_lammps;
     }
-    listlammps.close();
+    else if (ion[i].valency < 0)
+    {
+      AtomType = "2";
+      ChargeValue = nz * unitcharge_lammps;
+    }
+    listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
   }
+  for (unsigned int k = 0; k < leftplane.size(); k++)
+  {
+    listlammps << (k + 1 + ion.size()) << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << rightplane[k].posvec.z << endl;
+  }
+  for (unsigned int h = 0; h < rightplane.size(); h++)
+  {
+    listlammps << h + 1 + ion.size() + leftplane.size() << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << leftplane[h].posvec.x <<  "  " <<  leftplane[h].posvec.y <<  "  " << leftplane[h].posvec.z << endl;
+  }
+  listlammps.close();
+}
   return;
 }

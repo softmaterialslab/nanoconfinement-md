@@ -40,6 +40,7 @@ const double room_temperature = 298;						// Room temperature in Kelvin
 extern double unitlength;						// Unit of length is this much nanometers
 const double unitenergy = 1.3807 * pow(10.0,-16) * room_temperature;		// Unit of energy (thermal energy at room temoperature in CGS)
 const double unitmass = 23 * 1.67 * pow(10.0, -24);				// Unit of mass (mass of sodium ion in CGS)
+const double unitcharge = 1.60217646 * pow(10.0,-19);				// Unit of charge (electron charge in Coulombs)
 extern double unittime;	// Unit of time (length expressed in cms), result in seconds
 const double kB = 1;								// Boltzmann constant in reduced units
 extern double scalefactor;		// Reduced units lead to this scale factor for Coloumb interaction
