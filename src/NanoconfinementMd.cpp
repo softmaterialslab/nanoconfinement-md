@@ -32,6 +32,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double total_surface_charge; //total charge on the surface (in unit of electron charge)
     double surface_area; // area of surface
     double number_meshpoints; // number of mesh points on the surface
+    double smaller_ion_diameter; // the salt ion with smaller size;
+    double bigger_ion_diameter; // the salt ion with bigger size;
 
 
     // Simulation related variables
@@ -144,9 +146,18 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     if (paraMap) {
       //  negative_diameter_in = 0.714;
 	if (positive_diameter_in <= negative_diameter_in)
-	  unitlength = positive_diameter_in;
+  {
+    unitlength = positive_diameter_in;
+    smaller_ion_diameter = positive_diameter_in;
+    bigger_ion_diameter = negative_diameter_in;
+  }
 	else
-	  unitlength = negative_diameter_in;
+  {
+    unitlength = negative_diameter_in;
+    smaller_ion_diameter = negative_diameter_in;
+    bigger_ion_diameter = positive_diameter_in;
+  }
+
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
@@ -157,7 +168,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         }
         else
         {
-          charge_density = -0.01; // in unit of Coulomb per square meter
+          charge_density = -0.01; // in unit of Coulomb per squared meter
         }
 
         valency_counterion = 1; //pz_in;
@@ -173,7 +184,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         { //we distribute the extra charge to the mesh points to make the system electroneutral; then we recalculate the charge density on surface;
           charge_meshpoint = -1.0 * (valency_counterion * counterions) / (number_meshpoints * 2.0);
           total_surface_charge = charge_meshpoint * number_meshpoints; // we recalculate the total charge on teh surface;
-          charge_density = (total_surface_charge * unitcharge) / surface_area; //in unit of Coulomb per square meter;
+          charge_density = (total_surface_charge * unitcharge) / surface_area; //in unit of Coulomb per squared meter;
         }
 
         if (mdremote.steps < 100000) {      // minimum mdremote.steps is 20000
@@ -194,7 +205,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     T = 1;        // set temperature (in reduced units; see utility.h)
     INTERFACE box = INTERFACE(VECTOR3D(0, 0, 0), ein, eout); // interface, z planes hard walls; rest periodic boundaries
     box.set_up(salt_conc_in, 0, pz_in, 0, bx / unitlength, by / unitlength, bz / unitlength);
-    box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, positive_diameter_in, negative_diameter_in, ion, counterions, valency_counterion, counterion_diameter_in);
+    box.put_saltions_inside(saltion_in, pz_in, nz_in, salt_conc_in, positive_diameter_in, negative_diameter_in, ion, counterions, valency_counterion, counterion_diameter_in, bigger_ion_diameter);
     make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
     /*This is to get contact point densities*/
     double leftContact = -0.5 * box.lz + 0.5 * ion[0].diameter - 0.5 * bin[0].width;
@@ -209,7 +220,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     vector<double> initial_density;
     bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
 
-    box.discretize(positive_diameter_in / unitlength, fraction_diameter);
+    box.discretize(smaller_ion_diameter / unitlength, fraction_diameter);
 
     if (world.rank() == 0) {
         // output to screen the parameters of the problem
@@ -238,7 +249,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         cout << "positive ion diameter " << positive_diameter_in / unitlength << endl;
         cout << "negative ion diameter " << negative_diameter_in / unitlength << endl;
         cout << "counter ion diameter " << counterion_diameter_in / unitlength << endl;
-        cout << "In MD, charge density " << charge_density << " Coulomb per square meter" << endl;
+        cout << "In MD, charge density " << charge_density << " Coulomb per squared meter" << endl;
         cout << "Ion (salt) concentration (c) inside " << salt_conc_in << " M" << endl;
         cout << "Note: we define c = total number of positive ions / volume" << endl;
         cout << "Debye length " << box.inv_kappa_in << endl;
@@ -354,7 +365,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
                 cout << "Lammps Preprocessing started." << endl;
 
-                box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, positive_diameter_in, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
+                box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, smaller_ion_diameter, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
                 generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), positive_diameter_in, negative_diameter_in);
 
                 cout << "Lammps Preprocessing ended." << endl;
