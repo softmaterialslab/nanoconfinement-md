@@ -42,9 +42,9 @@ velocity	positive_ions	create	1.0	87238748            # Generates an ensemble of
 velocity        negative_ions   create  1.0     87238748
 # ------------------------------- FORCE FIELDS ------------------------------------
 pair_style      lj/long/coul/long   cut  long     1.122462048  8.0  # Standard 12/6 Lennard-Jones and Coulombic potentials.Cutoff for L-J = sigma * 2^(1/6),for Coul = 8.0 (reduced lj units);
-pair_coeff      1       1       1.0    USERINPUT_POSITIVE_DIAMETER   POSITIVE_CUTOFF # 1.0        1.122462048       # Epsilon, sigma, Cutoff distance (in reduced lj units);
-pair_coeff      2       2       1.0    USERINPUT_NEGATIVE_DIAMETER   NEGATIVE_CUTOFF # 2.0        2.122462048
-pair_coeff      1       2       1.0    AVERAGE_DIAMETER  CUTOFF_AVERAGE # 1.5        1.683693072
+pair_coeff      1       1       1.0    USERINPUT_POSITIVE_DIAMETER   POSITIVE_CUTOFF # Epsilon, sigma, Cutoff distance (in reduced lj units);
+pair_coeff      2       2       1.0    USERINPUT_NEGATIVE_DIAMETER   NEGATIVE_CUTOFF # Defaults: 
+pair_coeff      1       2       1.0    AVERAGE_DIAMETER  CUTOFF_AVERAGE # Defaults:
 pair_coeff      1       3       1.0    0.0        POSITIVE_CUTOFF
 pair_coeff      2       3       1.0    0.0        POSITIVE_CUTOFF
 pair_coeff      3       3       1.0    0.0        POSITIVE_CUTOFF
