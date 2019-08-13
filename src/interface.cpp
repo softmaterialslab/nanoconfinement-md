@@ -44,16 +44,10 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
 void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion, int counterions, int valency_counterion, double counterion_diameter_in, double bigger_ion_diameter)
 {
   // establish the number of inside salt ions first
-  // Note: salt concentration is the concentration of one kind of ions, so for total ions a factor of 2 needs to be multiplied.
+  // Note: salt concentration is the concentration of one kind of ions.
   // also the factor of 0.6 is there in order to be consistent with units.
 
   double volume_box = lx*ly*lz;
-//  unsigned int total_nions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
-//  if (total_nions_inside % pz !=0)
-//    total_nions_inside = total_nions_inside - (total_nions_inside % pz) + pz;
-
-//  unsigned int total_pions_inside = abs(nz) * total_nions_inside / pz;
-//  unsigned int total_saltions_inside = total_nions_inside + total_pions_inside;
 
   unsigned int total_pions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
   if (total_pions_inside % nz !=0)
@@ -62,7 +56,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   unsigned int total_saltions_inside = total_nions_inside + total_pions_inside + counterions;
 
   // express diameter in consistent units
-  bigger_ion_diameter = bigger_ion_diameter /unitlength; //the bigger_ion_diameter can be cation or anion depending on their sizes;
+  bigger_ion_diameter = bigger_ion_diameter / unitlength; // the bigger_ion_diameter can be cation or anion depending on their sizes;
   positive_diameter_in = positive_diameter_in / unitlength;
   negative_diameter_in = negative_diameter_in / unitlength;
   counterion_diameter_in = counterion_diameter_in / unitlength;
@@ -100,7 +94,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     double z = gsl_rng_uniform(rnr);
     z = (1 - z) * (-r0_z) + z * (r0_z);
     VECTOR3D posvec = VECTOR3D(x,y,z);
-    if (x > r0_x - bigger_ion_diameter || y > r0_y-bigger_ion_diameter  || z > r0_z-bigger_ion_diameter )		// putting an extra ion diameter length away from interface
+    if (x > r0_x - bigger_ion_diameter || y > r0_y - bigger_ion_diameter  || z > r0_z - bigger_ion_diameter )		// putting an extra ion diameter length away from interface
       continue;
     bool continuewhile = false;
     for (unsigned int i = 0; i < ion.size() && continuewhile == false; i++)
@@ -117,6 +111,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
+  
   mpi::environment env;
   mpi::communicator world;
   if (world.rank() == 0) {
@@ -168,8 +163,7 @@ void INTERFACE::discretize(double smaller_ion_diameter, double f)
   }
   mpi::environment env;
   mpi::communicator world;
-  if (world.rank() == 0)
-  {
+  if (world.rank() == 0) {
 	  string listleftplanePath= rootDirectory+"outfiles/leftplane.xyz";
 	  ofstream listleftplane(listleftplanePath.c_str(), ios::out);
 	  listleftplane << "ITEM: TIMESTEP" << endl;

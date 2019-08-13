@@ -142,21 +142,21 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             return 0;
         }
     }
+    
     //X and Y mapping
     if (paraMap) {
-      //  negative_diameter_in = 0.714;
-	if (positive_diameter_in <= negative_diameter_in)
-  {
-    unitlength = positive_diameter_in;
-    smaller_ion_diameter = positive_diameter_in;
-    bigger_ion_diameter = negative_diameter_in;
-  }
-	else
-  {
-    unitlength = negative_diameter_in;
-    smaller_ion_diameter = negative_diameter_in;
-    bigger_ion_diameter = positive_diameter_in;
-  }
+	if (positive_diameter_in <= negative_diameter_in) 
+	{
+	    unitlength = positive_diameter_in;
+	    smaller_ion_diameter = positive_diameter_in;
+	    bigger_ion_diameter = negative_diameter_in;
+	}
+	else 
+	{
+	    unitlength = negative_diameter_in;
+	    smaller_ion_diameter = negative_diameter_in;
+	    bigger_ion_diameter = positive_diameter_in;
+	}
 
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
