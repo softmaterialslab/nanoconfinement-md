@@ -21,13 +21,23 @@ Install instructions
 * You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
    * make local-install
 * Next, go to the bin directory: cd bin
-* Now you are ready to run the executable with aprun command using the following method: time mpirun -np 2 -N 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -S 1000000
+
+* In bin directory, you have two options to run the simulation. You can run the simulation through eighter the in-house code or the LAMMPS. The difference between these two options is the method that we use to calculate the electrostatics energy and force. In in-house code, we calculate the electrostatics energy and force with "charged sheet method". In LAMMPS, the electrostatics energy and force are calculated with Ewald-Summation method. 
+  
+Run the simulation through the in-house code:
+
+* Now you are ready to run the executable with aprun command using the following method: time mpirun -np 2 -N 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -S 1000000
+
+Run the simulation through the LAMMPS:
+
+* The command to execute the LAMMPS is: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
+* This make command creates the input data file (ip.lammps.xyz) through the inhouse code. Then it runs the simulation with LAMMPS.
+
 * All outputs from the simulation will be stored in the bin folder when the simulation is completed.
    * Check and compare files (ex: energy.out) inside the bin/outfiles directory.
    * If you want to clean everything and create a new build, use: ```make clean``
    * Once the simulation has finished, data and outflies folders will contain the simulation results. You may check final density profile form data folder against the example desity profile provided in nanoconfinement-md/examples folder.
 
-* ADD LAMMPS INPUT
 
 For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/) 
 
