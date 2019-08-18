@@ -10,6 +10,7 @@ n=-1
 c=0.5
 d=0.714
 a=0.714
+i=0.0
 S=5000000
 NODESIZE=4
 
@@ -23,10 +24,10 @@ test:
 
 
 run-preprocessor:
-	$(MPIRUNCMD) -n 1 md_simulation_confined_ions -Z $(Z) -p $(p) -n $(n) -c $(c) -d $(d) -a $(a) -S $(S) -J true -j true
+	$(MPIRUNCMD) -n 1 md_simulation_confined_ions -Z $(Z) -p $(p) -n $(n) -c $(c) -d $(d) -a $(a) -S $(S) -i $(i) -J true -j true
 
 run-postprocessor:
-	$(MPIRUNCMD) -n 1 md_simulation_confined_ions -Z $(Z) -p $(p) -n $(n) -c $(c) -d $(d) -a $(a) -S $(S) -J true -j false
+	$(MPIRUNCMD) -n 1 md_simulation_confined_ions -Z $(Z) -p $(p) -n $(n) -c $(c) -d $(d) -a $(a) -S $(S) -i $(i) -J true -j false
 
 submit-lammps:
 	@echo "Launching the job for Lammps script";
