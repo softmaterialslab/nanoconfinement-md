@@ -104,6 +104,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "positive ion diameter inside (nm)")        // enter in nanometers
              ("negative_diameter,a", value<double>(&negative_diameter_in)->default_value(0.627),
               "negative ion diameter inside (nm)")        // enter in nanometers
+             ("chargedensity_surface,i", value<double>(&charge_density)->default_value(0.0),
+               "charge density on surface (C/m2)")        // enter in c/m2
             ("simulation_steps,S", value<int>(&mdremote.steps)->default_value(5000000), "steps used in md")
             ("lammps,J", value<bool>(&lammps)->default_value(false), "LAMMPS (true LAMMPS; false MD)")
             ("lammpsPreprocessing,j", value<bool>(&lammpsPreprocessing)->default_value(true), "LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)");
@@ -116,7 +118,15 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     notify(vm);
 
     if (world.rank() == 0 && (!lammps))
-        cout << "\nSimulation begins\n";
+        if (charge_density == 0)   // This is temporary condition. Later we will define charge on surfaces. For now, you can simulate charged surfaces with LAMMPS;
+        {
+          cout << "\nSimulation begins\n";
+        }
+        else
+        {
+          cout << "\nThe system has charged surface; aborting\n";
+          return 0;
+        }
 
     if (world.rank() == 0) {
         if (mdremote.verbose) {
@@ -142,16 +152,16 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             return 0;
         }
     }
-    
+
     //X and Y mapping
     if (paraMap) {
-	if (positive_diameter_in <= negative_diameter_in) 
+	if (positive_diameter_in <= negative_diameter_in)
 	{
 	    unitlength = positive_diameter_in;
 	    smaller_ion_diameter = positive_diameter_in;
 	    bigger_ion_diameter = negative_diameter_in;
 	}
-	else 
+	else
 	{
 	    unitlength = negative_diameter_in;
 	    smaller_ion_diameter = negative_diameter_in;
@@ -162,13 +172,13 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
         by = bx;
-        if (!lammps)
+        if (lammps)
         {
-          charge_density = 0.0;
-        }
-        else
-        {
-          charge_density = -0.01; // in unit of Coulomb per squared meter
+          if ( charge_density < -0.01 || charge_density > 0.0) //In lammps, we can choose charge density on surface between 0.0 (uncharged walls)  to -0.01 C/m2.
+          {
+            cout << "\ncharge density on the surface must be between zero to -0.01 C/m-2; aborting\n";
+            return 0;
+          }
         }
 
         valency_counterion = 1; //pz_in;
