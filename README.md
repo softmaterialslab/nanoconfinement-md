@@ -4,9 +4,11 @@ What does this code do
 * The code enables simulations of ions confined between nanoparticles (NPs) or other material surfaces
     * Length of confinement is of the order of nanometers
 * Materials represent nanoparticles (NPs) or biomacromolecules
-    * NP surfaces are treated as planar walls due to the large size difference between ions and NPs 
+    * NP surfaces are treated as planar walls due to the large size difference between ions and NPs
 * Users can extract the ionic structure (density profile) for a wide variety of ionic and environmental parameters
 * Unpolarized surfaces are assumed and standard molecular dynamics is used to propagrate the dynamics of ions
+
+* ARE THE FOLLOWING INSTRUCTIONS ONLY FOR LOCAL INSTALL AND TEST?
 
 Necessary Modules
 
@@ -20,26 +22,30 @@ Install instructions
 * Go to nanoconfinement-md directory and (cd nanoconfinement-md)
 * You should provide the following make command to make the project. This will create the executable and Install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
    * make local-install
-* Next, go to the bin directory: cd bin
 
-* In bin directory, you have two options to run the simulation. You can run the simulation through eighter the in-house code or the LAMMPS. The difference between these two options is the method that we use to calculate the electrostatics energy and force. In in-house code, we calculate the electrostatics energy and force with "charged sheet method". In LAMMPS, the electrostatics energy and force are calculated with Ewald-Summation method. 
-  
+* Now, you have two options to run the simulation. You can run the simulation through the in-house code or the LAMMPS. The difference between these two options is the method that we use to calculate the electrostatics energy and force. In in-house code, we calculate the electrostatics energy and force with "charged sheet method". In LAMMPS, the electrostatics energy and force are calculated with Ewald-Summation method.
+
 Run the simulation through the in-house code:
 
-* Now you are ready to run the executable with aprun command using the following method: time mpirun -np 2 -N 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -S 1000000
+* go to the bin directory: cd bin
+
+* Now you are ready to run the executable with aprun command using the following method: time mpirun -np 2 -N 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -i 0.0 -S 1000000
+* Note that in current in-house code, you are only able to simulate a system with uncharged surfaces (-i 0.0).
 
 Run the simulation through the LAMMPS:
 
-* The command to execute the LAMMPS is: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
-* This make command creates the input data file (ip.lammps.xyz) through the inhouse code. Then it runs the simulation with LAMMPS.
+* In nanoconfinement-md directory, the command to execute the LAMMPS is: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
+   * Depending on the lammps executable, the following command may work: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp_g++ 
+* This make command creates the input data file (ip.lammps.xyz) through the inhouse code. Then it runs the simulation with LAMMPS. In LAMMPS, you can define charge on the surfaces. For uncharged surfaces: i=0.0. For charged surfaces, you can choose i between zero to -0.01 C/m2. The simulation does not work with charge density more than zero or less than -0.01 C/m-2. 
 
 * All outputs from the simulation will be stored in the bin folder when the simulation is completed.
-   * Check and compare files (ex: energy.out) inside the bin/outfiles directory.
-   * If you want to clean everything and create a new build, use: ```make clean``
+   * Check and compare files (ex: energy.out) inside the bin/outfiles directory. PLEASE PUT LAMMPS SPECIFIC INSTRUCTIONS; CAN I COMPARE ENERGY.OUT IN LAMMPS? WHAT SHOULD I COMPARE?
+   * If you want to clean everything and create a new build, use: ```make clean```
+   * DOES THE ABOVE CLEAN THE LAMMPS DATA? IT DID NOT FOR ME...WE SHOULD FIX THIS.
    * Once the simulation has finished, data and outflies folders will contain the simulation results. You may check final density profile form data folder against the example desity profile provided in nanoconfinement-md/examples folder.
 
 
-For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/) 
+For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/)
 
 ## NanoHUB app page:
 * https://nanohub.org/tools/nanoconfinement
