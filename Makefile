@@ -1,5 +1,5 @@
 # make cluster-submit-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000
-# make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000 MPIRUNCMD=mpirun
+# make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
 #This make file builds the sub folder make files
 PROG = md_simulation_confined_ions
 JOBSCR = nanoconfinement.pbs
