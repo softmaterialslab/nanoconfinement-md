@@ -421,20 +421,22 @@ double compute_MD_trust_factor_R(int hiteqm) {
     return R;
 }
 
-void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, double Positive_diameter_in, double Negative_diameter_in) {
-   
+void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
+
     Positive_diameter_in = Positive_diameter_in / unitlength;
     Negative_diameter_in = Negative_diameter_in / unitlength;
     double average_positive_negative_diameter =  0.5 * (Positive_diameter_in + Negative_diameter_in);
     double positive_ion_cutoff = Positive_diameter_in * dcut;
     double negative_ion_cutoff = Negative_diameter_in * dcut;
     double average_negative_positive_cutoff = 0.5 * (negative_ion_cutoff + positive_ion_cutoff);
-   
+
     /*Replacable variables*/
     string dielectricText = "USERINPUT_DIELECTRIC_CONST";
     string movieFrq = "USERINPUT_MOVIE_FRQ";
     string stepsUpToEQ = "USERINPUT_STEPS_BEFORE_EQ";
     string stepsAfterEQ = "USERINPUT_STEPS_AFTER_EQ";
+    string extraComputeSim = "USERINPUT_THERMO_DUMP_FRQ";
+    string StepsTime = "USERINPUT_TIMESTEP";
 
     string positiveIonsDiameter = "USERINPUT_POSITIVE_DIAMETER";
     string negativeIonsDiameter = "USERINPUT_NEGATIVE_DIAMETER";
@@ -442,7 +444,7 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
     string positiveIonCutoff = "POSITIVE_CUTOFF";
     string negativeIonCutoff = "NEGATIVE_CUTOFF";
     string averageIonCutoff = "CUTOFF_AVERAGE";
-    ofstream inputScript("in.lammps", ios::trunc);
+    ofstream inputScript("outfiles/in.lammps", ios::trunc);
     if (inputScript.is_open()) {
 
         /*Open the template file*/
@@ -462,10 +464,18 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
                 if (found != std::string::npos)
                     line.replace(found, stepsUpToEQ.length(), std::to_string(stepsToEqb));
 
+                found = line.find(extraComputeSim);
+                if (found != std::string::npos)
+                    line.replace(found, extraComputeSim.length(), std::to_string(extracompute));
+
+                found = line.find(StepsTime);
+                if (found != std::string::npos)
+                    line.replace(found, StepsTime.length(), std::to_string(timestep));
+
                 found = line.find(stepsAfterEQ);
                 if (found != std::string::npos)
                     line.replace(found, stepsAfterEQ.length(), std::to_string(stepsAfterEqb));
-                
+
                 found = line.find(positiveIonsDiameter);
                 if (found != std::string::npos)
                     line.replace(found, positiveIonsDiameter.length(), std::to_string(Positive_diameter_in));
