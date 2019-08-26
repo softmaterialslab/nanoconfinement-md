@@ -8,6 +8,8 @@ What does this code do
 * Users can extract the ionic structure (density profile) for a wide variety of ionic and environmental parameters
 * Unpolarized surfaces are assumed and standard molecular dynamics is used to propagrate the dynamics of ions
 
+* ARE THE FOLLOWING INSTRUCTIONS ONLY FOR LOCAL INSTALL AND TEST?
+
 Necessary Modules
 
 * Load the necessary modules: module load gsl && module load openmpi/3.0.1 && module load boost/1_67_0
@@ -33,11 +35,13 @@ Run the simulation through the in-house code:
 Run the simulation through the LAMMPS:
 
 * In nanoconfinement-md directory, the command to execute the LAMMPS is: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
+   * Depending on the lammps executable, the following command may work: make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=1000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp_g++ 
 * This make command creates the input data file (ip.lammps.xyz) through the inhouse code. Then it runs the simulation with LAMMPS. In LAMMPS, you can define charge on the surfaces. For uncharged surfaces: i=0.0. For charged surfaces, you can choose i between zero to -0.01 C/m2. The simulation does not work with charge density more than zero or less than -0.01 C/m-2. 
 
 * All outputs from the simulation will be stored in the bin folder when the simulation is completed.
-   * Check and compare files (ex: energy.out) inside the bin/outfiles directory.
-   * If you want to clean everything and create a new build, use: ```make clean``
+   * Check and compare files (ex: energy.out) inside the bin/outfiles directory. PLEASE PUT LAMMPS SPECIFIC INSTRUCTIONS; CAN I COMPARE ENERGY.OUT IN LAMMPS? WHAT SHOULD I COMPARE?
+   * If you want to clean everything and create a new build, use: ```make clean```
+   * DOES THE ABOVE CLEAN THE LAMMPS DATA? IT DID NOT FOR ME...WE SHOULD FIX THIS.
    * Once the simulation has finished, data and outflies folders will contain the simulation results. You may check final density profile form data folder against the example desity profile provided in nanoconfinement-md/examples folder.
 
 
