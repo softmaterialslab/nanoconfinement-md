@@ -34,7 +34,7 @@ submit-lammps:
 	qsub $(JOBSCRLMP)
 
 run-local-parallel:
-	time $(MPIRUNCMD) -n $(NODESIZE) $(LAMMPSEXE) < in.lammps
+	time $(MPIRUNCMD) -n $(NODESIZE) $(LAMMPSEXE) < outfiles/in.lammps
 
 run-local-serial:
-	time $(LAMMPSEXE) < in.lammps
+	time $(LAMMPSEXE) < outfiles/in.lammps
