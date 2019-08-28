@@ -387,7 +387,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 int cnt_filename = 0;
                 output_lammps(ion, cnt_filename, mdremote.freq);
                 if (world.rank() == 0)
-                    cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename << endl;
+                    cout << "Number of samples used to get density profile:" << cnt_filename << endl;
                 int lammps_samples = cnt_filename;
               //  make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
                 int cpmdstep = 0;
