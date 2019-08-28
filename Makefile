@@ -1,5 +1,5 @@
 # make cluster-submit-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000
-# make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000 MPIRUNCMD=mpirun
+# make local-run-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000 MPIRUNCMD=mpirun LAMMPSEXE=lmp
 #This make file builds the sub folder make files
 PROG = md_simulation_confined_ions
 JOBSCR = nanoconfinement.pbs
@@ -99,11 +99,13 @@ clean: dataclean
 	rm -f $(BIN)/$(PROG)
 	rm -rf $(BIN)/outfiles
 	rm -rf $(BIN)/data
+	rm -f $(BIN)/*.lammps
 
 dataclean:
 	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/*
 	rm -f $(BIN)/data/*.dat $(BIN)/data/*.xyz  $(BIN)/data/*.lammpstrj
 	rm -f $(BIN)/*.log
 	rm -f $(BIN)/*.pbs
+	rm -f $(BIN)/*.lammps
 
 .PHONY: all install cluster-install nanoHUB-install create-dirs cluster-submit cluster-test-submit clean dataclean
