@@ -7,12 +7,12 @@ bindir = bin
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 CCF = CC
 
-# nanoHUB flags. 
+# nanoHUB flags.
 nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
 nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 nanoHUBCFLAG = -I${BOOST_INCDIR}
 nanoHUBOFLAG = -o
-# BigRed2 flags. 
+# BigRed2 flags.
 BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
 BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
 BigRed2CFLAG = -c
@@ -46,7 +46,7 @@ create-dirs:
 	@echo "Directory creation is over."
 
 $(PROG) : $(OBJ)
-ifeq ($(CCF),BigRed2)	
+ifeq ($(CCF),BigRed2)
 	$(BigRed2CC) $(BigRed2OFLAG) $(PROG) $(OBJ) $(BigRed2LFLAG)
 %.o : %.cpp
 	$(BigRed2CC) -c $(BigRed2CFLAG) $< -o $@
@@ -57,7 +57,7 @@ else ifeq ($(CCF),nanoHUB)
 else
 	$(CC) $(OFLAG) $(PROG) $(OBJ) $(LFLAG)
 %.o : %.cpp
-	$(CC) -c $(CFLAG) $< -o $@	
+	$(CC) -c $(CFLAG) $< -o $@
 endif
 
 clean: dataclean
@@ -65,12 +65,14 @@ clean: dataclean
 	rm -f $(PROG)
 	rm -rf $(BIN)/outfiles/*
 	rm -rf $(BIN)/data/*
+	rm -f $(BIN)/*.lammps
 
 dataclean:
 	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/*
 	rm -f $(BIN)/data/*.dat $(BIN)/data/*.xyz  $(BIN)/data/*.lammpstrj
 	rm -f $(BIN)/*.log
-	rm -f $(BIN)/*.pbs	
+	rm -f $(BIN)/*.pbs
+	rm -f $(BIN)/*.lammps
 
 distclean: clean
 	rm -f $(BIN)/$(PROG)
