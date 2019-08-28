@@ -43,7 +43,7 @@ velocity        negative_ions   create  1.0     87238748
 # ------------------------------- FORCE FIELDS ------------------------------------
 pair_style      lj/long/coul/long   cut  long     1.122462048  8.0  # Standard 12/6 Lennard-Jones and Coulombic potentials.Cutoff for L-J = sigma * 2^(1/6),for Coul = 8.0 (reduced lj units);
 pair_coeff      1       1       1.0    USERINPUT_POSITIVE_DIAMETER   POSITIVE_CUTOFF # Epsilon, sigma, Cutoff distance (in reduced lj units);
-pair_coeff      2       2       1.0    USERINPUT_NEGATIVE_DIAMETER   NEGATIVE_CUTOFF # Defaults: 
+pair_coeff      2       2       1.0    USERINPUT_NEGATIVE_DIAMETER   NEGATIVE_CUTOFF # Defaults:
 pair_coeff      1       2       1.0    AVERAGE_DIAMETER  CUTOFF_AVERAGE # Defaults:
 pair_coeff      1       3       1.0    0.0        POSITIVE_CUTOFF
 pair_coeff      2       3       1.0    0.0        POSITIVE_CUTOFF
@@ -62,25 +62,27 @@ pair_modify     shift   yes                                              # The a
 kspace_style    pppm/disp 0.0001                                     # To use each timestep to compute Coulombic interactions; accuracy value is desired relative error in forces;
 kspace_modify   slab      3.0                                        # The slab allows an Ewald to be used for a systems that are periodic in x,y but non-periodic in z;
 # --------------------------------- SETTINGS --------------------------------------
+
 # EQUILIBRATION
+thermo_style	  custom    step   temp    vol    density   etotal  ke    pe        # Set the style and content for printing thermodynamic data to the screen and log file;
+fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
+timestep        USERINPUT_TIMESTEP                                                # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
+thermo	        USERINPUT_THERMO_DUMP_FRQ                                          # How often does the data get dumped
+run             USERINPUT_STEPS_BEFORE_EQ                                         # Run time for equilibration;
+write_restart   outfiles/equilibrated.electrolyte.system.*                        # Restart command to create a sample of fluid with which you can write a fix
+unfix           equilibrate                                                       # Similar to a bracket close
 dump	          mymovie  salt_ions    custom	USERINPUT_MOVIE_FRQ outfiles/electrolyte_movie.xyz id  type  q  x   y   z
+
 ## Image Dump ##
 dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 &
                	axes no 0.8 0.02 view 60 -30
 dump_modify myimages pad 3
 dump_modify myimages boxcolor black backcolor white
 
-thermo_style	  custom    step   temp    vol    density   ke    pe    etotal    # Set the style and content for printing thermodynamic data to the screen and log file;
-fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
-timestep        0.0005                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
-thermo	        1000                                                              # How often does the data get dumped
-run             USERINPUT_STEPS_BEFORE_EQ                                         # Run time for equilibration;
-write_restart   outfiles/equilibrated.electrolyte.system.*                        # Restart command to create a sample of fluid with which you can write a fix
-unfix           equilibrate                                                       # Similar to a bracket close
 # GET DATA
 fix             heat salt_ions nvt temp 1.0 1.0 0.1
-timestep        0.0005                                                             # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
-thermo          1000                                                              # How often does the data get dumped
+timestep        USERINPUT_TIMESTEP                                                # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
+thermo          USERINPUT_THERMO_DUMP_FRQ                                          # How often does the data get dumped
 run             USERINPUT_STEPS_AFTER_EQ                                          # Run time after equilibration;
 write_restart   outfiles/large.sample.electrolyte.*                               # Restart command to create a sample of fluid with which you can write a fix
 unfix           heat                                                              # Similar to a bracket close
@@ -89,4 +91,7 @@ unfix           heat                                                            
 # SIMULATION DONE
 undump mymovie
 undump myimages
+shell          mv log.lammps outfiles/log.lammps
+shell          sh infiles/cleanlog.sh # It creates outfiles/thermo.dat. thermo.dat file contains all numeric values in log.lammps without the printed information about the run. This makes it easy to plot.
+
 print "LAMMPS Simulation Ended"
