@@ -57,8 +57,8 @@ void average_errorbars_density(double density_profile_samples, vector<double>& m
                                    vector<PARTICLE>& ion, INTERFACE &box,
                                    vector<DATABIN>& bin,  string simulationParams);
 
-void ReadParticlePositions(vector<PARTICLE>&, int, int, double, INTERFACE &);
-void output_lammps(vector<PARTICLE>&, int&);
+void ReadParticlePositions(vector<PARTICLE>&, int, int, double, INTERFACE &, double);
+void output_lammps(vector<PARTICLE>&, int&, double);
 // post analysis : compute R
 double compute_MD_trust_factor_R(int);
 
@@ -66,7 +66,7 @@ double compute_MD_trust_factor_R(int);
 void auto_correlation_function();
 
 // generate LAMMPS input script
-void generateLammpsInputfile(double , int , int , int , double, double);
+void generateLammpsInputfile(double , int , int , int , int, double, double, double);
 
 
 // functions useful in computing forces and energies

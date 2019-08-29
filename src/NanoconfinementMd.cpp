@@ -28,7 +28,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double charge_meshpoint; // charge on mesh points to create uniform charge density on surface
     double charge_density; // charge density on surface
     int valency_counterion;
-    int counterions;         //number of counter ions
+    unsigned int counterions;         //number of counter ions
     double total_surface_charge; //total charge on the surface (in unit of electron charge)
     double surface_area; // area of surface
     double number_meshpoints; // number of mesh points on the surface
@@ -77,7 +77,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
              "chain length for real system: enter L+1 if you want L thermostats")
             ("bin_width,B", value<double>(&bin_width)->default_value(0.05), "bin width (reduced units)")// in reduced units
-            ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.0005), "time step used in md (reduced units)")
+            ("md_timestep,T", value<double>(&mdremote.timestep)->default_value(0.001), "time step used in md (reduced units)")
             ("md_eqm,P", value<int>(&mdremote.hiteqm)->default_value(100000), "production begin (md)")
             ("md_freq,F", value<int>(&mdremote.freq)->default_value(100), "sample frequency (md)")
             ("md_extra_compute,x", value<int>(&mdremote.extra_compute)->default_value(10000),
@@ -118,6 +118,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     notify(vm);
 
     if (world.rank() == 0 && (!lammps))
+	 {
         if (charge_density == 0)   // This is temporary condition. Later we will define charge on surfaces. For now, you can simulate charged surfaces with LAMMPS;
         {
           cout << "\nSimulation begins\n";
@@ -127,7 +128,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
           cout << "\nThe system has charged surface; aborting\n";
           return 0;
         }
-
+	 }
+	 
     if (world.rank() == 0) {
         if (mdremote.verbose) {
             cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
@@ -198,7 +200,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         }
 
         if (mdremote.steps < 100000) {      // minimum mdremote.steps is 20000
-            mdremote.hiteqm = 10000;
+            mdremote.hiteqm = (int)(mdremote.steps*0.1);
             mdremote.writedensity =(int)(mdremote.steps*0.1);
             mdremote.extra_compute = (int)(mdremote.steps*0.01);
             mdremote.moviefreq = (int)(mdremote.steps*0.001);
@@ -376,7 +378,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 cout << "Lammps Preprocessing started." << endl;
 
                 box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, smaller_ion_diameter, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
-                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), positive_diameter_in, negative_diameter_in);
+                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
 
                 cout << "Lammps Preprocessing ended." << endl;
 
@@ -385,9 +387,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 cout << "Lammps Postprocessing started." << endl;
 
                 int cnt_filename = 0;
-                output_lammps(ion, cnt_filename);
+                output_lammps(ion, cnt_filename, mdremote.freq);
                 if (world.rank() == 0)
-                    cout << "number of cnt_filename in nanoconfinement.cpp is:" << cnt_filename << endl;
+                    cout << "Number of samples used to get density profile:" << cnt_filename << endl;
                 int lammps_samples = cnt_filename;
               //  make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
                 int cpmdstep = 0;
@@ -396,7 +398,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     vector <PARTICLE> ion;
                     vector<double> initial_density;
                     lammps_density_profile_samples++;
-                    ReadParticlePositions(ion, cpmdstep, lammps_samples, positive_diameter_in, box);
+                    ReadParticlePositions(ion, cpmdstep, lammps_samples, positive_diameter_in, box, mdremote.freq);
                 //    bin_ions(ion, box, initial_density, bin);
                     compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density,
                                             mean_sq_positiveion_density,
