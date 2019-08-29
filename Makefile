@@ -100,6 +100,7 @@ clean: dataclean
 	rm -rf $(BIN)/outfiles
 	rm -rf $(BIN)/data
 	rm -f $(BIN)/*.lammps
+	rm -f $(BIN)/temp
 
 dataclean:
 	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/*
