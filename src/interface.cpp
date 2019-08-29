@@ -41,7 +41,7 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
   return;
 }
 
-void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion, int counterions, int valency_counterion, double counterion_diameter_in, double bigger_ion_diameter)
+void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion, unsigned int counterions, int valency_counterion, double counterion_diameter_in, double bigger_ion_diameter)
 {
   // establish the number of inside salt ions first
   // Note: salt concentration is the concentration of one kind of ions.

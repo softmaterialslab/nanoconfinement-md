@@ -13,7 +13,6 @@ What does this code do
 Necessary Modules
 
 * Load the necessary modules: module load gsl && module load openmpi/3.0.1 && module load boost/1_67_0
-* Make sure to export BOOST_LIBDIR environment variable with location to the lib directory: export BOOST_LIBDIR=/opt/boost/gnu/openmpi_ib/lib/
 * Also make sure to export OMP_NUM_THREADS environment variable with maximum threads available in your CPU: export OMP_NUM_THREADS=16
 
 Install instructions

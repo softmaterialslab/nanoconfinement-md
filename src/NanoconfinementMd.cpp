@@ -28,7 +28,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double charge_meshpoint; // charge on mesh points to create uniform charge density on surface
     double charge_density; // charge density on surface
     int valency_counterion;
-    int counterions;         //number of counter ions
+    unsigned int counterions;         //number of counter ions
     double total_surface_charge; //total charge on the surface (in unit of electron charge)
     double surface_area; // area of surface
     double number_meshpoints; // number of mesh points on the surface
@@ -118,6 +118,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     notify(vm);
 
     if (world.rank() == 0 && (!lammps))
+	 {
         if (charge_density == 0)   // This is temporary condition. Later we will define charge on surfaces. For now, you can simulate charged surfaces with LAMMPS;
         {
           cout << "\nSimulation begins\n";
@@ -127,7 +128,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
           cout << "\nThe system has charged surface; aborting\n";
           return 0;
         }
-
+	 }
+	 
     if (world.rank() == 0) {
         if (mdremote.verbose) {
             cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
