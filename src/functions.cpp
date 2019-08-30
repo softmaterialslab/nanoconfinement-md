@@ -11,6 +11,7 @@ ostream &operator<<(ostream &os, VECTOR3D vec) {
 // make bins
 void make_bins(vector<DATABIN> &bin, INTERFACE &box, double bin_width) {
     int number_of_bins = int(box.lz / bin_width);
+    bin_width = (box.lz / number_of_bins); // To make discretization of bins symmetric, we recalculate the bin_width
     /*Add two extra bins for contact point densities at both ends*/
     number_of_bins += 2;
     bin.resize(number_of_bins);
@@ -293,9 +294,9 @@ void output_lammps(vector<PARTICLE> &ion, int &cnt_filename, double data_frequen
     VECTOR3D posvec;
     string AtomType, ChargeType, Num, line;
     cnt_filename = 0;
-    int j = 0;
+    unsigned int j = 0;
     int filenumber = 0;
-    int header = 9; // There are 9 lines before the atom coordinates start.
+    unsigned int header = 9; // There are 9 lines before the atom coordinates start.
     char filename[100];
     ifstream file;
 

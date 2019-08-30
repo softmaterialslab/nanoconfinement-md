@@ -23,17 +23,17 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double salt_conc_in;        // salt concentration outside	(enter in M)
     double positive_diameter_in;    // positive ion diameter
     double negative_diameter_in;   // negative ion diameter
-    double counterion_diameter_in; // counterion ion diameter; (counterion ions assumed to be positive diameter and surfaces are negatively charged)
+    double counterion_diameter_in = 0.0; // counterion ion diameter; (counterion ions assumed to be positive diameter and surfaces are negatively charged)
     double T;            // temperature at which the system of ions is
-    double charge_meshpoint; // charge on mesh points to create uniform charge density on surface
+    double charge_meshpoint = 0.0; // charge on mesh points to create uniform charge density on surface
     double charge_density; // charge density on surface
     int valency_counterion;
-    unsigned int counterions;         //number of counter ions
-    double total_surface_charge; //total charge on the surface (in unit of electron charge)
-    double surface_area; // area of surface
-    double number_meshpoints; // number of mesh points on the surface
-    double smaller_ion_diameter; // the salt ion with smaller size;
-    double bigger_ion_diameter; // the salt ion with bigger size;
+    unsigned int counterions = 0.0;         //number of counter ions
+    double total_surface_charge = 0.0; //total charge on the surface (in unit of electron charge)
+    double surface_area = 0.0; // area of surface
+    double number_meshpoints = 0.0; // number of mesh points on the surface
+    double smaller_ion_diameter = 0.0; // the salt ion with smaller size;
+    double bigger_ion_diameter = 0.0; // the salt ion with bigger size;
 
 
     // Simulation related variables
@@ -129,7 +129,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
           return 0;
         }
 	 }
-	 
+
     if (world.rank() == 0) {
         if (mdremote.verbose) {
             cout << "For help with the menu, type ./md_simulation_confined_ions -h" << endl;
@@ -392,7 +392,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     cout << "Number of samples used to get density profile:" << cnt_filename << endl;
                 int lammps_samples = cnt_filename;
               //  make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
-                int cpmdstep = 0;
                 double lammps_density_profile_samples = 0;
                 for (int cpmdstep = 0; cpmdstep < lammps_samples; cpmdstep++) {
                     vector <PARTICLE> ion;
