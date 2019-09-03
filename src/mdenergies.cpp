@@ -98,12 +98,12 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
         if (ion[i].posvec.z < -0.5 * box.lz +
                               ion[i].diameter)   // avoiding calculating interactions between left wall and ions in bulk. replacing 1 by ion[i].diameter -Yufei -Vikram -Vikram
         {
-            PARTICLE dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                      VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, -0.5 * box.lz - 0.5 * ion[i].diameter),
+            PARTICLE dummy = PARTICLE(0, 0, 0, 0, 0, box.eout,
+                                      VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, -0.5 * box.lz),
                                       box.lx, box.ly, box.lz);
             VECTOR3D r_vec = ion[i].posvec - dummy.posvec;
             double r2 = r_vec.GetMagnitudeSquared();
-            double d = 0.5 * (ion[i].diameter + dummy.diameter);
+            double d = 0.5 * ion[i].diameter;
             double d2 = d * d;
             double elj = 1.0;
             if (r2 < dcut2 * d2) {
@@ -159,12 +159,12 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
         if (ion[i].posvec.z >
             0.5 * box.lz - ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk
         {
-            PARTICLE dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                                      VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, 0.5 * box.lz + 0.5 * ion[i].diameter),
+            PARTICLE dummy = PARTICLE(0, 0, 0, 0, 0, box.eout,
+                                      VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, 0.5 * box.lz),
                                       box.lx, box.ly, box.lz);
             VECTOR3D r_vec = ion[i].posvec - dummy.posvec;
             double r2 = r_vec.GetMagnitudeSquared();
-            double d = 0.5 * (ion[i].diameter + dummy.diameter);
+            double d = 0.5 * ion[i].diameter;
             double d2 = d * d;
             double elj = 1.0;
             if (r2 < dcut2 * d2) {

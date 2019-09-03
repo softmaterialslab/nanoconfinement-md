@@ -102,12 +102,12 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
         if (ion[i].posvec.z < -0.5 * box.lz +
                               ion[i].diameter)   // avoiding calculating interactions between left wall and ions in bulk. replacing 1 by diameter. -Yufei -Vikram -Vikram
         {
-            dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                             VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, -0.5 * box.lz - 0.5 * ion[i].diameter), box.lx,
+            dummy = PARTICLE(0, 0, 0, 0, 0, box.eout,
+                             VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, -0.5 * box.lz), box.lx,
                              box.ly, box.lz);
             r_vec = ion[i].posvec - dummy.posvec;
             r2 = r_vec.GetMagnitudeSquared();
-            d = 0.5 * (ion[i].diameter + (dummy.diameter));
+            d = 0.5 * ion[i].diameter;
             d2 = d * d;
             elj = 1.0;
             if (r2 < dcut2 * d2) {
@@ -166,12 +166,12 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
         if (ion[i].posvec.z > 0.5 * box.lz -
                               ion[i].diameter)  // avoiding calculating interactions between right wall and ions in bulk. -Yufei -Vikram
         {
-            dummy = PARTICLE(0, ion[i].diameter, 0, 0, 0, box.eout,
-                             VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, 0.5 * box.lz + 0.5 * ion[i].diameter), box.lx,
+            dummy = PARTICLE(0, 0, 0, 0, 0, box.eout,
+                             VECTOR3D(ion[i].posvec.x, ion[i].posvec.y, 0.5 * box.lz), box.lx,
                              box.ly, box.lz);
             r_vec = ion[i].posvec - dummy.posvec;
             r2 = r_vec.GetMagnitudeSquared();
-            d = 0.5 * (ion[i].diameter + dummy.diameter);
+            d = 0.5 * ion[i].diameter;
             d2 = d * d;
             elj = 1.0;
             if (r2 < dcut2 * d2) {
