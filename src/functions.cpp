@@ -425,9 +425,13 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
 
     Positive_diameter_in = Positive_diameter_in / unitlength;
     Negative_diameter_in = Negative_diameter_in / unitlength;
+    double Half_positive_diameter_in = 0.5 * Positive_diameter_in;
+    double Half_negative_diameter_in = 0.5 * Negative_diameter_in;
     double average_positive_negative_diameter =  0.5 * (Positive_diameter_in + Negative_diameter_in);
     double positive_ion_cutoff = Positive_diameter_in * dcut;
     double negative_ion_cutoff = Negative_diameter_in * dcut;
+    double half_positive_ion_cutoff = 0.5 * positive_ion_cutoff;
+    double half_negative_ion_cutoff = 0.5 * negative_ion_cutoff;
     double average_negative_positive_cutoff = 0.5 * (negative_ion_cutoff + positive_ion_cutoff);
 
     /*Replacable variables*/
@@ -440,9 +444,13 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
 
     string positiveIonsDiameter = "USERINPUT_POSITIVE_DIAMETER";
     string negativeIonsDiameter = "USERINPUT_NEGATIVE_DIAMETER";
+    string positiveIonsRadius = "POSITIVE_RADIUS";
+    string negativeIonsRadius = "NEGATIVE_RADIUS";
     string averagePositiveNegativeIonsDiameter = "AVERAGE_DIAMETER";
     string positiveIonCutoff = "POSITIVE_CUTOFF";
     string negativeIonCutoff = "NEGATIVE_CUTOFF";
+    string halfPositiveIonCutoff = "HALF_POS_CUTOFF";
+    string halfNegativeIonCutoff = "HALF_NEG_CUTOFF";
     string averageIonCutoff = "CUTOFF_AVERAGE";
     ofstream inputScript("in.lammps", ios::trunc);
     if (inputScript.is_open()) {
@@ -484,6 +492,14 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
                 if (found != std::string::npos)
                     line.replace(found, negativeIonsDiameter.length(), std::to_string(Negative_diameter_in));
 
+                found = line.find(positiveIonsRadius);
+               if (found != std::string::npos)
+                   line.replace(found, positiveIonsRadius.length(), std::to_string(Half_positive_diameter_in));
+
+               found = line.find(negativeIonsRadius);
+               if (found != std::string::npos)
+                   line.replace(found, negativeIonsRadius.length(), std::to_string(Half_negative_diameter_in));
+
                 found = line.find(averagePositiveNegativeIonsDiameter);
                 if (found != std::string::npos)
                     line.replace(found, averagePositiveNegativeIonsDiameter.length(), std::to_string(average_positive_negative_diameter));
@@ -495,6 +511,14 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
                found = line.find(negativeIonCutoff);
                if (found != std::string::npos)
                    line.replace(found, negativeIonCutoff.length(), std::to_string(negative_ion_cutoff));
+
+               found = line.find(halfPositiveIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, halfPositiveIonCutoff.length(), std::to_string(half_positive_ion_cutoff));
+
+               found = line.find(halfNegativeIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, halfNegativeIonCutoff.length(), std::to_string(half_negative_ion_cutoff));
 
                found = line.find(averageIonCutoff);
                if (found != std::string::npos)

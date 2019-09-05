@@ -111,7 +111,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
-  
+
   mpi::environment env;
   mpi::communicator world;
   if (world.rank() == 0) {
@@ -227,7 +227,7 @@ void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, i
     listlammps << "3 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
     listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
     listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
-    listlammps << -(0.5 * lz) - (smaller_ion_diameter/2.0) << " " << (0.5 * lz) + (smaller_ion_diameter/2.0)  <<  " " << "zlo zhi" << endl;	// should be generalized
+    listlammps << (-(0.5 * lz) - pow(10.0,-4))  << " " << ((0.5 * lz) + pow(10.0,-4))  <<  " " << "zlo zhi" << endl;	// if we increase the confinement size by pow(10.0,-4) to make the position of mesh points inside the boundaries;
     listlammps << " " << endl;
     listlammps << "Atoms" << endl;
     listlammps << " " << endl;
