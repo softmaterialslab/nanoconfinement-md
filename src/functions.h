@@ -36,7 +36,7 @@ void initialize_particle_velocities(vector<PARTICLE> &, vector<THERMOSTAT> &);
 // compute and write useful data in cpmd
 void compute_n_write_useful_data(int, vector<PARTICLE> &, vector<THERMOSTAT> &, INTERFACE &, unsigned int, unsigned int,
                                  vector<double> &, vector<double> &,
-                                 vector<double> &, vector<double> &, vector<double> &, vector<double> &);
+                                 vector<double> &, vector<double> &, vector<double> &, vector<double> &, vector <double> &, vector <double> &, double, int);
 
 // make movie
 void make_movie(int num, vector<PARTICLE> &ion, INTERFACE &box);

@@ -95,10 +95,10 @@ void compute_n_write_useful_data(int cpmdstep, vector<PARTICLE> &ion, vector<THE
                                  unsigned int upperBound, vector<double> &ion_energy,
                                  vector<double> &lj_ion_ion, vector<double> &lj_ion_leftdummy,
                                  vector<double> &lj_ion_leftwall, vector<double> &lj_ion_rightdummy,
-                                 vector<double> &lj_ion_rightwall) {
+                                 vector<double> &lj_ion_rightwall, vector <double> &coulomb_rightwall, vector <double> &coulomb_leftwall, double charge_meshpoint, int valency_counterion) {
 
     double potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion,
-                                                lj_ion_leftdummy, lj_ion_leftwall, lj_ion_rightdummy, lj_ion_rightwall);
+                                                lj_ion_leftdummy, lj_ion_leftwall, lj_ion_rightdummy, lj_ion_rightwall, coulomb_rightwall, coulomb_leftwall, charge_meshpoint, valency_counterion);
     mpi::environment env;
     mpi::communicator world;
     if (world.rank() == 0) {

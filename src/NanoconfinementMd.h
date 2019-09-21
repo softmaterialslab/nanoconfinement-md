@@ -13,7 +13,7 @@
 #include "functions.h"
 #include "thermostat.h"
 
-void md(vector<PARTICLE>&, INTERFACE&, vector<THERMOSTAT>&, vector<DATABIN>&, CONTROL&, string&);
+void md(vector<PARTICLE>&, INTERFACE&, vector<THERMOSTAT>&, vector<DATABIN>&, CONTROL&, string&, double, int);
 
 using namespace boost::program_options;
 

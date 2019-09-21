@@ -48,7 +48,6 @@ inline double bath_potential_energy(vector <THERMOSTAT> &bath) {
 
 long double
 energy_functional(vector <PARTICLE> &, INTERFACE &, unsigned int, unsigned int, vector<double> &, vector<double> &,
-                  vector<double> &, vector<double> &, vector<double> &, vector<double> &);
+                  vector<double> &, vector<double> &, vector<double> &, vector<double> &, vector<double> &, vector<double> &, double, int);
 
 #endif
-
