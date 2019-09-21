@@ -294,9 +294,9 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     double ion_ion = 0;
     double total_lj_ion_ion = 0;
     double total_lj_ion_leftdummy = 0;
-    double total_lj_ion_leftwall = 0;
+  //  double total_lj_ion_leftwall = 0;
     double total_lj_ion_rightdummy = 0;
-    double total_lj_ion_rightwall = 0;
+  //  double total_lj_ion_rightwall = 0;
     double total_coulomb_leftwall = 0;
     double total_coulomb_rightwall = 0;
     for (i = lowerBound; i <= upperBound; i++) {
