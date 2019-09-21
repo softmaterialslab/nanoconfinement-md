@@ -64,7 +64,7 @@ kspace_modify   slab      3.0                                        # The slab 
 # --------------------------------- SETTINGS --------------------------------------
 
 # EQUILIBRATION
-thermo_style	  custom    step   temp    vol    density   etotal  ke    pe        # Set the style and content for printing thermodynamic data to the screen and log file;
+thermo_style	  custom    step   temp    vol    density   etotal  ke    pe   epair evdwl ecoul  elong    # Set the style and content for printing thermodynamic data to the screen and log file;
 fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
 timestep        USERINPUT_TIMESTEP                                                # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
 thermo	        USERINPUT_THERMO_DUMP_FRQ                                          # How often does the data get dumped
