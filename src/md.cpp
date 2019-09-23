@@ -11,7 +11,7 @@
 
 void
 md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<DATABIN> &bin, CONTROL &mdremote,
-   string &simulationParams) {
+   string &simulationParams, double charge_meshpoint, int valency_counterion) {
 
     mpi::environment env;
     mpi::communicator world;
@@ -36,11 +36,13 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
     std::vector<VECTOR3D> lj_ion_rightdummy(sizFVec, VECTOR3D(0, 0, 0));
     std::vector<VECTOR3D> lj_ion_right_wall(sizFVec, VECTOR3D(0, 0, 0));
     std::vector<VECTOR3D> sendForceVector(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector <VECTOR3D> coulomb_rightwallForce(sizFVec, VECTOR3D(0, 0, 0));
+    std::vector <VECTOR3D> coulomb_leftwallForce(sizFVec, VECTOR3D(0, 0, 0));
 
     initialize_particle_velocities(ion, real_bath);    // particle velocities initialized
     for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                            lj_ion_left_wall, lj_ion_rightdummy,
-                           lj_ion_right_wall, sendForceVector);        // force on particles initialized
+                           lj_ion_right_wall, sendForceVector, coulomb_rightwallForce, coulomb_leftwallForce, charge_meshpoint, valency_counterion);        // force on particles initialized
     long double particle_ke = particle_kinetic_energy(ion);// compute initial kinetic energy
 
     long double potential_energy;
@@ -51,11 +53,13 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
     vector<double> lj_ion_leftwall_energy(sizFVec, 0.0);
     vector<double> lj_ion_rightdummy_energy(sizFVec, 0.0);
     vector<double> lj_ion_rightwall_energy(sizFVec, 0.0);
+    vector <double> coulomb_rightwall_energy(sizFVec, 0.0);
+    vector <double> coulomb_leftwall_energy(sizFVec, 0.0);
 
     // compute initial potential energy
     potential_energy = energy_functional(ion, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy,
                                          lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,
-                                         lj_ion_rightwall_energy);
+                                         lj_ion_rightwall_energy, coulomb_rightwall_energy, coulomb_leftwall_energy, charge_meshpoint, valency_counterion);
 
     // Output md essentials
     if (world.rank() == 0) {
@@ -96,7 +100,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         mean_sq_positiveion_density.push_back(0.0);
         mean_sq_negativeion_density.push_back(0.0);
     }
-    
+
     double density_profile_samples = 0;            // number of samples used to estimate density profile
 
     long double expfac_real;                // exponential factors useful in velocity Verlet routine
@@ -126,7 +130,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
             ion[i].update_position(mdremote.timestep);
         for_md_calculate_force(ion, box, 'y', lowerBound, upperBound, partialForceVector, lj_ion_ion, lj_ion_leftdummy,
                                lj_ion_left_wall, lj_ion_rightdummy,
-                               lj_ion_right_wall, sendForceVector);        // force on particles initialized
+                               lj_ion_right_wall, sendForceVector, coulomb_rightwallForce, coulomb_leftwallForce, charge_meshpoint, valency_counterion);        // force on particles initialized
         //#pragma omp parallel for schedule(dynamic) private(i)
         for (i = 0; i < ion.size(); i++)
             ion[i].new_update_velocity(mdremote.timestep, real_bath[0], expfac_real);
@@ -146,7 +150,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
             energy_samples++;
             compute_n_write_useful_data(num, ion, real_bath, box, lowerBound, upperBound, ion_energy, lj_ion_ion_energy,
                                         lj_ion_leftdummy_energy, lj_ion_leftwall_energy, lj_ion_rightdummy_energy,
-                                        lj_ion_rightwall_energy);
+                                        lj_ion_rightwall_energy, coulomb_rightwall_energy, coulomb_leftwall_energy, charge_meshpoint, valency_counterion);
         }
 
         // make a movie

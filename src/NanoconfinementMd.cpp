@@ -118,17 +118,9 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     notify(vm);
 
     if (world.rank() == 0 && (!lammps))
-	 {
-        if (charge_density == 0)   // This is temporary condition. Later we will define charge on surfaces. For now, you can simulate charged surfaces with LAMMPS;
-        {
-          cout << "\nSimulation begins\n";
-        }
-        else
-        {
-          cout << "\nThe system has charged surface; aborting\n";
-          return 0;
-        }
-	 }
+    {
+      cout << "\nSimulation begins\n";
+    }
 
     if (world.rank() == 0) {
         if (mdremote.verbose) {
@@ -174,14 +166,13 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
         by = bx;
-        if (lammps)
+
+        if ( charge_density < -0.01 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
         {
-          if ( charge_density < -0.01 || charge_density > 0.0) //In lammps, we can choose charge density on surface between 0.0 (uncharged walls)  to -0.01 C/m2.
-          {
-            cout << "\ncharge density on the surface must be between zero to -0.01 C/m-2; aborting\n";
-            return 0;
-          }
+          cout << "\ncharge density on the surface must be between zero to -0.01 C/m-2; aborting\n";
+          return 0;
         }
+
 
         valency_counterion = 1; //pz_in;
         counterion_diameter_in = positive_diameter_in;
@@ -353,7 +344,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     // Simulation using Molecular Dynamics
     if (!lammps) {
 
-        md(ion, box, real_bath, bin, mdremote, simulationParams);
+        md(ion, box, real_bath, bin, mdremote, simulationParams, charge_meshpoint, valency_counterion);
 
         // Post simulation analysis (useful for short runs, but performed otherwise too)
         if (world.rank() == 0) {

@@ -8,6 +8,6 @@
 
 void for_md_calculate_force(vector <PARTICLE> &, INTERFACE &, char, unsigned int, unsigned int, vector <VECTOR3D> &,
                             vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &,
-                            vector <VECTOR3D> &,vector <VECTOR3D> &);
+                            vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, vector <VECTOR3D> &, double, int);
 
-#endif 
+#endif
