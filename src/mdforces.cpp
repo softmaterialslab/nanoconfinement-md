@@ -34,7 +34,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
                 r2 = sqrt(0.25 + (dz / box.lx) * (dz / box.lx));
                 E_z = 4 * atan(4 * fabs(dz) * r1 / box.lx);
                 hcsh = (4 / box.lx) * (1 / (r1 * (0.5 + r1)) - 1 / (r2 * r2)) * dz + factor * E_z +
-                       16 * fabs(dz) * (box.lx / (box.lx * box.lx + 4 * dz * dz * r1 * r1)) *
+                       16 * fabs(dz) * (box.lx / (box.lx * box.lx + 16 * dz * dz * r1 * r1)) *
                        (fabs(dz) * dz / (box.lx * box.lx * r1) + factor * r1);
 
                 h1.z = h1.z +
@@ -242,7 +242,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
       r2_rightwall = sqrt(0.25 + (dz_rightwall / box.lx) * (dz_rightwall / box.lx));
       E_z_rightwall = 4 * atan(4 * fabs(dz_rightwall) * r1_rightwall / box.lx);
       hcsh_rightwall = (4 / box.lx) * (1 / (r1_rightwall * (0.5 + r1_rightwall)) - 1 / (r2_rightwall * r2_rightwall)) * dz_rightwall + factor * E_z_rightwall +
-             16 * fabs(dz_rightwall) * (box.lx / (box.lx * box.lx + 4 * dz_rightwall * dz_rightwall * r1_rightwall * r1_rightwall)) *
+             16 * fabs(dz_rightwall) * (box.lx / (box.lx * box.lx + 16 * dz_rightwall * dz_rightwall * r1_rightwall * r1_rightwall)) *
              (fabs(dz_rightwall) * dz_rightwall / (box.lx * box.lx * r1_rightwall) + factor * r1_rightwall);
 
       h1_rightwall.z = h1_rightwall.z + 2 * ion[i].q * (wall_dummy.q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon) *
@@ -281,7 +281,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
       r2_leftwall = sqrt(0.25 + (dz_leftwall / box.lx) * (dz_leftwall / box.lx));
       E_z_leftwall  = 4 * atan(4 * fabs(dz_leftwall) * r1_leftwall / box.lx);
       hcsh_leftwall = (4 / box.lx) * (1 / (r1_leftwall * (0.5 + r1_leftwall)) - 1 / (r2_leftwall * r2_leftwall)) * dz_leftwall + factor * E_z_leftwall  +
-             16 * fabs(dz_leftwall) * (box.lx / (box.lx * box.lx + 4 * dz_leftwall * dz_leftwall * r1_leftwall * r1_leftwall)) *
+             16 * fabs(dz_leftwall) * (box.lx / (box.lx * box.lx + 16 * dz_leftwall * dz_leftwall * r1_leftwall * r1_leftwall)) *
              (fabs(dz_leftwall) * dz_leftwall / (box.lx * box.lx * r1_leftwall) + factor * r1_leftwall);
 
       h1_leftwall.z = h1_leftwall.z +
