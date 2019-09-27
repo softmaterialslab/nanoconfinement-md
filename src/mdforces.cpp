@@ -224,7 +224,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 //    }
 
 ///electrostatic between ion and rightwall///////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, k, h1_rightwall, dz_rightwall, factor, r1_rightwall, r2_rightwall, E_z_rightwall, hcsh_rightwall, temp_vec_rightwall, r_rightwall, r3_rightwall)
+#pragma omp parallel default(shared) private(i, k, wall_dummy, h1_rightwall, dz_rightwall, factor, r1_rightwall, r2_rightwall, E_z_rightwall, hcsh_rightwall, temp_vec_rightwall, r_rightwall, r3_rightwall)
 {
   #pragma omp for schedule(dynamic) nowait
   for (i = lowerBound; i <= upperBound; i++)
@@ -262,7 +262,7 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
         }
       }
 //////////////////////////////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, m, h1_leftwall, dz_leftwall, factor, r1_leftwall, r2_leftwall, E_z_leftwall, hcsh_leftwall, temp_vec_leftwall, r_leftwall, r3_leftwall)
+#pragma omp parallel default(shared) private(i, m, wall_dummy, h1_leftwall, dz_leftwall, factor, r1_leftwall, r2_leftwall, E_z_leftwall, hcsh_leftwall, temp_vec_leftwall, r_leftwall, r3_leftwall)
 {
   #pragma omp for schedule(dynamic) nowait
   for (i = lowerBound; i <= upperBound; i++)
