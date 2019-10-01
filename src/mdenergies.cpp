@@ -212,7 +212,7 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
 //        }
 //    }
 //coulomb interaction ion-rightwall///////////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, k, fqq_rightwall, fqq_csh_rightwall, dz_rightwall , r1_rightwall, r2_rightwall, fcsh_inf_rightwall, fcsh_z_rightwall, temp_vec_rightwall)
+#pragma omp parallel default(shared) private(i, k, wall_dummy, fqq_rightwall, fqq_csh_rightwall, dz_rightwall , r1_rightwall, r2_rightwall, fcsh_inf_rightwall, fcsh_z_rightwall, temp_vec_rightwall)
 {
 #pragma omp for schedule(dynamic) nowait
   for (i = lowerBound; i <= upperBound; i++)
@@ -243,7 +243,7 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //coulomb interaction ion-leftwall///////////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, m, fqq_leftwall, fqq_csh_leftwall, dz_leftwall, r1_leftwall, r2_leftwall, fcsh_inf_leftwall, fcsh_z_leftwall, temp_vec_leftwall)
+#pragma omp parallel default(shared) private(i, m, wall_dummy, fqq_leftwall, fqq_csh_leftwall, dz_leftwall, r1_leftwall, r2_leftwall, fcsh_inf_leftwall, fcsh_z_leftwall, temp_vec_leftwall)
 {
 #pragma omp for schedule(dynamic) nowait
     for (i = lowerBound; i <= upperBound; i++)
@@ -273,20 +273,19 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
   }
 
   // electrostatic interacting between right and left walls
-  PARTICLE right_wall, left_wall;
-  VECTOR3D r_vec_walls;
-  double fqq_walls;
+
   double total_coulomb_between_walls = 0;
   for (l = 0; l < box.rightplane.size(); l++)
   {
-    fqq_walls = 0.0;
-    right_wall = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.rightplane[l].posvec.x, box.rightplane[l].posvec.y, box.rightplane[l].posvec.z), box.lx, box.ly, box.lz);
+    double fqq_walls = 0.0;
+    PARTICLE right_wall = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.rightplane[l].posvec.x, box.rightplane[l].posvec.y, box.rightplane[l].posvec.z), box.lx, box.ly, box.lz);
     for (b = 0; b < box.leftplane.size(); b++)
     {
-      left_wall = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.leftplane[b].posvec.x, box.leftplane[b].posvec.y, box.leftplane[b].posvec.z), box.lx, box.ly, box.lz);
+        if (l == b) continue;
+      PARTICLE left_wall = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.leftplane[b].posvec.x, box.leftplane[b].posvec.y, box.leftplane[b].posvec.z), box.lx, box.ly, box.lz);
 
-      r_vec_walls = right_wall.posvec - left_wall.posvec;
-      fqq_walls = fqq_walls + right_wall.q * left_wall.q * 0.5 * (1.0 / right_wall.epsilon + 1.0 / left_wall.epsilon) / ((r_vec_walls).GetMagnitude());
+      VECTOR3D r_vec_walls = right_wall.posvec - left_wall.posvec;
+      fqq_walls = fqq_walls + 0.5 * right_wall.q * left_wall.q * 0.5 * (1.0 / right_wall.epsilon + 1.0 / left_wall.epsilon) / ((r_vec_walls).GetMagnitude());
   }
   total_coulomb_between_walls += fqq_walls;
 }
@@ -318,7 +317,7 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
     total_lj_ion_ion = 0.5 * total_lj_ion_ion;
     // factor of half for double counting, same reasoning as electrostatic energy
 
-    potential = coulomb + total_lj_ion_ion + total_lj_ion_leftdummy + total_lj_ion_rightdummy + total_coulomb_rightwall + total_coulomb_leftwall + total_coulomb_between_walls;
+    potential = coulomb + total_lj_ion_ion + total_lj_ion_leftdummy + total_lj_ion_rightdummy + total_coulomb_rightwall + total_coulomb_leftwall;
   //  potential = coulomb + total_lj_ion_ion + total_lj_ion_leftwall + total_lj_ion_rightwall;
 
     //MPI Operations
@@ -330,6 +329,8 @@ long double energy_functional(vector <PARTICLE> &ion, INTERFACE &box, unsigned i
 
         totalPotential=potential;
     }
+
+    totalPotential = totalPotential + total_coulomb_between_walls;
 
     return totalPotential;
 }
