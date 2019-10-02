@@ -52,6 +52,7 @@ class INTERFACE
   double inv_kappa_out;		// debye length outside
   double mean_sep_in;		// mean separation inside
   double mean_sep_out;		// mean separation outside
+  double meshpoint;		// charge of the meshpoint
 
   double width;			// discretization width
   vector<VERTEX> leftplane;
@@ -59,8 +60,9 @@ class INTERFACE
 
   void set_up(double, double, int, int, double, double, double);
   void put_saltions_inside(vector<PARTICLE>&, int, int, double, double, double, vector<PARTICLE>&, unsigned int, int, double, double);
-  void discretize(double, double);
+  void discretize(double, double, double);
   void generate_lammps_datafile(vector<PARTICLE>&, int, int, vector<PARTICLE>&, double, double, int, int, double, double);
+  double electrostatics_between_walls(double);
 
   INTERFACE(VECTOR3D initial_posvec = VECTOR3D(0,0,0), double initial_ein = 1, double initial_eout = 1)
   {

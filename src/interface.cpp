@@ -129,7 +129,7 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 }
 
 // discretize interface
-void INTERFACE::discretize(double smaller_ion_diameter, double f)
+void INTERFACE::discretize(double smaller_ion_diameter, double f, double charge_meshpoint)
 {
   // width of the discretization (f is typically 1 or 1/2 or 1/4 or 1/8 ...)
   width = f * lx;	// in reduced units
@@ -146,7 +146,7 @@ void INTERFACE::discretize(double smaller_ion_diameter, double f)
       VECTOR3D position = VECTOR3D(-0.5*lx+0.5*smaller_ion_diameter+i*width,-0.5*ly+0.5*smaller_ion_diameter+j*width,-0.5*lz);
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,-1);
-      leftplane.push_back(VERTEX(position,area,normal));
+      leftplane.push_back(VERTEX(position,charge_meshpoint,eout,area,normal));
     }
   }
 
@@ -158,7 +158,7 @@ void INTERFACE::discretize(double smaller_ion_diameter, double f)
       VECTOR3D position = VECTOR3D(-0.5*lx+0.5*smaller_ion_diameter+i*width,-0.5*ly+0.5*smaller_ion_diameter+j*width,0.5*lz);
       double area = width * width;
       VECTOR3D normal = VECTOR3D(0,0,1);
-      rightplane.push_back(VERTEX(position,area,normal));
+      rightplane.push_back(VERTEX(position,charge_meshpoint,eout,area,normal));
     }
   }
   mpi::environment env;
@@ -195,6 +195,27 @@ void INTERFACE::discretize(double smaller_ion_diameter, double f)
 	  listrightplane.close();
   }
   return;
+}
+
+// electrostatic interaction between right and left walls:
+double INTERFACE::electrostatics_between_walls(double charge_meshpoint)
+{
+  mpi::environment env;
+  mpi::communicator world;
+  double electrostatics_between_walls = 0.0;
+  for (unsigned int i = 0; i < rightplane.size(); i++)
+  {
+    double fqq_walls = 0.0;
+    for (unsigned int j = 0; j < leftplane.size(); j++)
+    {
+      if (i == j) continue;
+      VECTOR3D r_vec_walls = rightplane[i].posvec - leftplane[j].posvec;
+      fqq_walls = fqq_walls + 0.5 * rightplane[i].q * leftplane[j].q * 0.5 * (1.0 / rightplane[i].epsilon + 1.0 / leftplane[j].epsilon) / ((r_vec_walls).GetMagnitude());
+    }
+    electrostatics_between_walls += fqq_walls;
+  }
+    double total_electrostatics_between_walls = (electrostatics_between_walls) * scalefactor;
+    return total_electrostatics_between_walls;
 }
 // creating data file for LAMMPS;
 void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double smaller_ion_diameter,

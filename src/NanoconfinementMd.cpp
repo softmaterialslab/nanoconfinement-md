@@ -223,7 +223,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     vector<double> initial_density;
     bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
 
-    box.discretize(smaller_ion_diameter / unitlength, fraction_diameter);
+    box.discretize(smaller_ion_diameter / unitlength, fraction_diameter, charge_meshpoint);
 
     if (world.rank() == 0) {
         // output to screen the parameters of the problem
