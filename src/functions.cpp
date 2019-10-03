@@ -421,7 +421,7 @@ double compute_MD_trust_factor_R(int hiteqm) {
     return R;
 }
 
-void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
+void generateLammpsInputfileForChargedSurface(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
 
     Positive_diameter_in = Positive_diameter_in / unitlength;
     Negative_diameter_in = Negative_diameter_in / unitlength;
@@ -457,7 +457,119 @@ void generateLammpsInputfile(double ein, int Frequency, int stepsToEqb, int step
 
         /*Open the template file*/
         string line;
-        ifstream inputTemplate("infiles/in.lammps.template", ios::in);
+        ifstream inputTemplate("infiles/in.lammps.chargedsurface.template", ios::in);
+        if (inputTemplate.is_open()) {
+            while (getline(inputTemplate, line)) {
+                std::size_t found = line.find(dielectricText);
+                if (found != std::string::npos)
+                    line.replace(found, dielectricText.length(), std::to_string(ein));
+
+                found = line.find(movieFrq);
+                if (found != std::string::npos)
+                    line.replace(found, movieFrq.length(), std::to_string(Frequency));
+
+                found = line.find(stepsUpToEQ);
+                if (found != std::string::npos)
+                    line.replace(found, stepsUpToEQ.length(), std::to_string(stepsToEqb));
+
+                found = line.find(extraComputeSim);
+                if (found != std::string::npos)
+                    line.replace(found, extraComputeSim.length(), std::to_string(extracompute));
+
+                found = line.find(StepsTime);
+                if (found != std::string::npos)
+                    line.replace(found, StepsTime.length(), std::to_string(timestep));
+
+                found = line.find(stepsAfterEQ);
+                if (found != std::string::npos)
+                    line.replace(found, stepsAfterEQ.length(), std::to_string(stepsAfterEqb));
+
+                found = line.find(positiveIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, positiveIonsDiameter.length(), std::to_string(Positive_diameter_in));
+
+                found = line.find(negativeIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, negativeIonsDiameter.length(), std::to_string(Negative_diameter_in));
+
+                found = line.find(positiveIonsRadius);
+               if (found != std::string::npos)
+                   line.replace(found, positiveIonsRadius.length(), std::to_string(Half_positive_diameter_in));
+
+               found = line.find(negativeIonsRadius);
+               if (found != std::string::npos)
+                   line.replace(found, negativeIonsRadius.length(), std::to_string(Half_negative_diameter_in));
+
+                found = line.find(averagePositiveNegativeIonsDiameter);
+                if (found != std::string::npos)
+                    line.replace(found, averagePositiveNegativeIonsDiameter.length(), std::to_string(average_positive_negative_diameter));
+
+               found = line.find(positiveIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, positiveIonCutoff.length(), std::to_string(positive_ion_cutoff));
+
+               found = line.find(negativeIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, negativeIonCutoff.length(), std::to_string(negative_ion_cutoff));
+
+               found = line.find(halfPositiveIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, halfPositiveIonCutoff.length(), std::to_string(half_positive_ion_cutoff));
+
+               found = line.find(halfNegativeIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, halfNegativeIonCutoff.length(), std::to_string(half_negative_ion_cutoff));
+
+               found = line.find(averageIonCutoff);
+               if (found != std::string::npos)
+                   line.replace(found, averageIonCutoff.length(), std::to_string(average_negative_positive_cutoff));
+
+                inputScript << line << endl;
+            }
+            inputTemplate.close();
+        } else cout << "Unable to open the template input script" << endl;
+        inputScript.close();
+    } else cout << "Unable create a input Script" << endl;
+
+}
+
+void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
+
+    Positive_diameter_in = Positive_diameter_in / unitlength;
+    Negative_diameter_in = Negative_diameter_in / unitlength;
+    double Half_positive_diameter_in = 0.5 * Positive_diameter_in;
+    double Half_negative_diameter_in = 0.5 * Negative_diameter_in;
+    double average_positive_negative_diameter =  0.5 * (Positive_diameter_in + Negative_diameter_in);
+    double positive_ion_cutoff = Positive_diameter_in * dcut;
+    double negative_ion_cutoff = Negative_diameter_in * dcut;
+    double half_positive_ion_cutoff = 0.5 * positive_ion_cutoff;
+    double half_negative_ion_cutoff = 0.5 * negative_ion_cutoff;
+    double average_negative_positive_cutoff = 0.5 * (negative_ion_cutoff + positive_ion_cutoff);
+
+    /*Replacable variables*/
+    string dielectricText = "USERINPUT_DIELECTRIC_CONST";
+    string movieFrq = "USERINPUT_MOVIE_FRQ";
+    string stepsUpToEQ = "USERINPUT_STEPS_BEFORE_EQ";
+    string stepsAfterEQ = "USERINPUT_STEPS_AFTER_EQ";
+    string extraComputeSim = "USERINPUT_THERMO_DUMP_FRQ";
+    string StepsTime = "USERINPUT_TIMESTEP";
+
+    string positiveIonsDiameter = "USERINPUT_POSITIVE_DIAMETER";
+    string negativeIonsDiameter = "USERINPUT_NEGATIVE_DIAMETER";
+    string positiveIonsRadius = "POSITIVE_RADIUS";
+    string negativeIonsRadius = "NEGATIVE_RADIUS";
+    string averagePositiveNegativeIonsDiameter = "AVERAGE_DIAMETER";
+    string positiveIonCutoff = "POSITIVE_CUTOFF";
+    string negativeIonCutoff = "NEGATIVE_CUTOFF";
+    string halfPositiveIonCutoff = "HALF_POS_CUTOFF";
+    string halfNegativeIonCutoff = "HALF_NEG_CUTOFF";
+    string averageIonCutoff = "CUTOFF_AVERAGE";
+    ofstream inputScript("in.lammps", ios::trunc);
+    if (inputScript.is_open()) {
+
+        /*Open the template file*/
+        string line;
+        ifstream inputTemplate("infiles/in.lammps.unchargedsurface.template", ios::in);
         if (inputTemplate.is_open()) {
             while (getline(inputTemplate, line)) {
                 std::size_t found = line.find(dielectricText);

@@ -61,7 +61,8 @@ class INTERFACE
   void set_up(double, double, int, int, double, double, double);
   void put_saltions_inside(vector<PARTICLE>&, int, int, double, double, double, vector<PARTICLE>&, unsigned int, int, double, double);
   void discretize(double, double, double);
-  void generate_lammps_datafile(vector<PARTICLE>&, int, int, vector<PARTICLE>&, double, double, int, int, double, double);
+  void generate_lammps_datafile_unchargedsurface(vector<PARTICLE>&, int, int, vector<PARTICLE>&);
+  void generate_lammps_datafile_chargedsurface(vector<PARTICLE>&, int, int, vector<PARTICLE>&, double, double, int, int, double, double);
   double electrostatics_between_walls(double);
 
   INTERFACE(VECTOR3D initial_posvec = VECTOR3D(0,0,0), double initial_ein = 1, double initial_eout = 1)

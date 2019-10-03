@@ -217,8 +217,52 @@ double INTERFACE::electrostatics_between_walls(double charge_meshpoint)
     double total_electrostatics_between_walls = (electrostatics_between_walls) * scalefactor;
     return total_electrostatics_between_walls;
 }
-// creating data file for LAMMPS;
-void INTERFACE::generate_lammps_datafile(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double smaller_ion_diameter,
+
+// creating data file for LAMMPS uncharged surfaces;
+void INTERFACE::generate_lammps_datafile_unchargedsurface(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion)
+{
+  string AtomType;
+  double ChargeValue;
+  double unitcharge_lammps = unitcharge / (sqrt(4 * pi * unitlength * pow(10, -9) * 8.854187 * pow(10, -12) * 1.38064852 * pow(10,-23) * room_temperature)); //in reduced unit
+  mpi::environment env;
+  mpi::communicator world;
+
+  if (world.rank() == 0)
+  {
+    string InputLammpsPath= rootDirectory+"outfiles/ip.lammps.xyz";
+    ofstream listlammps(InputLammpsPath.c_str(), ios::out);
+    listlammps << "LAMMPS data file" << endl;
+    listlammps << ion.size() << " atoms" << endl;
+    listlammps << "2 atom types" << endl; //Type 1 is pz positive charged ions, type 2 is negative charged ions inside the box;
+    listlammps << -0.5 * lx << " " << 0.5 * lx<< " " << "xlo xhi" << endl;
+    listlammps << -0.5 * ly << " " << 0.5 * ly << " " << "ylo yhi" <<  endl;
+    listlammps << -0.5 * lz  << " " << 0.5 * lz  <<  " " << "zlo zhi" << endl;
+    listlammps << " " << endl;
+    listlammps << "Atoms" << endl;
+    listlammps << " " << endl;
+    for (unsigned int i = 0; i < ion.size(); i++)
+  {
+    if (ion[i].valency > 0)
+    {
+      AtomType = "1";
+      ChargeValue = pz * unitcharge_lammps;
+    }
+    else if (ion[i].valency < 0)
+    {
+      AtomType = "2";
+      ChargeValue = nz * unitcharge_lammps;
+    }
+    listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+  }
+  listlammps.close();
+}
+  return;
+}
+
+
+
+// creating data file for LAMMPS charged surfaces;
+void INTERFACE::generate_lammps_datafile_chargedsurface(vector<PARTICLE>& saltion_in, int pz, int nz, vector<PARTICLE>& ion, double smaller_ion_diameter,
   double charge_meshpoint, int counterions, int valency_counterion, double fraction_diameter, double surface_area)
 {
   // In Lammps, unit of charge is in reduced unit, where q* = q / (4 pi perm0 sigma epsilon)^1/2;
