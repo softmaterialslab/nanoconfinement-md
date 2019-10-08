@@ -367,9 +367,16 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             if (lammpsPreprocessing) {
 
                 cout << "Lammps Preprocessing started." << endl;
-
-                box.generate_lammps_datafile(saltion_in, pz_in, nz_in, ion, smaller_ion_diameter, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
-                generateLammpsInputfile(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
+                if (charge_meshpoint == 0)
+                {
+                  box.generate_lammps_datafile_unchargedsurface(saltion_in, pz_in, nz_in, ion);
+                  generateLammpsInputfileForUnchargedSurface(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
+                }
+                else
+                {
+                  box.generate_lammps_datafile_chargedsurface(saltion_in, pz_in, nz_in, ion, smaller_ion_diameter, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
+                  generateLammpsInputfileForChargedSurface(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
+                }
 
                 cout << "Lammps Preprocessing ended." << endl;
 

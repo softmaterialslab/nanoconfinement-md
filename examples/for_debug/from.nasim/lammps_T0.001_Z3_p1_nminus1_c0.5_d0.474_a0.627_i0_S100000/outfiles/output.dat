@@ -1,6 +1,3 @@
-The default app simulates a total of 424 ions
-MPI/OpenMP hybrid acceleration is built in this app
------------------------------------------------------
 Ions are confined by nanomaterial surfaces in aqueous solvent
 Material surfaces modeled as thin planar interfaces
 Solvent modeled as implicit media
@@ -44,6 +41,6 @@ Make sure that number of grid points and ions is greater than 2
 Lammps Postprocessing started.
 Number of samples used to get density profile:801
 Lammps Postprocessing ended.
-make[1]: Leaving directory `/nfs/nfs5/home/nobackup/nanoushe/5Sep/Test/lammps_T0.001_Z3_p1_nminus1_c0.5_d0.474_a0.627_i0_S100000/nanoconfinement-md/bin'
+make[1]: Leaving directory `/nfs/nfs5/home/nobackup/nanoushe/3october/Recent-Pull/from.nasim/lammps_T0.001_Z3_p1_nminus1_c0.5_d0.474_a0.627_i0_S100000/nanoconfinement-md-1/bin'
 Postprocessing is over.
 

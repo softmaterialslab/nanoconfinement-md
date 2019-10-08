@@ -1,3 +1,9 @@
+make -C bin run-postprocessor Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=10000 MPIRUNCMD=mpirun
+make[1]: Entering directory `/nfs/nfs5/home/nobackup/nanoushe/3october/Recent-Pull/from.nasim/lammps_T0.001_Z3_p1_nminus1_c0.5_d0.714_a0.714_i0_S10000/nanoconfinement-md-1/bin'
+mpirun -n 1 md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -S 10000 -i 0.0 -J true -j false
+[jughead.sice.indiana.edu:24883] mca_base_component_repository_open: unable to open mca_oob_ud: libosmcomp.so.3: cannot open shared object file: No such file or directory (ignored)
+[jughead.sice.indiana.edu:24888] mca_base_component_repository_open: unable to open mca_oob_ud: libosmcomp.so.3: cannot open shared object file: No such file or directory (ignored)
+[jughead.sice.indiana.edu:24888] mca_base_component_repository_open: unable to open mca_btl_openib: libosmcomp.so.3: cannot open shared object file: No such file or directory (ignored)
 For help with the menu, type ./md_simulation_confined_ions -h
 The default app simulates a total of 424 ions
 MPI/OpenMP hybrid acceleration is built in this app
@@ -45,6 +51,6 @@ Make sure that number of grid points and ions is greater than 2
 Lammps Postprocessing started.
 Number of samples used to get density profile:91
 Lammps Postprocessing ended.
-make[1]: Leaving directory `/nfs/nfs5/home/nobackup/nanoushe/5Sep/Test/lammps_T0.001_Z3_p1_nminus1_c0.5_d0.714_a0.714_i0_S10000/nanoconfinement-md/bin'
+make[1]: Leaving directory `/nfs/nfs5/home/nobackup/nanoushe/3october/Recent-Pull/from.nasim/lammps_T0.001_Z3_p1_nminus1_c0.5_d0.714_a0.714_i0_S10000/nanoconfinement-md-1/bin'
 Postprocessing is over.
 
