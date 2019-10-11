@@ -1,0 +1,72 @@
+Simulation begins
+For help with the menu, type ./md_simulation_confined_ions -h
+The default app simulates a total of 424 ions
+MPI/OpenMP hybrid acceleration is built in this app
+-----------------------------------------------------
+Ions are confined by nanomaterial surfaces in aqueous solvent
+Material surfaces modeled as thin planar interfaces
+Solvent modeled as implicit media
+Ions modeled as finite-size, soft spheres
+Dielectric constant of water 80
+Unit of length is 0.474 nanometers
+Unit of mass is 3.841e-23 grams
+Unit of energy is 4.11449e-14 ergs (CGS)
+Unit of time is 4.57976e-09 seconds
+Simulation employs reduced units to measure physical quantities
+Simulation box dimensions (in reduced units) x | y | z   32.3202 | 32.3202 | 6.32911
+Box dimensions (in nanometers) x | y | z   15.3198 | 15.3198 | 3
+Note: periodic boundaries in x and y direcitons 
+Permittivity inside the confinement (channel) 80
+Permittivity outside 80
+Dielectric contrast across interfaces 0
+Positive (+) ion valency 1
+Negative (-) ion valency -1
+Valency of counter ions is 1
+positive ion diameter 1
+negative ion diameter 1.32278
+counter ion diameter 1
+In MD, charge density 0 Coulomb per squared meter
+Ion (salt) concentration (c) inside 0.5 M
+Note: we define c = total number of positive ions / volume
+Debye length 0.907446
+Mean separation between ions 2.50133
+Temperature (in Kelvin) 298
+Binning width (uniform) 0.0502311
+Number of bins 128
+Number of points discretizing the left and right planar walls/interfaces/surfaces 2500  2500
+Number of ions 424
+Number of positive ions 212
+Number of negative ions 212
+Number of counter ions 0
+System simulated is electroneutral-- total charge inside is 0
+The app comes with MPI and OpenMP (Hybrid) parallelization)
+Number of MPI processes used 2
+Number of OpenMP threads per MPI process 2
+Make sure that number of grid points and ions is greater than 4
+
+Propagation of ions using Molecular Dynamics method begins 
+Time step in the simulation 0.001
+Total number of simulation steps 100000
+Initial ion kinetic energy 295.675
+Inital potential energy -61.4544
+Initial system energy 234.22
+Chain length (L+1) implementation 5
+Main thermostat temperature 1
+Main thermostat mass 1
+Number of bins used for computing density profiles 128
+Production begins at 20000
+Sampling frequency 100
+Extra computation every 1000 steps
+Write density profile every 10000
+100% ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||Number of samples used to compute energy       101
+Number of samples used to get density profile       801
+Dynamics of ions simulated for 457.976 nanoseconds
+MD trust factor R (should be < 0.05) is 0.000671802
+Converged results for ionic densities expected with ~ 1500 nanoseconds of ion dynamics
+Accordingly, we recommend using ~ 1000,000 simulation steps to obtain smoother, converged profiles 
+Simulation ends 
+
+
+real	704m43.703s
+user	637m36.816s
+sys	0m5.857s
