@@ -40,9 +40,9 @@ Number of negative ions 212
 Number of counter ions 0
 System simulated is electroneutral-- total charge inside is 0
 The app comes with MPI and OpenMP (Hybrid) parallelization)
-Number of MPI processes used 4
-Number of OpenMP threads per MPI process 8
-Make sure that number of grid points and ions is greater than 32
+Number of MPI processes used 2
+Number of OpenMP threads per MPI process 2
+Make sure that number of grid points and ions is greater than 4
 
 Propagation of ions using Molecular Dynamics method begins 
 Time step in the simulation 0.001
@@ -61,13 +61,12 @@ Write density profile every 10000
 100% ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||Number of samples used to compute energy       101
 Number of samples used to get density profile       801
 Dynamics of ions simulated for 457.976 nanoseconds
-MD trust factor R (should be < 0.05) is 0.00137201
+MD trust factor R (should be < 0.05) is 0.000671802
 Converged results for ionic densities expected with ~ 1500 nanoseconds of ion dynamics
 Accordingly, we recommend using ~ 1000,000 simulation steps to obtain smoother, converged profiles 
 Simulation ends 
 
 
-real	791m39.503s
-user	1427m19.160s
-sys	1m14.592s
-
+real	704m43.703s
+user	637m36.816s
+sys	0m5.857s
