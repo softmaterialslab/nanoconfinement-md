@@ -222,86 +222,87 @@ void for_md_calculate_force(vector <PARTICLE> &ion, INTERFACE &box, char flag, u
 //            lj_ion_right_wall[i - lowerBound] = flj;
 //        }
 //    }
-
-///electrostatic between ion and rightwall///////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, k, wall_dummy, h1_rightwall, dz_rightwall, factor, r1_rightwall, r2_rightwall, E_z_rightwall, hcsh_rightwall, temp_vec_rightwall, r_rightwall, r3_rightwall)
+if (charge_meshpoint != 0.0) // if charge_mesh is not zero, there is electrostatics force between ions and walls;
 {
-  #pragma omp for schedule(dynamic) nowait
-  for (i = lowerBound; i <= upperBound; i++)
+  ///electrostatic between ion and rightwall///////////////////////////////////////////////////////////////////////
+  #pragma omp parallel default(shared) private(i, k, wall_dummy, h1_rightwall, dz_rightwall, factor, r1_rightwall, r2_rightwall, E_z_rightwall, hcsh_rightwall, temp_vec_rightwall, r_rightwall, r3_rightwall)
   {
-    h1_rightwall = VECTOR3D(0, 0, 0);
-    for (k = 0; k < box.rightplane.size(); k++)
+    #pragma omp for schedule(dynamic) nowait
+    for (i = lowerBound; i <= upperBound; i++)
     {
-      wall_dummy = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.rightplane[k].posvec.x, box.rightplane[k].posvec.y, box.rightplane[k].posvec.z),
-                                      box.lx, box.ly, box.lz);//+ 0.5 * ion[i].diameter
+      h1_rightwall = VECTOR3D(0, 0, 0);
+      for (k = 0; k < box.rightplane.size(); k++)
+      {
+        wall_dummy = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.rightplane[k].posvec.x, box.rightplane[k].posvec.y, box.rightplane[k].posvec.z),
+                                        box.lx, box.ly, box.lz);//+ 0.5 * ion[i].diameter
 
-      dz_rightwall = ion[i].posvec.z - wall_dummy.posvec.z;
-      if (dz_rightwall >= 0) factor = 1;
-      else factor = -1;
-      r1_rightwall = sqrt(0.5 + (dz_rightwall / box.lx) * (dz_rightwall / box.lx));
-      r2_rightwall = sqrt(0.25 + (dz_rightwall / box.lx) * (dz_rightwall / box.lx));
-      E_z_rightwall = 4 * atan(4 * fabs(dz_rightwall) * r1_rightwall / box.lx);
-      hcsh_rightwall = (4 / box.lx) * (1 / (r1_rightwall * (0.5 + r1_rightwall)) - 1 / (r2_rightwall * r2_rightwall)) * dz_rightwall + factor * E_z_rightwall +
-             16 * fabs(dz_rightwall) * (box.lx / (box.lx * box.lx + 16 * dz_rightwall * dz_rightwall * r1_rightwall * r1_rightwall)) *
-             (fabs(dz_rightwall) * dz_rightwall / (box.lx * box.lx * r1_rightwall) + factor * r1_rightwall);
+        dz_rightwall = ion[i].posvec.z - wall_dummy.posvec.z;
+        if (dz_rightwall >= 0) factor = 1;
+        else factor = -1;
+        r1_rightwall = sqrt(0.5 + (dz_rightwall / box.lx) * (dz_rightwall / box.lx));
+        r2_rightwall = sqrt(0.25 + (dz_rightwall / box.lx) * (dz_rightwall / box.lx));
+        E_z_rightwall = 4 * atan(4 * fabs(dz_rightwall) * r1_rightwall / box.lx);
+        hcsh_rightwall = (4 / box.lx) * (1 / (r1_rightwall * (0.5 + r1_rightwall)) - 1 / (r2_rightwall * r2_rightwall)) * dz_rightwall + factor * E_z_rightwall +
+               16 * fabs(dz_rightwall) * (box.lx / (box.lx * box.lx + 16 * dz_rightwall * dz_rightwall * r1_rightwall * r1_rightwall)) *
+               (fabs(dz_rightwall) * dz_rightwall / (box.lx * box.lx * r1_rightwall) + factor * r1_rightwall);
 
-      h1_rightwall.z = h1_rightwall.z + 2 * ion[i].q * (wall_dummy.q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon) *
-             hcsh_rightwall;
+        h1_rightwall.z = h1_rightwall.z + 2 * ion[i].q * (wall_dummy.q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon) *
+               hcsh_rightwall;
 
-      temp_vec_rightwall = ion[i].posvec - wall_dummy.posvec;
-      if (temp_vec_rightwall.x > box.lx / 2) temp_vec_rightwall.x -= box.lx;
-      if (temp_vec_rightwall.x < -box.lx / 2) temp_vec_rightwall.x += box.lx;
-      if (temp_vec_rightwall.y > box.ly / 2) temp_vec_rightwall.y -= box.ly;
-      if (temp_vec_rightwall.y < -box.ly / 2) temp_vec_rightwall.y += box.ly;
-      r_rightwall = temp_vec_rightwall.GetMagnitude();
-      r3_rightwall = r_rightwall * r_rightwall * r_rightwall;
-      h1_rightwall = h1_rightwall+ ((temp_vec_rightwall ^ ((-1.0) / r3_rightwall)) ^
-            ((-0.5) * ion[i].q * wall_dummy.q * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon)));
+        temp_vec_rightwall = ion[i].posvec - wall_dummy.posvec;
+        if (temp_vec_rightwall.x > box.lx / 2) temp_vec_rightwall.x -= box.lx;
+        if (temp_vec_rightwall.x < -box.lx / 2) temp_vec_rightwall.x += box.lx;
+        if (temp_vec_rightwall.y > box.ly / 2) temp_vec_rightwall.y -= box.ly;
+        if (temp_vec_rightwall.y < -box.ly / 2) temp_vec_rightwall.y += box.ly;
+        r_rightwall = temp_vec_rightwall.GetMagnitude();
+        r3_rightwall = r_rightwall * r_rightwall * r_rightwall;
+        h1_rightwall = h1_rightwall+ ((temp_vec_rightwall ^ ((-1.0) / r3_rightwall)) ^
+              ((-0.5) * ion[i].q * wall_dummy.q * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon)));
+            }
+            coulomb_rightwallForce[i - lowerBound] = ((h1_rightwall) ^ (scalefactor));
           }
-          coulomb_rightwallForce[i - lowerBound] = ((h1_rightwall) ^ (scalefactor));
+        }
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  #pragma omp parallel default(shared) private(i, m, wall_dummy, h1_leftwall, dz_leftwall, factor, r1_leftwall, r2_leftwall, E_z_leftwall, hcsh_leftwall, temp_vec_leftwall, r_leftwall, r3_leftwall)
+  {
+    #pragma omp for schedule(dynamic) nowait
+    for (i = lowerBound; i <= upperBound; i++)
+    {
+      h1_leftwall = VECTOR3D(0, 0, 0);
+      for (m = 0; m < box.leftplane.size(); m++)
+      {
+        wall_dummy = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.leftplane[m].posvec.x, box.leftplane[m].posvec.y,
+                                                 box.leftplane[m].posvec.z), box.lx, box.ly, box.lz);// - 0.5 * ion[i].diameter
+
+
+        dz_leftwall = ion[i].posvec.z - wall_dummy.posvec.z;
+        if (dz_leftwall >= 0) factor = 1;
+        else factor = -1;
+        r1_leftwall = sqrt(0.5 + (dz_leftwall / box.lx) * (dz_leftwall / box.lx));
+        r2_leftwall = sqrt(0.25 + (dz_leftwall / box.lx) * (dz_leftwall / box.lx));
+        E_z_leftwall  = 4 * atan(4 * fabs(dz_leftwall) * r1_leftwall / box.lx);
+        hcsh_leftwall = (4 / box.lx) * (1 / (r1_leftwall * (0.5 + r1_leftwall)) - 1 / (r2_leftwall * r2_leftwall)) * dz_leftwall + factor * E_z_leftwall  +
+               16 * fabs(dz_leftwall) * (box.lx / (box.lx * box.lx + 16 * dz_leftwall * dz_leftwall * r1_leftwall * r1_leftwall)) *
+               (fabs(dz_leftwall) * dz_leftwall / (box.lx * box.lx * r1_leftwall) + factor * r1_leftwall);
+
+        h1_leftwall.z = h1_leftwall.z +
+               2 * ion[i].q * (wall_dummy.q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon) *
+               hcsh_leftwall;
+
+        temp_vec_leftwall = ion[i].posvec - wall_dummy.posvec;
+        if (temp_vec_leftwall.x > box.lx / 2) temp_vec_leftwall.x -= box.lx;
+        if (temp_vec_leftwall.x < -box.lx / 2) temp_vec_leftwall.x += box.lx;
+        if (temp_vec_leftwall.y > box.ly / 2) temp_vec_leftwall.y -= box.ly;
+        if (temp_vec_leftwall.y < -box.ly / 2) temp_vec_leftwall.y += box.ly;
+        r_leftwall = temp_vec_leftwall.GetMagnitude();
+        r3_leftwall = r_leftwall * r_leftwall * r_leftwall;
+        h1_leftwall = h1_leftwall + ((temp_vec_leftwall ^ ((-1.0) / r3_leftwall)) ^
+              ((-0.5) * ion[i].q * wall_dummy.q * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon)));
+            }
+            coulomb_leftwallForce[i - lowerBound] = ((h1_leftwall) ^ (scalefactor));
+          }
         }
       }
-//////////////////////////////////////////////////////////////////////////////////////////////
-#pragma omp parallel default(shared) private(i, m, wall_dummy, h1_leftwall, dz_leftwall, factor, r1_leftwall, r2_leftwall, E_z_leftwall, hcsh_leftwall, temp_vec_leftwall, r_leftwall, r3_leftwall)
-{
-  #pragma omp for schedule(dynamic) nowait
-  for (i = lowerBound; i <= upperBound; i++)
-  {
-    h1_leftwall = VECTOR3D(0, 0, 0);
-    for (m = 0; m < box.leftplane.size(); m++)
-    {
-      wall_dummy = PARTICLE(0, 0, valency_counterion * -1, charge_meshpoint * 1.0, 0, box.eout, VECTOR3D(box.leftplane[m].posvec.x, box.leftplane[m].posvec.y,
-                                               box.leftplane[m].posvec.z), box.lx, box.ly, box.lz);// - 0.5 * ion[i].diameter
-
-
-      dz_leftwall = ion[i].posvec.z - wall_dummy.posvec.z;
-      if (dz_leftwall >= 0) factor = 1;
-      else factor = -1;
-      r1_leftwall = sqrt(0.5 + (dz_leftwall / box.lx) * (dz_leftwall / box.lx));
-      r2_leftwall = sqrt(0.25 + (dz_leftwall / box.lx) * (dz_leftwall / box.lx));
-      E_z_leftwall  = 4 * atan(4 * fabs(dz_leftwall) * r1_leftwall / box.lx);
-      hcsh_leftwall = (4 / box.lx) * (1 / (r1_leftwall * (0.5 + r1_leftwall)) - 1 / (r2_leftwall * r2_leftwall)) * dz_leftwall + factor * E_z_leftwall  +
-             16 * fabs(dz_leftwall) * (box.lx / (box.lx * box.lx + 16 * dz_leftwall * dz_leftwall * r1_leftwall * r1_leftwall)) *
-             (fabs(dz_leftwall) * dz_leftwall / (box.lx * box.lx * r1_leftwall) + factor * r1_leftwall);
-
-      h1_leftwall.z = h1_leftwall.z +
-             2 * ion[i].q * (wall_dummy.q / (box.lx * box.lx)) * 0.5 * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon) *
-             hcsh_leftwall;
-
-      temp_vec_leftwall = ion[i].posvec - wall_dummy.posvec;
-      if (temp_vec_leftwall.x > box.lx / 2) temp_vec_leftwall.x -= box.lx;
-      if (temp_vec_leftwall.x < -box.lx / 2) temp_vec_leftwall.x += box.lx;
-      if (temp_vec_leftwall.y > box.ly / 2) temp_vec_leftwall.y -= box.ly;
-      if (temp_vec_leftwall.y < -box.ly / 2) temp_vec_leftwall.y += box.ly;
-      r_leftwall = temp_vec_leftwall.GetMagnitude();
-      r3_leftwall = r_leftwall * r_leftwall * r_leftwall;
-      h1_leftwall = h1_leftwall + ((temp_vec_leftwall ^ ((-1.0) / r3_leftwall)) ^
-            ((-0.5) * ion[i].q * wall_dummy.q * (1 / ion[i].epsilon + 1 / wall_dummy.epsilon)));
-          }
-          coulomb_leftwallForce[i - lowerBound] = ((h1_leftwall) ^ (scalefactor));
-        }
-      }
-
 
     if (world.size() > 1) {
 
