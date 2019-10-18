@@ -43,6 +43,7 @@ void INTERFACE::set_up(double salt_conc_in, double salt_conc_out, int salt_valen
 
 void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz, double concentration, double positive_diameter_in, double negative_diameter_in, vector<PARTICLE>& ion, unsigned int counterions, int valency_counterion, double counterion_diameter_in, double bigger_ion_diameter)
 {
+  bool INIT_CRYSTAL = true;
   // establish the number of inside salt ions first
   // Note: salt concentration is the concentration of one kind of ions.
   // also the factor of 0.6 is there in order to be consistent with units.
@@ -85,6 +86,8 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   // gsl_rng_set(rnr,s); // seed the random number generator;
 
   // generate salt ions inside
+  if (!INIT_CRYSTAL)//initialize ions randomly;
+{
   while (saltion_in.size() != total_saltions_inside)
   {
     double x = gsl_rng_uniform(rnr);
@@ -94,8 +97,8 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     double z = gsl_rng_uniform(rnr);
     z = (1 - z) * (-r0_z) + z * (r0_z);
     VECTOR3D posvec = VECTOR3D(x,y,z);
-    if (x > r0_x - bigger_ion_diameter || y > r0_y - bigger_ion_diameter  || z > r0_z - bigger_ion_diameter )		// putting an extra ion diameter length away from interface
-      continue;
+  //  if (x > r0_x - bigger_ion_diameter || y > r0_y - bigger_ion_diameter  || z > r0_z - bigger_ion_diameter )		// putting an extra ion diameter length away from interface
+  //    continue;
     bool continuewhile = false;
     for (unsigned int i = 0; i < ion.size() && continuewhile == false; i++)
       if ((posvec - ion[i].posvec).GetMagnitude() <= (0.5*bigger_ion_diameter+0.5*ion[i].diameter)) continuewhile = true;
@@ -111,6 +114,42 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
   }
+}
+else //initialize ions in crystal pack;
+{
+  int num_ions_in_lx = lx/ bigger_ion_diameter;
+  int num_ions_in_ly = ly/ bigger_ion_diameter;
+  int num_ions_in_lz = lz/ bigger_ion_diameter;
+
+  for (int i = 0; i < num_ions_in_lx; i++)
+  {
+    for (int j = 0; j < num_ions_in_ly; j++)
+    {
+      for (int k = 0; k < num_ions_in_lz; k++)
+      {
+        if (saltion_in.size() < total_saltions_inside)
+        {
+          double x = (-lx/2 + (0.5 * bigger_ion_diameter)) + i * bigger_ion_diameter;
+          double y = (-ly/2 + (0.5 * bigger_ion_diameter)) + j * bigger_ion_diameter;
+          double z = (-lz/2 + (0.5 * bigger_ion_diameter)) + k * bigger_ion_diameter;
+          VECTOR3D posvec = VECTOR3D(x,y,z);
+          if (x > ((lx/2)-(0.5 * bigger_ion_diameter)) || y > ((ly/2)-(0.5 * bigger_ion_diameter)) || z > ((lz/2)-(0.5 * bigger_ion_diameter)))// || z <= ((-lz/2)+(diameter/2)))	// avoid putting the ions outside the box
+             continue;
+        
+          PARTICLE freshion;
+          if (saltion_in.size() < counterions)
+            freshion = PARTICLE(int(ion.size())+1,counterion_diameter_in,valency_counterion,valency_counterion*1.0,1.0,ein,posvec,lx,ly,lz);
+          else if (saltion_in.size() >= counterions && saltion_in.size() < (total_pions_inside + counterions))
+            freshion = PARTICLE(int(ion.size())+1,positive_diameter_in,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
+          else
+            freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
+          saltion_in.push_back(freshion);
+          ion.push_back(freshion);
+        }
+      }
+    }
+  }
+}
 
   mpi::environment env;
   mpi::communicator world;

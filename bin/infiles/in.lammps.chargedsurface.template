@@ -23,7 +23,7 @@ atom_style      charge                                  # Charges are associated
 
 # ------------------------------ SETS PARAMETERS ----------------------------------
 neighbor        0.1     bin                             # Extra distance beyond force cutoff (in reduced lj units);
-neigh_modify    every   1    delay   0   check   yes    # The every, delay, check options affect how often lists are built as a simulation runs. "delay" means never build new lists until at least N steps after the previous build. "every" means build lists every M steps. check = yes, then every and delay settings determine when a build may possibly be performed;
+neigh_modify    every   1    delay   0   check   yes   page 50000 one 5000  # The every, delay, check options affect how often lists are built as a simulation runs. "delay" means never build new lists until at least N steps after the previous build. "every" means build lists every M steps. check = yes, then every and delay settings determine when a build may possibly be performed;Neighbor page size must be >= 10x 
 
 # ------------------------ CREAT SIMULATION BOX, ATOMS ----------------------------
 read_data       outfiles/ip.lammps.xyz                  # The atoms are listed in order of atom-ID atom-type q x y z;
