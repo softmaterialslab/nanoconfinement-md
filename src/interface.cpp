@@ -50,10 +50,16 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 
   double volume_box = lx*ly*lz;
 
-  unsigned int total_pions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
-  if (total_pions_inside % nz !=0)
-    total_pions_inside = total_pions_inside - (total_pions_inside % abs (nz));
-  unsigned int total_nions_inside = total_pions_inside * pz / abs (nz);
+//  unsigned int total_pions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
+//  if (total_pions_inside % nz !=0)
+//    total_pions_inside = total_pions_inside - (total_pions_inside % abs (nz));
+//  unsigned int total_nions_inside = total_pions_inside * pz / abs (nz);
+
+  unsigned int total_nions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
+  if (total_nions_inside % pz !=0)
+    total_nions_inside = total_nions_inside - (total_nions_inside % pz) + pz;
+
+  unsigned int total_pions_inside = abs(nz) * total_nions_inside / pz;
   unsigned int total_saltions_inside = total_nions_inside + total_pions_inside + counterions;
 
   // express diameter in consistent units
@@ -135,7 +141,7 @@ else //initialize ions in crystal pack;
           VECTOR3D posvec = VECTOR3D(x,y,z);
           if (x > ((lx/2)-(0.5 * bigger_ion_diameter)) || y > ((ly/2)-(0.5 * bigger_ion_diameter)) || z > ((lz/2)-(0.5 * bigger_ion_diameter)))// || z <= ((-lz/2)+(diameter/2)))	// avoid putting the ions outside the box
              continue;
-        
+
           PARTICLE freshion;
           if (saltion_in.size() < counterions)
             freshion = PARTICLE(int(ion.size())+1,counterion_diameter_in,valency_counterion,valency_counterion*1.0,1.0,ein,posvec,lx,ly,lz);
