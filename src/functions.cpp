@@ -675,7 +675,10 @@ void NetChargeDensity_ScreenFactor(double charge_density, double bin_width, stri
     //otherwis the "list_screencharge_profile" file is empty;
     if (charge_density != 0.0)
     {
-      list_screencharge_profile << bin_number << setw(15) << screenfactor_at_bin_number << endl;
+      if (bin_number <= 0.0)
+      { // we get the screening factor from left wall (-lz/2) to midplane (0);
+        list_screencharge_profile << bin_number << setw(15) << screenfactor_at_bin_number << endl;
+      }
     }
   }
   list_netcharge_profile.close();
