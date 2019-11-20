@@ -645,6 +645,44 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
 
 }
 
+void NetChargeDensity_ScreenFactor(double charge_density, double bin_width, string simulationParams)
+{
+  string netcharge_density_profile, screen_factor_profile, errorbars;
+  double bin_number, p_density_at_bin_number, n_density_at_bin_number;
+  double netcharge_at_bin_number = 0.0;
+  double screenfactor_at_bin_number = 0.0;
+  char filename[100];
+  //open "p_density_profile.dat" and "n_density_profile.dat" files:
+  ifstream p_density_file;
+  ifstream n_density_file;
+  ofstream output_p_density_file(filename, ios::in);
+  ofstream output_n_density_file(filename, ios::in);
+  p_density_file.open("data/p_density_profile.dat");
+  n_density_file.open("data/n_density_profile.dat");
+  //create "netcharge_density_profile" and "screen_factor_profile" files:
+  netcharge_density_profile = "data/netcharge_density_profile" + simulationParams + ".dat";
+  screen_factor_profile = "data/screen_factor_profile" + simulationParams + ".dat";
+  ofstream list_netcharge_profile(netcharge_density_profile.c_str(), ios::out);
+  ofstream list_screencharge_profile(screen_factor_profile.c_str(), ios::out);
+
+  while ((p_density_file >> bin_number >> p_density_at_bin_number >> errorbars) && (n_density_file >>  bin_number >> n_density_at_bin_number >> errorbars))
+  {
+    //if p_density_profile.dat and n_density_profile.dat have the same profile, the net charge density will be zero;
+    netcharge_at_bin_number = p_density_at_bin_number - n_density_at_bin_number;
+    screenfactor_at_bin_number = screenfactor_at_bin_number + (netcharge_at_bin_number * (bin_width * unitlength * pow(10, -9)) * (96485.3399 * 1000 / abs(charge_density)));
+    list_netcharge_profile << bin_number << setw(15) << netcharge_at_bin_number << endl;
+    // the screen factor is meaningful if there is charge on the walls;
+    //otherwis the "list_screencharge_profile" file is empty;
+    if (charge_density != 0.0)
+    {
+      list_screencharge_profile << bin_number << setw(15) << screenfactor_at_bin_number << endl;
+    }
+  }
+  list_netcharge_profile.close();
+  list_screencharge_profile.close();
+  return;
+}
+
 // auto correlation function
 void auto_correlation_function() {
     string inPath = rootDirectory + "outfiles/for_auto_corr.dat";
