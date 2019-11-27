@@ -68,7 +68,7 @@ void auto_correlation_function();
 // generate LAMMPS input script
 void generateLammpsInputfileForChargedSurface(double , int , int , int , int, double, double, double);
 void generateLammpsInputfileForUnchargedSurface(double , int , int , int , int, double, double, double);
-
+void get_NetChargeDensity_ScreeningFactor(double, double, string);
 
 // functions useful in computing forces and energies
 // -------------------------------------------------

@@ -413,6 +413,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             }
         }
     }
+    
+    get_NetChargeDensity_ScreeningFactor(charge_density, bin_width, simulationParams);
 
 
 
