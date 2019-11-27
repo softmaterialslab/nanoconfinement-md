@@ -645,7 +645,7 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
 
 }
 
-void NetChargeDensity_ScreenFactor(double charge_density, double bin_width, string simulationParams)
+void get_NetChargeDensity_ScreeningFactor(double charge_density, double bin_width, string simulationParams)
 {
   string netcharge_density_profile, screen_factor_profile, errorbars;
   double bin_number, p_density_at_bin_number, n_density_at_bin_number;
