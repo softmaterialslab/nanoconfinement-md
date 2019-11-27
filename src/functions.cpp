@@ -648,9 +648,9 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
 void get_NetChargeDensity_ScreeningFactor(double charge_density, double bin_width, string simulationParams)
 {
   string netcharge_density_profile, screen_factor_profile, errorbars;
-  double bin_number, p_density_at_bin_number, n_density_at_bin_number;
-  double netcharge_at_bin_number = 0.0;
-  double screenfactor_at_bin_number = 0.0;
+  double z_position, p_density_at_z_position, n_density_at_z_position;
+  double netdensity_at_z_position = 0.0;
+  double screenfactor_at_z_position = 0.0;
   char filename[100];
   //open "p_density_profile.dat" and "n_density_profile.dat" files:
   ifstream p_density_file;
@@ -664,20 +664,24 @@ void get_NetChargeDensity_ScreeningFactor(double charge_density, double bin_widt
   screen_factor_profile = "data/screen_factor_profile" + simulationParams + ".dat";
   ofstream list_netcharge_profile(netcharge_density_profile.c_str(), ios::out);
   ofstream list_screencharge_profile(screen_factor_profile.c_str(), ios::out);
+  
+  double FaradayConstant = 96485.3399; // Coloumb / N_A
 
-  while ((p_density_file >> bin_number >> p_density_at_bin_number >> errorbars) && (n_density_file >>  bin_number >> n_density_at_bin_number >> errorbars))
+  while ((p_density_file >> z_position >> p_density_at_z_position >> errorbars) && (n_density_file >>  z_position >> n_density_at_z_position >> errorbars))
   {
     //if p_density_profile.dat and n_density_profile.dat have the same profile, the net charge density will be zero;
-    netcharge_at_bin_number = p_density_at_bin_number - n_density_at_bin_number;
-    screenfactor_at_bin_number = screenfactor_at_bin_number + (netcharge_at_bin_number * (bin_width * unitlength * pow(10, -9)) * (96485.3399 * 1000 / abs(charge_density)));
-    list_netcharge_profile << bin_number << setw(15) << netcharge_at_bin_number << endl;
-    // the screen factor is meaningful if there is charge on the walls;
-    //otherwis the "list_screencharge_profile" file is empty;
+    netdensity_at_z_position = p_density_at_z_position - n_density_at_z_position; // this only works for monovalent
+    screenfactor_at_z_position = screenfactor_at_z_position + FaradayConstant * (netdensity_at_z_position * (bin_width * unitlength * pow(10, -9)) * (1000 / abs(charge_density)));	// because you demand to get netdensity in M
+    list_netcharge_profile << z_position << setw(15) << netdensity_at_z_position * 1 << endl;		
+	 // multiplty by valency to get e - M
+    
+	 // the screen factor is meaningful if there is charge on the walls;
+    //otherwise the "list_screencharge_profile" file is empty;
     if (charge_density != 0.0)
     {
-      if (bin_number <= 0.0)
+      if (z_position <= 0.0)
       { // we get the screening factor from left wall (-lz/2) to midplane (0);
-        list_screencharge_profile << bin_number << setw(15) << screenfactor_at_bin_number << endl;
+        list_screencharge_profile << z_position << setw(15) << screenfactor_at_z_position << endl;
       }
     }
   }
