@@ -2,7 +2,7 @@
 # Use option -p in CC for profiling with gprof
 
 PROG = md_simulation_confined_ions
-BIN = ../bin/
+BIN = ../bin
 bindir = bin
 OBJ = main.o interface.o NanoconfinementMd.o functions.o md.o mdforces.o mdenergies.o
 CCF = CC
