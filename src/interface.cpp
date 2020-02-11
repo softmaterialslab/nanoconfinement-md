@@ -50,11 +50,6 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 
   double volume_box = lx*ly*lz;
 
-//  unsigned int total_pions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
-//  if (total_pions_inside % nz !=0)
-//    total_pions_inside = total_pions_inside - (total_pions_inside % abs (nz));
-//  unsigned int total_nions_inside = total_pions_inside * pz / abs (nz);
-
   unsigned int total_nions_inside = int((concentration * 0.6022) * (volume_box * unitlength * unitlength * unitlength));
   if (total_nions_inside % pz !=0)
     total_nions_inside = total_nions_inside - (total_nions_inside % pz) + pz;
@@ -74,8 +69,6 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
   double r0_y = 0.5 * ly - 0.5 * bigger_ion_diameter;
   double r0_z = 0.5 * lz - 0.5 * bigger_ion_diameter;
 
-  // UTILITY ugsl;			// utility used for making initial configuration
-
   const gsl_rng_type * rnT;
   gsl_rng * rnr;
 
@@ -93,9 +86,9 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
 
   // generate salt ions inside
   if (!INIT_CRYSTAL)//initialize ions randomly;
-{
-  while (saltion_in.size() != total_saltions_inside)
-  {
+  {	
+	while (saltion_in.size() != total_saltions_inside)
+	{
     double x = gsl_rng_uniform(rnr);
     x = (1 - x) * (-r0_x) + x * (r0_x);
     double y = gsl_rng_uniform(rnr);
@@ -119,43 +112,44 @@ void INTERFACE::put_saltions_inside(vector<PARTICLE>& saltion_in, int pz, int nz
       freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
     saltion_in.push_back(freshion);		// create a salt ion
     ion.push_back(freshion);			// copy the salt ion to the stack of all ions
+	}
   }
-}
-else //initialize ions in crystal pack;
-{
-  int num_ions_in_lx = lx/ bigger_ion_diameter;
-  int num_ions_in_ly = ly/ bigger_ion_diameter;
-  int num_ions_in_lz = lz/ bigger_ion_diameter;
-
-  for (int i = 0; i < num_ions_in_lx; i++)
+  
+  else //initialize ions in crystal pack;
   {
-    for (int j = 0; j < num_ions_in_ly; j++)
-    {
-      for (int k = 0; k < num_ions_in_lz; k++)
-      {
-        if (saltion_in.size() < total_saltions_inside)
-        {
-          double x = (-lx/2 + (0.5 * bigger_ion_diameter)) + i * bigger_ion_diameter;
-          double y = (-ly/2 + (0.5 * bigger_ion_diameter)) + j * bigger_ion_diameter;
-          double z = (-lz/2 + (0.5 * bigger_ion_diameter)) + k * bigger_ion_diameter;
-          VECTOR3D posvec = VECTOR3D(x,y,z);
-          if (x > ((lx/2)-(0.5 * bigger_ion_diameter)) || y > ((ly/2)-(0.5 * bigger_ion_diameter)) || z > ((lz/2)-(0.5 * bigger_ion_diameter)))// || z <= ((-lz/2)+(diameter/2)))	// avoid putting the ions outside the box
-             continue;
+	int num_ions_in_lx = lx/ bigger_ion_diameter;
+	int num_ions_in_ly = ly/ bigger_ion_diameter;
+	int num_ions_in_lz = lz/ bigger_ion_diameter;
 
-          PARTICLE freshion;
-          if (saltion_in.size() < counterions)
-            freshion = PARTICLE(int(ion.size())+1,counterion_diameter_in,valency_counterion,valency_counterion*1.0,1.0,ein,posvec,lx,ly,lz);
-          else if (saltion_in.size() >= counterions && saltion_in.size() < (total_pions_inside + counterions))
-            freshion = PARTICLE(int(ion.size())+1,positive_diameter_in,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
-          else
-            freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
-          saltion_in.push_back(freshion);
-          ion.push_back(freshion);
-        }
-      }
-    }
+	for (int i = 0; i < num_ions_in_lx; i++)
+	{
+		for (int j = 0; j < num_ions_in_ly; j++)
+		{
+			for (int k = 0; k < num_ions_in_lz; k++)
+			{
+			if (saltion_in.size() < total_saltions_inside)
+			{
+				double x = (-lx/2 + (0.5 * bigger_ion_diameter)) + i * bigger_ion_diameter;
+				double y = (-ly/2 + (0.5 * bigger_ion_diameter)) + j * bigger_ion_diameter;
+				double z = (-lz/2 + (0.5 * bigger_ion_diameter)) + k * bigger_ion_diameter;
+				VECTOR3D posvec = VECTOR3D(x,y,z);
+				if (x > ((lx/2)-(0.5 * bigger_ion_diameter)) || y > ((ly/2)-(0.5 * bigger_ion_diameter)) || z > ((lz/2)-(0.5 * bigger_ion_diameter)))// || z <= ((-lz/2)+(diameter/2)))	// avoid putting the ions outside the box
+					continue;
+
+				PARTICLE freshion;
+				if (saltion_in.size() < counterions)
+					freshion = PARTICLE(int(ion.size())+1,counterion_diameter_in,valency_counterion,valency_counterion*1.0,1.0,ein,posvec,lx,ly,lz);
+				else if (saltion_in.size() >= counterions && saltion_in.size() < (total_pions_inside + counterions))
+					freshion = PARTICLE(int(ion.size())+1,positive_diameter_in,pz,pz*1.0,1.0,ein,posvec,lx,ly,lz);
+				else
+					freshion = PARTICLE(int(ion.size())+1,negative_diameter_in,nz,nz*1.0,1.0,ein,posvec,lx,ly,lz);
+				saltion_in.push_back(freshion);
+				ion.push_back(freshion);
+			}
+		  }
+		}
+	 }
   }
-}
 
   mpi::environment env;
   mpi::communicator world;
@@ -286,24 +280,23 @@ void INTERFACE::generate_lammps_datafile_unchargedsurface(vector<PARTICLE>& salt
     listlammps << "Atoms" << endl;
     listlammps << " " << endl;
     for (unsigned int i = 0; i < ion.size(); i++)
-  {
-    if (ion[i].valency > 0)
-    {
-      AtomType = "1";
-      ChargeValue = pz * unitcharge_lammps;
-    }
-    else if (ion[i].valency < 0)
-    {
-      AtomType = "2";
-      ChargeValue = nz * unitcharge_lammps;
-    }
-    listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
-  }
+	 {
+		if (ion[i].valency > 0)
+		{
+			AtomType = "1";
+			ChargeValue = pz * unitcharge_lammps;
+		}
+		else if (ion[i].valency < 0)
+		{
+			AtomType = "2";
+			ChargeValue = nz * unitcharge_lammps;
+		}
+		listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+	 }
   listlammps.close();
-}
+  }
   return;
 }
-
 
 
 // creating data file for LAMMPS charged surfaces;
@@ -342,28 +335,28 @@ void INTERFACE::generate_lammps_datafile_chargedsurface(vector<PARTICLE>& saltio
     listlammps << "Atoms" << endl;
     listlammps << " " << endl;
     for (unsigned int i = 0; i < ion.size(); i++)
-  {
-    if (ion[i].valency > 0)
-    {
-      AtomType = "1";
-      ChargeValue = pz * unitcharge_lammps;
+	 {
+		if (ion[i].valency > 0)
+		{
+			AtomType = "1";
+			ChargeValue = pz * unitcharge_lammps;
+		}
+		else if (ion[i].valency < 0)
+		{
+			AtomType = "2";
+			ChargeValue = nz * unitcharge_lammps;
+		}
+		listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
     }
-    else if (ion[i].valency < 0)
-    {
-      AtomType = "2";
-      ChargeValue = nz * unitcharge_lammps;
+    for (unsigned int k = 0; k < leftplane.size(); k++)
+	 {
+		listlammps << (k + 1 + ion.size()) << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << rightplane[k].posvec.z << endl;
     }
-    listlammps << i + 1 << "   " << AtomType << "   " << setprecision(10) << ChargeValue << "   " << ion[i].posvec.x << "   " << ion[i].posvec.y << "   " << ion[i].posvec.z << endl;
+	 for (unsigned int h = 0; h < rightplane.size(); h++)
+	 {
+		listlammps << h + 1 + ion.size() + leftplane.size() << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << leftplane[h].posvec.x <<  "  " <<  leftplane[h].posvec.y <<  "  " << leftplane[h].posvec.z << endl;
+	 }
+	 listlammps.close();
   }
-  for (unsigned int k = 0; k < leftplane.size(); k++)
-  {
-    listlammps << (k + 1 + ion.size()) << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << rightplane[k].posvec.x <<  "  " << rightplane[k].posvec.y <<  "  " << rightplane[k].posvec.z << endl;
-  }
-  for (unsigned int h = 0; h < rightplane.size(); h++)
-  {
-    listlammps << h + 1 + ion.size() + leftplane.size() << "  " << "3" << "   " << setprecision(10) << charge_meshpoint << "   " << leftplane[h].posvec.x <<  "  " <<  leftplane[h].posvec.y <<  "  " << leftplane[h].posvec.z << endl;
-  }
-  listlammps.close();
-}
   return;
 }
