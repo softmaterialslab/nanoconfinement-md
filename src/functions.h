@@ -48,14 +48,14 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
                              vector<double> &meanNegativeionDensity,
                              vector<double> &mean_sq_negativeion_density,
                              vector<PARTICLE> &ion, INTERFACE &box,
-                             vector<DATABIN> &bin, CONTROL &cpmdremote);
+                             vector<DATABIN> &bin, CONTROL &cpmdremote, bool);
 
 void average_errorbars_density(double density_profile_samples, vector<double>& mean_positiveion_density,
                                    vector<double>& mean_sq_positiveion_density,
                                    vector<double>& mean_negativeion_density,
                                    vector<double>& mean_sq_negativeion_density,
                                    vector<PARTICLE>& ion, INTERFACE &box,
-                                   vector<DATABIN>& bin,  string simulationParams);
+                                   vector<DATABIN>& bin,  string simulationParams, bool);
 
 void ReadParticlePositions(vector<PARTICLE>&, int, int, double, INTERFACE &, double);
 void output_lammps(vector<PARTICLE>&, int&, double);
@@ -68,7 +68,8 @@ void auto_correlation_function();
 // generate LAMMPS input script
 void generateLammpsInputfileForChargedSurface(double , int , int , int , int, double, double, double);
 void generateLammpsInputfileForUnchargedSurface(double , int , int , int , int, double, double, double);
-void get_NetChargeDensity_ScreeningFactor(double, double, string);
+void get_NetChargeDensity(string);
+void get_ScreeningFactor(double, double, string);
 
 // functions useful in computing forces and energies
 // -------------------------------------------------
