@@ -11,7 +11,7 @@
 
 void
 md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<DATABIN> &bin, CONTROL &mdremote,
-   string &simulationParams, double charge_meshpoint, int valency_counterion) {
+   string &simulationParams, double charge_meshpoint, int valency_counterion, bool screen) {
 
     mpi::environment env;
     mpi::communicator world;
@@ -161,7 +161,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         if (num >= mdremote.hiteqm && (num % mdremote.freq == 0)) {
             density_profile_samples++;
             compute_density_profile(num, density_profile_samples, mean_positiveion_density, mean_sq_positiveion_density,
-                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote);
+                                    mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin, mdremote, screen);
         }
 
         if (world.rank() == 0) {
@@ -185,7 +185,7 @@ md(vector<PARTICLE> &ion, INTERFACE &box, vector<THERMOSTAT> &real_bath, vector<
         }
     }
     average_errorbars_density(density_profile_samples, mean_positiveion_density,mean_sq_positiveion_density,mean_negativeion_density,
-                                    mean_sq_negativeion_density, ion, box, bin, simulationParams);
+                                    mean_sq_negativeion_density, ion, box, bin, simulationParams, screen);
 
 
       if (world.rank() == 0) {
