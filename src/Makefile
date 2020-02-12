@@ -43,6 +43,7 @@ create-dirs:
 	if ! [ -d $(BIN)/outfiles ]; then mkdir $(BIN)/outfiles; fi
 	if ! [ -d $(BIN)/infiles ]; then mkdir $(BIN)/infiles; fi
 	if ! [ -d $(BIN)/data ]; then mkdir $(BIN)/data; fi
+	if ! [ -d $(BIN)/screen ]; then mkdir $(BIN)/screen; fi
 	@echo "Directory creation is over."
 
 $(PROG) : $(OBJ)
@@ -65,11 +66,12 @@ clean: dataclean
 	rm -f $(PROG)
 	rm -rf $(BIN)/outfiles/*
 	rm -rf $(BIN)/data/*
+	rm -rf $(BIN)/screen/*
 	rm -f $(BIN)/*.lammps
 	rm -rf $(BIN)/temp
 
 dataclean:
-	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/*
+	rm -f $(BIN)/outfiles/*.dat $(BIN)/outfiles/*.xyz  $(BIN)/outfiles/*.lammpstrj  $(BIN)/temp/* $(BIN)/screen/*
 	rm -f $(BIN)/data/*.dat $(BIN)/data/*.xyz  $(BIN)/data/*.lammpstrj
 	rm -f $(BIN)/*.log
 	rm -f $(BIN)/*.pbs
