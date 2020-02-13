@@ -64,7 +64,7 @@ void make_movie(int num, vector<PARTICLE> &ion, INTERFACE &box) {
     mpi::environment env;
     mpi::communicator world;
     if (world.rank() == 0) {
-        string outdumpPath = rootDirectory + "outfiles/p.lammpstrj";
+        string outdumpPath = rootDirectory + "outfiles/electrolyte_movie.xyz";
         ofstream outdump(outdumpPath.c_str(), ios::app);
         outdump << "ITEM: TIMESTEP" << endl;
         outdump << num - 1 << endl;
@@ -74,14 +74,14 @@ void make_movie(int num, vector<PARTICLE> &ion, INTERFACE &box) {
         outdump << -0.5 * box.lx << "\t" << 0.5 * box.lx << endl;
         outdump << -0.5 * box.ly << "\t" << 0.5 * box.ly << endl;
         outdump << -0.5 * box.lz << "\t" << 0.5 * box.lz << endl;
-        outdump << "ITEM: ATOMS index type x y z" << endl;
+        outdump << "ITEM: ATOMS index type q x y z" << endl;
         string type;
         for (unsigned int i = 0; i < ion.size(); i++) {
             if (ion[i].valency > 0)
                 type = "1";
             else
                 type = "-1";
-            outdump << setw(6) << i << "\t" << type << "\t" << setw(8) << ion[i].posvec.x << "\t" << setw(8)
+            outdump << setw(6) << i << "\t" << type << "\t" << ion[i].valency << "\t" << setw(8) << ion[i].posvec.x << "\t" << setw(8)
                     << ion[i].posvec.y << "\t" << setw(8) << ion[i].posvec.z << endl;
         }
         outdump.close();
@@ -127,7 +127,7 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
                              vector<double> &meanNegativeionDensity,
                              vector<double> &mean_sq_negativeion_density,
                              vector<PARTICLE> &ion, INTERFACE &box,
-                             vector<DATABIN> &bin, CONTROL &cpmdremote) {
+                             vector<DATABIN> &bin, CONTROL &cpmdremote, bool screen) {
     vector<double> sample_positiveion_density;
     vector<double> sample_negativeion_density;
 
@@ -165,9 +165,16 @@ void compute_density_profile(int cpmdstep, double density_profile_samples,
 
         if (world.rank() == 0) {
             char datap[200], datan[200];
-            sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
-            sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
-
+            if (!screen)
+            {
+              sprintf(datap, "data/_z+_den_%.06d.dat", cpmdstep);
+              sprintf(datan, "data/_z-_den_%.06d.dat", cpmdstep);
+            }
+            else if(screen)
+            {
+              sprintf(datap, "screen/_z+_den_%.06d.dat", cpmdstep);
+              sprintf(datan, "screen/_z-_den_%.06d.dat", cpmdstep);
+            }
             string p_density_profile, n_density_profile;
             p_density_profile = rootDirectory + string(datap);
             n_density_profile = rootDirectory + string(datan);
@@ -223,7 +230,7 @@ void average_errorbars_density(double density_profile_samples, vector<double> &m
                                vector<double> &mean_negativeion_density,
                                vector<double> &mean_sq_negativeion_density,
                                vector<PARTICLE> &ion, INTERFACE &box,
-                               vector<DATABIN> &bin, string simulationParams) {
+                               vector<DATABIN> &bin, string simulationParams, bool screen) {
     // 1. density profile
     vector<double> positiveion_density_profile;
     vector<double> negativeion_density_profile;
@@ -245,8 +252,16 @@ void average_errorbars_density(double density_profile_samples, vector<double> &m
                                    negativeion_density_profile.at(b) * negativeion_density_profile.at(b)));
     // 3. write results
     string p_density_profile, n_density_profile;
-    p_density_profile = "data/p_density_profile" + simulationParams + ".dat";
-    n_density_profile = "data/n_density_profile" + simulationParams + ".dat";
+    if (!screen)
+    {
+      p_density_profile = "data/p_density_profile" + simulationParams + ".dat";
+      n_density_profile = "data/n_density_profile" + simulationParams + ".dat";
+    }
+    else if (screen)
+    {
+      p_density_profile = "screen/p_density_profile" + simulationParams + ".dat";
+      n_density_profile = "screen/n_density_profile" + simulationParams + ".dat";
+    }
     ofstream list_p_profile(p_density_profile.c_str(), ios::out);
     ofstream list_n_profile(n_density_profile.c_str(), ios::out);
     std::map<double, std::string> positiveDenistyMap;
@@ -645,12 +660,11 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
 
 }
 
-void get_NetChargeDensity_ScreeningFactor(double charge_density, double bin_width, string simulationParams)
+void get_NetChargeDensity(string simulationParams)
 {
-  string netcharge_density_profile, screen_factor_profile, errorbars;
+  string netcharge_density_profile, errorbars;
   double z_position, p_density_at_z_position, n_density_at_z_position;
   double netdensity_at_z_position = 0.0;
-  double screenfactor_at_z_position = 0.0;
   char filename[100];
   //open "p_density_profile.dat" and "n_density_profile.dat" files:
   ifstream p_density_file;
@@ -661,31 +675,49 @@ void get_NetChargeDensity_ScreeningFactor(double charge_density, double bin_widt
   n_density_file.open("data/n_density_profile.dat");
   //create "netcharge_density_profile" and "screen_factor_profile" files:
   netcharge_density_profile = "data/netcharge_density_profile" + simulationParams + ".dat";
-  screen_factor_profile = "data/screen_factor_profile" + simulationParams + ".dat";
   ofstream list_netcharge_profile(netcharge_density_profile.c_str(), ios::out);
-  ofstream list_screencharge_profile(screen_factor_profile.c_str(), ios::out);
-  
-  double FaradayConstant = 96485.3399; // Coloumb / N_A
 
   while ((p_density_file >> z_position >> p_density_at_z_position >> errorbars) && (n_density_file >>  z_position >> n_density_at_z_position >> errorbars))
   {
     //if p_density_profile.dat and n_density_profile.dat have the same profile, the net charge density will be zero;
     netdensity_at_z_position = p_density_at_z_position - n_density_at_z_position; // this only works for monovalent
-    screenfactor_at_z_position = screenfactor_at_z_position + FaradayConstant * (netdensity_at_z_position * (bin_width * unitlength * pow(10, -9)) * (1000 / abs(charge_density)));	// because you demand to get netdensity in M
-    list_netcharge_profile << z_position << setw(15) << netdensity_at_z_position * 1 << endl;		
+    list_netcharge_profile << z_position << setw(15) << netdensity_at_z_position * 1 << endl;
 	 // multiplty by valency to get e - M
-    
-	 // the screen factor is meaningful if there is charge on the walls;
-    //otherwise the "list_screencharge_profile" file is empty;
-    if (charge_density != 0.0)
-    {
-      if (z_position <= 0.0)
-      { // we get the screening factor from left wall (-lz/2) to midplane (0);
-        list_screencharge_profile << z_position << setw(15) << screenfactor_at_z_position << endl;
-      }
-    }
   }
   list_netcharge_profile.close();
+  return;
+}
+
+
+void get_ScreeningFactor(double charge_density, double bin_width, string simulationParams)
+{
+  string screen_factor_profile, errorbars;
+  double FaradayConstant = 96485.3399; // Coloumb / N_A
+  double z_position, p_density_at_z_position, n_density_at_z_position;
+  double screenfactor_at_z_position = 0.0;
+  char filename[100];
+  //open "p_density_profile.dat" and "n_density_profile.dat" files:
+  ifstream p_density_file;
+  ifstream n_density_file;
+  ofstream output_p_density_file(filename, ios::in);
+  ofstream output_n_density_file(filename, ios::in);
+  p_density_file.open("screen/p_density_profile.dat");
+  n_density_file.open("screen/n_density_profile.dat");
+  //create "screen_factor_profile" files:
+  screen_factor_profile = "screen/screen_factor_profile" + simulationParams + ".dat";
+  ofstream list_screencharge_profile(screen_factor_profile.c_str(), ios::out);
+  while ((p_density_file >> z_position >> p_density_at_z_position >> errorbars) && (n_density_file >>  z_position >> n_density_at_z_position >> errorbars))
+  {
+    //if p_density_profile.dat and n_density_profile.dat have the same profile, the net charge density will be zero;
+    screenfactor_at_z_position = screenfactor_at_z_position + FaradayConstant * ((p_density_at_z_position - n_density_at_z_position) * (bin_width * unitlength * pow(10, -9)) * (1000 / abs(charge_density)));	// because you demand to get netdensity in M
+	 // multiplty by valency to get e - M
+	 // the screen factor is meaningful if there is charge on the walls;
+   //otherwise the "list_screencharge_profile" file is empty;
+    if (z_position <= 0.0)
+    { // we get the screening factor from left wall (-lz/2) to midplane (0);
+      list_screencharge_profile << z_position << setw(15) << screenfactor_at_z_position << endl;
+    }
+  }
   list_screencharge_profile.close();
   return;
 }

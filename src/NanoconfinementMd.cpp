@@ -43,6 +43,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     double bin_width;            // width of the bins used to compute density profiles
     bool lammps = true; //if it is false, do the simulation with c++ code, if it is true do it with lammps;
     bool lammpsPreprocessing = true;
+    bool screen = false; //if it is false, do not calculate screen factor
     CONTROL mdremote;            // remote control for md
     string config_file = "input_config.cfg";         //Configuration file path holder
     string simulationParams;
@@ -344,7 +345,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     // Simulation using Molecular Dynamics
     if (!lammps) {
 
-        md(ion, box, real_bath, bin, mdremote, simulationParams, charge_meshpoint, valency_counterion);
+        md(ion, box, real_bath, bin, mdremote, simulationParams, charge_meshpoint, valency_counterion, screen);
 
         // Post simulation analysis (useful for short runs, but performed otherwise too)
         if (world.rank() == 0) {
@@ -400,21 +401,73 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density,
                                             mean_sq_positiveion_density,
                                             mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin,
-                                            mdremote);
+                                            mdremote, screen);
 
                 }
                 average_errorbars_density(lammps_density_profile_samples, mean_positiveion_density,
                                           mean_sq_positiveion_density,
                                           mean_negativeion_density,
-                                          mean_sq_negativeion_density, ion, box, bin, simulationParams);
+                                          mean_sq_negativeion_density, ion, box, bin, simulationParams, screen);
 
                 cout << "Lammps Postprocessing ended." << endl;
 
             }
         }
     }
-    
-    get_NetChargeDensity_ScreeningFactor(charge_density, bin_width, simulationParams);
+    get_NetChargeDensity(simulationParams); // The net charge is zero if there is no charge on surfaces and the sizes of positive and negative ions are equal.
+    if (charge_density != 0)
+    {
+      screen = true;
+      cout << "Screen Factor Postprocessing started." << endl;
+      bin_width = bin_width * 0.01; // we choose smaller bin_width to calculate screen factor;
+      int cnt_filename = 0;
+      int samples = 0;
+      bin.clear();
+      make_bins(bin, box, bin_width);    // set up bins to be used for computing density profiles
+      vector<double> mean_positiveion_density;            // average density profile
+      vector<double> mean_negativeion_density;            // average density profile
+      vector<double> mean_sq_positiveion_density;            // average of square of density
+      vector<double> mean_sq_negativeion_density;            // average of square of density
+      for (unsigned int b = 0; b < bin.size(); b++)
+      {
+          mean_positiveion_density.push_back(0.0);
+          mean_negativeion_density.push_back(0.0);
+          mean_sq_positiveion_density.push_back(0.0);
+          mean_sq_negativeion_density.push_back(0.0);
+      }
+      double leftContact = -0.5 * box.lz + 0.5 * ion[0].diameter - 0.5 * bin[0].width;
+      double rightContact = 0.5 * box.lz - 0.5 * ion[0].diameter - 0.5 * bin[0].width;
+      bin[bin.size() - 1].lower = leftContact;
+      bin[bin.size() - 2].lower = rightContact;
+      bin[bin.size() - 1].higher = leftContact + bin[0].width;
+      bin[bin.size() - 2].higher = rightContact + bin[0].width;
+      bin[bin.size() - 1].midPoint = 0.5 * (bin[bin.size() - 1].lower + bin[bin.size() - 1].higher);
+      bin[bin.size() - 2].midPoint = 0.5 * (bin[bin.size() - 2].lower + bin[bin.size() - 2].higher);
+
+      output_lammps(ion, cnt_filename, mdremote.freq);
+      if (world.rank() == 0)
+          cout << "Number of samples used to get screen factor profile: " << cnt_filename << endl;
+      samples = cnt_filename;
+      double screen_density_profile_samples = 0;
+      for (int cpmdstep = 0; cpmdstep < samples; cpmdstep++)
+      {
+        vector <PARTICLE> ion;
+        vector<double> initial_density;
+        screen_density_profile_samples++;
+        ReadParticlePositions(ion, cpmdstep, samples, positive_diameter_in, box, mdremote.freq);
+        bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
+        compute_density_profile(cpmdstep, screen_density_profile_samples, mean_positiveion_density,
+                                mean_sq_positiveion_density,
+                                mean_negativeion_density, mean_sq_negativeion_density, ion, box, bin,
+                                mdremote, screen);
+      }
+      average_errorbars_density(screen_density_profile_samples, mean_positiveion_density,
+                                mean_sq_positiveion_density,
+                                mean_negativeion_density,
+                                mean_sq_negativeion_density, ion, box, bin, simulationParams, screen);
+      get_ScreeningFactor(charge_density, bin_width, simulationParams);
+      cout << "Screen Factor Postprocessing ended." << endl;
+    }
 
 
 
