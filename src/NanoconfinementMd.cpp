@@ -419,6 +419,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     {
       screen = true;
       cout << "Screen Factor Postprocessing started." << endl;
+      int number_of_bins = int(box.lz / bin_width);
       bin_width = (box.lz / number_of_bins); // This give us the correct value of bin_width (see function.ccp)
       bin_width = bin_width * 0.01; // we choose smaller bin_width to calculate screen factor;
       int cnt_filename = 0;
