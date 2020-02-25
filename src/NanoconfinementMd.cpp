@@ -419,6 +419,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
     {
       screen = true;
       cout << "Screen Factor Postprocessing started." << endl;
+      int number_of_bins = int(box.lz / bin_width);
+      bin_width = (box.lz / number_of_bins); // This give us the correct value of bin_width (see function.ccp)
       bin_width = bin_width * 0.01; // we choose smaller bin_width to calculate screen factor;
       int cnt_filename = 0;
       int samples = 0;
@@ -444,7 +446,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
       bin[bin.size() - 1].midPoint = 0.5 * (bin[bin.size() - 1].lower + bin[bin.size() - 1].higher);
       bin[bin.size() - 2].midPoint = 0.5 * (bin[bin.size() - 2].lower + bin[bin.size() - 2].higher);
 
-      output_lammps(ion, cnt_filename, mdremote.freq);
+      output_lammps(ion, cnt_filename, mdremote.freq);  // if the simulation is done with lammps, this fuction rewrites the files in "temp" folder;
       if (world.rank() == 0)
           cout << "Number of samples used to get screen factor profile: " << cnt_filename << endl;
       samples = cnt_filename;
