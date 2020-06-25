@@ -1,16 +1,27 @@
-#!	/bin/bash
-#PBS	-l	nodes=4:ppn=16,walltime=2:00:00
-#PBS	-q	gpu
-#PBS	-m	ae
-#PBS	-o	out.log
-#PBS	-e	err.log
-#PBS	-N	nanoconfinementLammps
+#!/bin/bash
+#SBATCH --nodes=1	
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=0-1:00:00
+#SBATCH --partition=general
+#SBATCH --mail-type=FAIL,BEGIN,END
+#SBATCH --job-name=IONS_LAMMPS
+#SBATCH --output=out.log
+#SBATCH --error=err.log
 
-module load PrgEnv-gnu
-module load boost/1.65.0
+######  Module commands #####
+module swap PrgEnv-intel PrgEnv-gnu
+module load boost/gnu
 module load gsl
-module load cudatoolkit/7.0.28-1.0502.10742.5.1
-module load lammps/gnu/gpu/15May15	
+module load lammps/gnu/7Aug19
 
-cd	$PBS_O_WORKDIR
-aprun -n 4 -d 16 lmp_xe6 < in.lammps
+######  Job commands go below this line #####
+cd $SLURM_SUBMIT_DIR
+
+export OMP_NUM_THREADS=16
+
+#chmod 777 NAME
+
+# -d refers to number of cores. this should match ntasks-per-node
+# default is n = 4 and d = 16
+
+time srun -n 1 -d 16 lmp_mpi < in.lammps

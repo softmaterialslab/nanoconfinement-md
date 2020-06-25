@@ -20,7 +20,7 @@ i=0.0
 S=5000000
 NODESIZE=4
 
-MPIRUNCMD = aprun
+MPIRUNCMD = srun
 LAMMPSEXE = lmp_mpi
 
 all:

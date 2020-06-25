@@ -1,5 +1,5 @@
 # This submit a job in bigred2
-MPIRUNCMD = aprun
+MPIRUNCMD = srun
 LAMMPSEXE = lmp_mpi
 JOBSCR = nanoconfinement.pbs
 TEST = test.pbs
@@ -16,11 +16,11 @@ NODESIZE=4
 
 submit:
 	@echo "Launching the job";
-	qsub $(JOBSCR)
+	sbatch $(JOBSCR)
 
 test:
 	@echo "Launching the test job for nanoconfinement-md";
-	qsub $(TEST)
+	sbatch $(TEST)
 
 
 run-preprocessor:
@@ -30,8 +30,8 @@ run-postprocessor:
 	$(MPIRUNCMD) -n 1 md_simulation_confined_ions -Z $(Z) -p $(p) -n $(n) -c $(c) -d $(d) -a $(a) -S $(S) -i $(i) -J true -j false
 
 submit-lammps:
-	@echo "Launching the job for Lammps script";
-	qsub $(JOBSCRLMP)
+	@echo "Launching the job for Lammps script in BIGRED3";
+	sbatch $(JOBSCRLMP)
 
 run-local-parallel:
 	time $(MPIRUNCMD) -n $(NODESIZE) $(LAMMPSEXE) < in.lammps
