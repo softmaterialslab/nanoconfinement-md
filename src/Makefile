@@ -13,8 +13,12 @@ nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -l
 nanoHUBCFLAG = -I${BOOST_INCDIR}
 nanoHUBOFLAG = -o
 # BigRed2 flags.
-BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
-BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
+#BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
+#BigRed2LFLAG = -lgsl -lgslcblas -lm -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
+#BigRed2CFLAG = -c
+#BigRed2OFLAG = -o
+BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11 -Wunused-variable -Wunknown-pragmas
+BigRed2LFLAG = -L/N/soft/cle6/boost/gnu/1.72.0/lib -L/N/soft/cle6/gsl/2.6/lib -lgsl -lgslcblas -lm -lboost_filesystem -lboost_system -lboost_program_options -lboost_mpi -lboost_serialization
 BigRed2CFLAG = -c
 BigRed2OFLAG = -o
 # General purpose flags.
@@ -34,7 +38,8 @@ local-install: create-dirs
 	@echo "Installing $(PROG) into $(bindir) directory"; cp -f $(PROG) $(BIN)
 
 cluster-install: create-dirs
-	module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
+	#module swap PrgEnv-cray PrgEnv-gnu && module load boost/1.65.0 && module load gsl; make CCF=BigRed2 all
+	module swap PrgEnv-intel PrgEnv-gnu && module load boost/gnu && module load gsl; make CCF=BigRed2 all
 	@echo "Installing $(PROG) into $(bindir) directory on the computing cluster"; cp -f $(PROG) $(BIN)
 
 create-dirs:
