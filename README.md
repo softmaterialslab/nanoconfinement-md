@@ -51,6 +51,19 @@ Run the simulation through the LAMMPS:
    * ```make clean```
 * Once the simulation has finished, data and outflies folders will contain the simulation results. You may check final density profile form data folder against the example desity profile provided in nanoconfinement-md/examples folder.
 
+* THE FOLLOWING INSTRUCTIONS ARE FOR BIGRED3 INSTALL and RUN:
+
+
+* Load the necessary modules: module swap PrgEnv-intel PrgEnv-gnu && module load boost/gnu  && module load gsl 
+* You should provide the following make command to make the project. This will create the executable and install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
+   * make cluster-install
+* Next run the simulation -- this will use C++ and then LAMMPS
+   * make cluster-submit-lammps
+Here the default parameters are used. This is tested to run successfully. The following is the more explicit command:
+   * make cluster-submit-lammps Z=3 p=1 n=-1 c=0.5 d=0.714 a=0.714 i=0.0 S=5000000
+* Testing for i=-0.01 and asymmetric ion sizes-- update when it works.
+
+
 For further details please refer to the [documentation](https://softmaterialslab.github.io/nanoconfinement-md/)
 
 ## NanoHUB app page:
