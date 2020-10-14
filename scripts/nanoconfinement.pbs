@@ -1,20 +1,26 @@
-#! /bin/bash
-#PBS -l	nodes=4:ppn=16,walltime=1:00:00
-#PBS -q	gpu
-#PBS -m	ae
-#PBS -o	out.log
-#PBS -e	err.log
-#PBS -N	Z_3__p_1__n_1__c_0.5__d_0.714__S_1000000
+#!/bin/bash
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=1:00:00
+#SBATCH --mail-type=FAIL,BEGIN,END
+#SBATCH --job-name=IONS_LAMMPS
+#SBATCH --output=out.log
+#SBATCH --error=err.log
+#SBATCH --job-name=Z_3__p_1__n_1__c_0.5__d_0.714__S_1000000
 
-# below are the modules you will need to compile the code on bigred2 (see README)
-# uncomment the following 3 lines to load the modules at the time of job launch
-module swap PrgEnv-cray PrgEnv-gnu
-module load boost/1.65.0
+# below are the modules you will need to compile the code on bigred3 (see README)
+######  Module commands #####
+module swap PrgEnv-intel PrgEnv-gnu
+module load boost/gnu
 module load gsl
 
-cd $PBS_O_WORKDIR
+#This print all the lib paths
+echo $LD_LIBRARY_PATH
+
+cd $SLURM_SUBMIT_DIR
 
 export OMP_NUM_THREADS=16
+
 # the following is a test simulation to check things are working, it simulates 0.1 M of +1 and -1 ions of diameter 0.714 nm confined within 3 nm
 # -d refers to number of cores. this should match ppn in Line 2.
-time aprun -n 4 -d 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -i 0.0 -S 1000000
+time srun -n 4 -d 16 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -i 0.0 -S 1000000
