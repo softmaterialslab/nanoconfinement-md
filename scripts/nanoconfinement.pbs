@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=4
-#SBATCH --ntasks-per-node=32
+#SBATCH --ntasks-per-node=24
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --job-name=IONS_LAMMPS
@@ -19,8 +19,8 @@ echo $LD_LIBRARY_PATH
 
 cd $SLURM_SUBMIT_DIR
 
-export OMP_NUM_THREADS=32
+export OMP_NUM_THREADS=24
 
 # the following is a test simulation to check things are working, it simulates 0.1 M of +1 and -1 ions of diameter 0.714 nm confined within 3 nm
 # -d refers to number of cores. this should match ppn in Line 2.
-time srun -n 4 -d 32 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -i 0.0 -S 1000000
+time srun -n 4 -d 24 ./md_simulation_confined_ions -Z 3 -p 1 -n -1 -c 0.5 -d 0.714 -a 0.714 -i 0.0 -S 1000000
