@@ -416,7 +416,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         }
     }
     get_NetChargeDensity(simulationParams); // The net charge is zero if there is no charge on surfaces and the sizes of positive and negative ions are equal.
-    if (charge_density != 0)
+    if (charge_density != 0 && world.rank() == 0)
     {
       screen = true;
       cout << "Screen Factor Postprocessing started." << endl;
