@@ -72,8 +72,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
              "dielectric const inside")        // must have ein = eout
             ("epsilon_out,E", value<double>(&eout)->default_value(80),
              "dielectric const outside")        // must have ein = eout
-            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(0.02),
-             "for interface discretization width")    // enter a perfect square
+            ("fraction_diameter,g", value<double>(&fraction_diameter)->default_value(1/50.0),
+             "for interface discretization width")    // enter a perfect square: 1/28 and 1/50
             ("thermostat_mass,Q", value<double>(&Q)->default_value(1.0), "thermostat mass")
             ("chain_length_real,L", value<unsigned int>(&chain_length_real)->default_value(5),
              "chain length for real system: enter L+1 if you want L thermostats")
@@ -166,6 +166,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
         bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
+        //bx = 10.0;
         by = bx;
 
         if ( charge_density < -0.01 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
@@ -178,7 +179,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         valency_counterion = 1; //pz_in;
         counterion_diameter_in = positive_diameter_in;
         surface_area = bx * by * pow(10.0,-18);// in unit of squared meter;
-        number_meshpoints = pow ((1.0/fraction_diameter), 2.0);
+        number_meshpoints =  pow ((1.0/fraction_diameter), 2.0);
         charge_meshpoint = (charge_density * surface_area) / (unitcharge * number_meshpoints); //in unit of electron charge;
         total_surface_charge = charge_meshpoint * number_meshpoints; //in unit of electron charge;
         counterions =  2.0 * (int( abs (total_surface_charge)/valency_counterion)); // there are two charged surfaces, we multiply the counter ions by two;
@@ -186,8 +187,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         //we should make sure the total charge of both surfaces and the counter ions are zero;
         if (((valency_counterion * counterions) + (total_surface_charge * 2.0 )) != 0)
         { //we distribute the extra charge to the mesh points to make the system electroneutral; then we recalculate the charge density on surface;
-          charge_meshpoint = -1.0 * (valency_counterion * counterions) / (number_meshpoints * 2.0);
-          total_surface_charge = charge_meshpoint * number_meshpoints; // we recalculate the total charge on teh surface;
+          charge_meshpoint = -1.0 * (valency_counterion * (counterions/2.0)) / (number_meshpoints);
+          total_surface_charge = -1.0 * (valency_counterion * (counterions/2.0)); //we recalculate the total charge on teh surface;
           charge_density = (total_surface_charge * unitcharge) / surface_area; //in unit of Coulomb per squared meter;
         }
 
