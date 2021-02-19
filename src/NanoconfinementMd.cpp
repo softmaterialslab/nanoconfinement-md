@@ -165,8 +165,8 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
-        bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
-        //bx = 10.0;
+        //bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
+        bx = 10.0; // Fixing bx to fix M=784
         by = bx;
 
         if ( charge_density < -0.01 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
@@ -299,14 +299,6 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             cout << "Number of counter ions " << counterions << endl;
         }
 
-        if (box.total_charge_inside(ion) + (total_surface_charge * 2.0 ) == 0)
-            cout << "System simulated is electroneutral-- total charge inside is 0" << endl;
-        else {
-            cout << "System not electroneutral; aborting" << endl;
-            cout << "Total charge inside the confinement " << box.total_charge_inside(ion) - (total_surface_charge * 2.0) << endl;
-            return 0;
-        }
-
         int numOfNodes = world.size();
 
 #pragma omp parallel default(shared)
@@ -320,6 +312,19 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
             }
         }
     }
+
+    if (box.total_charge_inside(ion) + (total_surface_charge * 2.0 ) == 0){
+        if (world.rank() == 0)
+            cout << "System simulated is electroneutral-- total charge inside is 0" << endl;
+    }
+    else {
+        if (world.rank() == 0){
+            cout << "System not electroneutral; aborting" << endl;
+            cout << "Total charge inside the confinement " << box.total_charge_inside(ion) - (total_surface_charge * 2.0) << endl;
+        }
+        return 0;
+    }
+
 
     // prepare for md : make real baths
     vector<THERMOSTAT> real_bath;
