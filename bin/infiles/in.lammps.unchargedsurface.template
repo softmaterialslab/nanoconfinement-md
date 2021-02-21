@@ -84,7 +84,7 @@ unfix           heat                                                            
 ##################################################################################
 # SIMULATION DONE
 undump mymovie
-undump myimages
+#undump myimages
 #shell          mv log.lammps outfiles/log.lammps
 #shell          sh infiles/cleanlog.sh # It creates outfiles/thermo.dat. thermo.dat file contains all numeric values in log.lammps without the printed information about the run. This makes it easy to plot.
 
