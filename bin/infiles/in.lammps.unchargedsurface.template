@@ -68,10 +68,10 @@ unfix           equilibrate                                                     
 dump	          mymovie  salt_ions    custom	USERINPUT_MOVIE_FRQ outfiles/electrolyte_movie.xyz id  type  q  x   y   z
 
 ## Image Dump ##
-dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 &
-               	axes no 0.8 0.02 view 60 -30
-dump_modify myimages pad 3
-dump_modify myimages boxcolor black backcolor white
+#dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 &
+#               	axes no 0.8 0.02 view 60 -30
+#dump_modify myimages pad 3
+#dump_modify myimages boxcolor black backcolor white
 
 # GET DATA
 fix             heat salt_ions nvt temp 1.0 1.0 0.1

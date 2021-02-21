@@ -377,12 +377,12 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 if (charge_meshpoint == 0)
                 {
                   box.generate_lammps_datafile_unchargedsurface(saltion_in, pz_in, nz_in, ion);
-                  generateLammpsInputfileForUnchargedSurface(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
+                  generateLammpsInputfileForUnchargedSurface(ein, mdremote.moviefreq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
                 }
                 else
                 {
                   box.generate_lammps_datafile_chargedsurface(saltion_in, pz_in, nz_in, ion, smaller_ion_diameter, charge_meshpoint, counterions, valency_counterion, fraction_diameter, surface_area);
-                  generateLammpsInputfileForChargedSurface(ein, mdremote.freq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
+                  generateLammpsInputfileForChargedSurface(ein, mdremote.moviefreq, mdremote.hiteqm, (mdremote.steps - mdremote.hiteqm), mdremote.extra_compute, mdremote.timestep, positive_diameter_in, negative_diameter_in);
                 }
 
                 cout << "Lammps Preprocessing ended." << endl;
@@ -392,7 +392,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                 cout << "Lammps Postprocessing started." << endl;
 
                 int cnt_filename = 0;
-                output_lammps(ion, cnt_filename, mdremote.freq);
+                output_lammps(ion, cnt_filename, mdremote.moviefreq);
                 if (world.rank() == 0)
                     cout << "Number of samples used to get density profile:" << cnt_filename << endl;
                 int lammps_samples = cnt_filename;
@@ -402,7 +402,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
                     vector <PARTICLE> ion;
                     vector<double> initial_density;
                     lammps_density_profile_samples++;
-                    ReadParticlePositions(ion, cpmdstep, lammps_samples, positive_diameter_in, box, mdremote.freq);
+                    ReadParticlePositions(ion, cpmdstep, lammps_samples, positive_diameter_in, box, mdremote.moviefreq);
                 //    bin_ions(ion, box, initial_density, bin);
                     compute_density_profile(cpmdstep, lammps_density_profile_samples, mean_positiveion_density,
                                             mean_sq_positiveion_density,
@@ -452,7 +452,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
       bin[bin.size() - 1].midPoint = 0.5 * (bin[bin.size() - 1].lower + bin[bin.size() - 1].higher);
       bin[bin.size() - 2].midPoint = 0.5 * (bin[bin.size() - 2].lower + bin[bin.size() - 2].higher);
 
-      output_lammps(ion, cnt_filename, mdremote.freq);  // if the simulation is done with lammps, this fuction rewrites the files in "temp" folder;
+      output_lammps(ion, cnt_filename, mdremote.moviefreq);  // if the simulation is done with lammps, this fuction rewrites the files in "temp" folder;
       if (world.rank() == 0)
           cout << "Number of samples used to get screen factor profile: " << cnt_filename << endl;
       samples = cnt_filename;
@@ -462,7 +462,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         vector <PARTICLE> ion;
         vector<double> initial_density;
         screen_density_profile_samples++;
-        ReadParticlePositions(ion, cpmdstep, samples, positive_diameter_in, box, mdremote.freq);
+        ReadParticlePositions(ion, cpmdstep, samples, positive_diameter_in, box, mdremote.moviefreq);
         bin_ions(ion, box, initial_density, bin);    // bin the ions to get initial density profile
         compute_density_profile(cpmdstep, screen_density_profile_samples, mean_positiveion_density,
                                 mean_sq_positiveion_density,
