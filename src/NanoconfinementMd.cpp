@@ -169,7 +169,7 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
         bx = 10.0; // Fixing bx to fix M=784
         by = bx;
 
-        if ( charge_density < -0.01 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
+        if ( charge_density < -0.021 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
         {
           cout << "\ncharge density on the surface must be between zero to -0.01 C/m-2; aborting\n";
           return 0;
