@@ -66,8 +66,8 @@ double compute_MD_trust_factor_R(int);
 void auto_correlation_function();
 
 // generate LAMMPS input script
-void generateLammpsInputfileForChargedSurface(double , int , int , int , int, double, double, double);
-void generateLammpsInputfileForUnchargedSurface(double , int , int , int , int, double, double, double);
+void generateLammpsInputfileForChargedSurface(double , int, int , int , int , int, double, double, double);
+void generateLammpsInputfileForUnchargedSurface(double , int, int , int , int , int, double, double, double);
 void get_NetChargeDensity(string);
 void get_ScreeningFactor(double, double, string);
 
