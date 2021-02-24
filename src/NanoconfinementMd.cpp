@@ -150,23 +150,30 @@ int NanoconfinementMd::startSimulation(int argc, char *argv[], bool paraMap) {
 
     //X and Y mapping
     if (paraMap) {
-	if (positive_diameter_in <= negative_diameter_in)
-	{
-	    unitlength = positive_diameter_in;
-	    smaller_ion_diameter = positive_diameter_in;
-	    bigger_ion_diameter = negative_diameter_in;
-	}
-	else
-	{
-	    unitlength = negative_diameter_in;
-	    smaller_ion_diameter = negative_diameter_in;
-	    bigger_ion_diameter = positive_diameter_in;
-	}
+
+        if (positive_diameter_in <= negative_diameter_in)
+        {
+            unitlength = positive_diameter_in;
+            smaller_ion_diameter = positive_diameter_in;
+            bigger_ion_diameter = negative_diameter_in;
+        }
+        else
+        {
+            unitlength = negative_diameter_in;
+            smaller_ion_diameter = negative_diameter_in;
+            bigger_ion_diameter = positive_diameter_in;
+        }
 
         unittime = sqrt(unitmass * unitlength * pow(10.0, -7) * unitlength / unitenergy);
         scalefactor = epsilon_water * lB_water / unitlength;
         //bx = sqrt(212 / 0.6022 / salt_conc_in / bz);
-        bx = 10.0; // Fixing bx to fix M=784
+        if (salt_conc_in > 0.5){
+            bx = 10.0; // Fixing bx to fix M=784
+            fraction_diameter=1/28.0;
+        }else{
+            bx = 15.0; // Fixing bx to fix M=42*42=1764
+            fraction_diameter = 1 / 42.0;
+        }
         by = bx;
 
         if ( charge_density < -0.021 || charge_density > 0.0) //we can choose charge density on surface between 0.0 (uncharged surfaces)  to -0.01 C/m2.
