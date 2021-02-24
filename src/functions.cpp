@@ -436,7 +436,7 @@ double compute_MD_trust_factor_R(int hiteqm) {
     return R;
 }
 
-void generateLammpsInputfileForChargedSurface(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
+void generateLammpsInputfileForChargedSurface(double ein, int Frequency,  int density_frq, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
 
     Positive_diameter_in = Positive_diameter_in / unitlength;
     Negative_diameter_in = Negative_diameter_in / unitlength;
@@ -467,6 +467,8 @@ void generateLammpsInputfileForChargedSurface(double ein, int Frequency, int ste
     string halfPositiveIonCutoff = "HALF_POS_CUTOFF";
     string halfNegativeIonCutoff = "HALF_NEG_CUTOFF";
     string averageIonCutoff = "CUTOFF_AVERAGE";
+    string frq = "USERINPUT_FRQ";
+
     ofstream inputScript("in.lammps", ios::trunc);
     if (inputScript.is_open()) {
 
@@ -539,6 +541,10 @@ void generateLammpsInputfileForChargedSurface(double ein, int Frequency, int ste
                if (found != std::string::npos)
                    line.replace(found, averageIonCutoff.length(), std::to_string(average_negative_positive_cutoff));
 
+               found = line.find(frq);
+               if (found != std::string::npos)
+                    line.replace(found, frq.length(), std::to_string(density_frq));
+
                 inputScript << line << endl;
             }
             inputTemplate.close();
@@ -548,7 +554,7 @@ void generateLammpsInputfileForChargedSurface(double ein, int Frequency, int ste
 
 }
 
-void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
+void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency,  int density_frq, int stepsToEqb, int stepsAfterEqb, int extracompute, double timestep, double Positive_diameter_in, double Negative_diameter_in) {
 
     Positive_diameter_in = Positive_diameter_in / unitlength;
     Negative_diameter_in = Negative_diameter_in / unitlength;
@@ -579,6 +585,9 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
     string halfPositiveIonCutoff = "HALF_POS_CUTOFF";
     string halfNegativeIonCutoff = "HALF_NEG_CUTOFF";
     string averageIonCutoff = "CUTOFF_AVERAGE";
+    string frq = "USERINPUT_FRQ";
+
+
     ofstream inputScript("in.lammps", ios::trunc);
     if (inputScript.is_open()) {
 
@@ -650,6 +659,10 @@ void generateLammpsInputfileForUnchargedSurface(double ein, int Frequency, int s
                found = line.find(averageIonCutoff);
                if (found != std::string::npos)
                    line.replace(found, averageIonCutoff.length(), std::to_string(average_negative_positive_cutoff));
+
+                found = line.find(frq);
+                if (found != std::string::npos)
+                    line.replace(found, frq.length(), std::to_string(density_frq));
 
                 inputScript << line << endl;
             }
