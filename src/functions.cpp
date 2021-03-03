@@ -239,7 +239,7 @@ void average_errorbars_density(double density_profile_samples, vector<double> &m
     for (unsigned int b = 0; b < mean_negativeion_density.size(); b++)
         negativeion_density_profile.push_back(mean_negativeion_density.at(b) / density_profile_samples);
 
-    // 2. error bars
+    // 2. error bars: Standard error is used not std
     vector<double> p_error_bar;
     vector<double> n_error_bar;
     for (unsigned int b = 0; b < positiveion_density_profile.size(); b++)

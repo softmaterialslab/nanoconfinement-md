@@ -26,6 +26,8 @@ variable totalSteps equal ${stepsBeforeEq}+${stepsAfterEq}
 variable densityDataFrq equal USERINPUT_FRQ
 variable densityDataSamples equal ${stepsAfterEq}/${densityDataFrq}
 variable binWidth equal 0.05 #0.05023206751
+variable densityWriteFrq equal ${totalSteps}*0.1
+variable densityDataSamplesErrorbars equal ${densityWriteFrq}/${densityDataFrq}
 
 # ------------------------------ INITIALIZATION-----------------------------------
 units           lj                                      # The units of all quantities specified in simulation are in lj;
@@ -78,7 +80,7 @@ kspace_modify   slab      3.0                                            # The s
 # EQUILIBRATION
 thermo_style	  custom    step   temp    vol    density   etotal  ke    pe   epair evdwl ecoul  elong    # Set the style and content for printing thermodynamic data to the screen and log file;
 fix               equilibrate salt_ions nvt temp 1.0 1.0 0.1                      # This updates the position and velocity for atoms in the group each timestep in the canonical (nvt) ensemble. # T_start, T_stop, T_damp=100*timestep: The desired temperature at each timestep is a ramped value during the run from Tstart to Tstop. The Tdamp parameter is specified in time units and determines how rapidly the temperature is relaxed;
-timestep        ${deltaT}                                                        # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
+timestep        ${deltaT}                                                         # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau);
 thermo	        ${thermoDumpFrq}                                                  # How often does the data get dumped
 run             ${stepsBeforeEq}                                         		  # Run time for equilibration;
 write_restart   outfiles/equilibrated.electrolyte.system.*                        # Restart command to create a sample of fluid with which you can write a fix
@@ -94,23 +96,33 @@ dump	          mymovie  salt_ions    custom	${movieFrq} outfiles/electrolyte_mov
 
 #compute ID group-ID chunk/atom dim origin delta #units reduced
 compute pdpbin positive_ions chunk/atom bin/1d z center ${binWidth}
+compute pdpbinErrorbars positive_ions chunk/atom bin/1d z center ${binWidth}
 compute ndpbin negative_ions chunk/atom bin/1d z center ${binWidth}
+compute ndpbinErrorbars negative_ions chunk/atom bin/1d z center ${binWidth}
 
 #For example, if Nevery=2, Nrepeat=6, and Nfreq=100, then values on timesteps 90,92,94,96,98,100 will be used to compute the final average on timestep 100. 
 fix positivedensity positive_ions ave/chunk ${densityDataFrq} ${densityDataSamples} ${totalSteps} pdpbin density/number ave one file data/p_density_profile.lmp.dat
 fix negativedensity negative_ions ave/chunk ${densityDataFrq} ${densityDataSamples} ${totalSteps} ndpbin density/number ave one file data/n_density_profile.lmp.dat
 
+#This is to generate the errorbars
+fix positivedensityerrorbars positive_ions ave/chunk ${densityDataFrq} ${densityDataSamplesErrorbars} ${densityWriteFrq} pdpbinErrorbars density/number ave one file data/p_density_profile.lmp.for.errorbars.dat
+fix negativedensityerrorbars negative_ions ave/chunk ${densityDataFrq} ${densityDataSamplesErrorbars} ${densityWriteFrq} ndpbinErrorbars density/number ave one file data/n_density_profile.lmp.for.errorbars.dat
+
 # GET DATA
 fix             heat salt_ions nvt temp 1.0 1.0 0.1
-timestep        ${deltaT}                                                        # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
+timestep        ${deltaT}                                                         # The timestep command specifies this dimensionless multiplier as the magnitude of the timestep relative to (tau).
 thermo          ${thermoDumpFrq}                                                  # How often does the data get dumped
 run             ${stepsAfterEq}                                                   # Run time after equilibration;
 write_restart   outfiles/large.sample.electrolyte.*                               # Restart command to create a sample of fluid with which you can write a fix
 unfix           heat                                                              # Similar to a bracket close
 unfix           positivedensity
 unfix           negativedensity
+unfix           positivedensityerrorbars
+unfix           negativedensityerrorbars
 uncompute     	pdpbin
 uncompute     	ndpbin
+uncompute     	pdpbinErrorbars
+uncompute     	ndpbinErrorbars
 
 ##################################################################################
 # SIMULATION DONE
