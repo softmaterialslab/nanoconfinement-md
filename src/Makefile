@@ -10,7 +10,7 @@ CCF = CC
 # nanoHUB flags.
 nanoHUBCC = mpicxx -O3 -g -Wall -fopenmp -std=c++11
 nanoHUBLFLAG = -lgsl -lgslcblas -lm -L${BOOST_LIBDIR} -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system
-nanoHUBCFLAG = -I${BOOST_INCDIR}
+nanoHUBCFLAG = -I${BOOST_INCDIR} -I${GSL_ROOT}/include
 nanoHUBOFLAG = -o
 # BigRed3 flags.
 #BigRed2CC = CC -O3 -g -Wall -fopenmp -std=c++11
@@ -30,7 +30,7 @@ OFLAG = -o
 all: $(PROG)
 
 install: create-dirs
-	. /etc/environ.sh; use -e -r boost-1.62.0-mpich2-1.3-gnu-4.7.2; make CCF=nanoHUB all
+	. /etc/environ.sh; use -e -r boost-1.62.0-openmpi-2.1.6; use -e -r gsl-1.15; make CCF=nanoHUB all
 	@echo "Installing $(PROG) into $(bindir) directory on nanohub"; cp -f $(PROG) $(BIN)
 
 local-install: create-dirs
