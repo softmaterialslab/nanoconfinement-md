@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/usr/bin/invoke_app "$@" -C "start_jupyter -t -A -T @tool bin/nanoconfinement.ipynb" -t nanoconfinement -u anaconda3-5.1
+/usr/bin/invoke_app "$@" -C "start_jupyter -t -A -T @tool bin/nanoconfinement.ipynb" -t nanoconfinement -u anaconda-7
