@@ -1,10 +1,10 @@
-***Dataset Outline***  <br>
-1. ***data_dump_density_preprocessed_V2.pk*** -----> All data containing 4050 data samples<br>
+**Dataset Outline**  
+1. **data_dump_density_preprocessed_V2.pk** -----> All data containing 4050 data samples
 
-2. ***data_dump_density_preprocessed_train.pk*** ----->  3550 training samples using random splitting methods to drop 500 random samples from the whole 4050 dataset    <br>
-    ***data_dump_density_preprocessed_test.pk*** -----> 500 random dropped samples used for testing      <br>
+2. **data_dump_density_preprocessed_train.pk** ----->  3550 training samples using random splitting methods to drop 500 random samples from the whole 4050 dataset    
+    **data_dump_density_preprocessed_test.pk** -----> 500 random dropped samples used for testing      
 
-3. ***data_dump_density_preprocessed_train_excludeX.pk*** -----> Exclude certian samples involving [X] as input parameters using deterministic splitting methods with sample size = 4050 - N(X)    <br>
-    ***data_dump_density_preprocessed_test_excludeX.pk*** -----> Corresponding excluded testing dataset include N(X) samples   <br>
+3. **data_dump_density_preprocessed_train_excludeX.pk** -----> Exclude certian samples involving [X] as input parameters using deterministic splitting methods with sample size = 4050 - N(X)    
+    **data_dump_density_preprocessed_test_excludeX.pk** -----> Corresponding excluded testing dataset include N(X) samples   
 
-4. ***scaler_new.pkl*** -----> Scaler modules fitting with the maximum and the minimum of the original input parameter spaces  <br>
+4. **scaler_new.pkl** -----> Scaler modules fitting with the maximum and the minimum of the original input parameter spaces  
