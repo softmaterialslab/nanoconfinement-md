@@ -28,11 +28,6 @@ variable densityDataSamples equal ${stepsAfterEq}/${densityDataFrq}
 variable binWidth equal 0.05 #0.05023206751
 variable densityWriteFrq equal ${totalSteps}*0.1
 variable densityDataSamplesErrorbars equal ${densityWriteFrq}/${densityDataFrq}
-variable positiveRadius equal POSITIVE_RADIUS
-variable negativeRadius equal NEGATIVE_RADIUS
-if "${positiveRadius} > ${negativeRadius}" then "variable largeRadius equal ${positiveRadius}" else " variable largeRadius equal ${negativeRadius}"
-variable positiveRadiusRatio equal ${positiveRadius}/${largeRadius}
-variable negativeRadiusRatio equal ${negativeRadius}/${largeRadius}
 
 # ------------------------------ INITIALIZATION-----------------------------------
 units           lj                                      # The units of all quantities specified in simulation are in lj;
@@ -88,11 +83,9 @@ unfix           equilibrate                                                     
 dump	          mymovie  salt_ions    custom	${movieFrq} outfiles/electrolyte_movie.xyz id  type  q  x   y   z
 
 ## Image Dump ##
-dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 axes no 0.8 0.02 view 60 -30
-dump_modify myimages pad 3
-dump_modify myimages boxcolor black backcolor white
-dump_modify 	myimages adiam 1 ${positiveRadiusRatio}
-dump_modify 	myimages adiam 2 ${negativeRadiusRatio}
+#dump	myimages all image 10000 outfiles/image.*.jpg type type size 1024 1024 axes no 0.8 0.02 view 60 -30
+#dump_modify myimages pad 3
+#dump_modify myimages boxcolor black backcolor white
 
 # --------------------------------- Desnity profile dump --------------------------------------
 
