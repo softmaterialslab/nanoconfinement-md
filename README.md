@@ -15,26 +15,27 @@ THE FOLLOWING INSTRUCTIONS ARE FOR BIGRED200 INSTALL and GENERATE ONE DATA SAMPL
 
 * Locate into the project directory: ```cd nanoconfinement-md```
 * Load the necessary modules: ```module load gsl/2.7 && module load boost/1.78.0```
-* You should provide the following make command to make the project. This will create the executable and install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)
+* You should provide the following make command to make the project. This will create the executable and install the executable (md_simulation_confined_ions) into bin directory (That is nanoconfinement-md/bin)\
 ```make cluster-install```
-*Then go into the bin directory: ```cd bin```
-* Next run the simulation using LAMMPS-- this will first use C++ to create LAMMPS scripts
+* Then go into the bin directory: ```cd bin```
+* Next run the simulation using LAMMPS-- this will first use C++ to create LAMMPS scripts:\
 ```time srun -A rxxxxx -n 1 -d 1 ./md_simulation_confined_ions -Z 4.2 -p 1 -n -1 -c 0.1 -d 0.2 -a 0.2 -i -0.01 -S 10000000 -B 0.05 -m 1000000 -J true -j true```
-*Note: The parameters are defined as:
- ```-A``` is the RT project number for running job on bigred20
- ```-Z```: confinement length 
- ```-p/-n```: positive/negative valency
- ```-c```: salt concentration 
- ```-d/-a``: positive/negative valency 
- ```-i```: surface charge density
- ```-S```: simulation steps(not used when only generating LAMMPS input scripts)
- ```-B```: binwidth
- ```-m```: MD movie frequency(not used when only generating LAMMPS input scripts)
- ```-J```: LAMMPS(true LAMMPS; false MD)
- ```-j```: LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)
+* Note: The parameters are defined as:\
+ ```-A``` is the RT project number for running job on bigred200 \
+ ```-Z```: confinement length  \
+ ```-p/-n```: positive/negative valency\
+ ```-c```: salt concentration \
+ ```-d/-a```: positive/negative valency \
+ ```-i```: surface charge density\
+ ```-S```: simulation steps(not used when only generating LAMMPS input scripts)\
+ ```-B```: binwidth\
+ ```-m```: MD movie frequency(not used when only generating LAMMPS input scripts)\
+ ```-J```: LAMMPS(true LAMMPS; false MD)\
+ ```-j```: LAMMPS Preprocessing/Postprocessing (true Preprocessing; false Postprocessing)\
 
-* Time to do LAMMPS preprocessing takes around 10 seconds. ```real    0m9.302s```
-* Next submit the script ```nanoconfinement-lammps.pbs``` to run LAMMPS simulation. 
+* Time to do LAMMPS preprocessing takes around 10 seconds. ```real 0m9.302s```
+* Next submit the script ```nanoconfinement-lammps.pbs``` to run LAMMPS simulation:
+```sbatch nanoconfinement-lammps.pbs```
 * When simulation finishes, the result ion density files will be stored in ```bin/data``` directory. Total average density values can be found in ```n_density_profile.lmp.dat``` and ```p_density_profile.lmp.dat```; Average density values per N steps can be found in ```n_density_profile.lmp.for.errorbars.dat``` and ```p_density_profile.lmp.for.errorbars.dat```
 
 
